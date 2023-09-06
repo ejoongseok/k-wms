@@ -1,5 +1,7 @@
 package com.example.kwms.inbound;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,8 +42,11 @@ class CreateInboundTest {
         }
 
         public record Request(
+                @NotBlank(message = "입고 제목은 필수입니다.")
                 String title,
+                @NotNull(message = "입고 예정일은 필수입니다.")
                 LocalDateTime estimatedArrivalAt,
+                @NotNull(message = "주문 요청일은 필수입니다.")
                 LocalDateTime orderRequestedAt,
                 String description) {
         }
