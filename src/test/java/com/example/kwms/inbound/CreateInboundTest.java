@@ -11,7 +11,6 @@ import org.springframework.util.Assert;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 class CreateInboundTest {
 
@@ -45,12 +44,26 @@ class CreateInboundTest {
         // inboundRepository.findById(1L).asn();
     }
 
+    public enum InboundStatus {
+        ORDER_REQUESTED("발주 요청");
+
+        private final String description;
+
+        InboundStatus(final String description) {
+            this.description = description;
+        }
+    }
+
     private static class InboundProduct {
         private final Long productNo;
         private final Long requestQuantity;
         private final Long unitPrice;
         private final String description;
         private Inbound inbound;
+        /**
+         * 발주요청 상태에서 생성되었는지 입고 이후에 추가로 입고된 상품인지를 구분하기 위한 필드
+         */
+        private boolean isAdded;
 
         public InboundProduct(
                 final Long productNo,
@@ -75,6 +88,7 @@ class CreateInboundTest {
             Assert.notNull(inbound, "입고는 필수입니다.");
             this.inbound = inbound;
         }
+
     }
 
     private static class Inbound {
@@ -82,14 +96,15 @@ class CreateInboundTest {
         private final LocalDateTime estimatedArrivalAt;
         private final LocalDateTime orderRequestedAt;
         private final String description;
-        private List<InboundProduct> inboundProducts = new ArrayList<>();
+        private final List<InboundProduct> inboundProducts = new ArrayList<>();
+        private final InboundStatus status;
+
 
         public Inbound(
                 final String title,
                 final LocalDateTime estimatedArrivalAt,
                 final LocalDateTime orderRequestedAt,
-                final String description,
-                final List<InboundProduct> inboundProducts) {
+                final String description) {
             Assert.hasText(title, "입고 제목은 필수입니다.");
             Assert.notNull(estimatedArrivalAt, "입고 예정일은 필수입니다.");
             Assert.notNull(orderRequestedAt, "주문 요청일은 필수입니다.");
@@ -98,15 +113,23 @@ class CreateInboundTest {
             this.estimatedArrivalAt = estimatedArrivalAt;
             this.orderRequestedAt = orderRequestedAt;
             this.description = description;
-            this.inboundProducts = inboundProducts;
-            inboundProducts.forEach(product -> product.assignInbound(this));
+            status = InboundStatus.ORDER_REQUESTED;
         }
 
+        public void assignProducts(final List<InboundProduct> products) {
+            Assert.notEmpty(products, "입고 상품은 필수입니다.");
+            for (final InboundProduct product : products) {
+                product.assignInbound(this);
+                inboundProducts.add(product);
+            }
+        }
     }
 
     private class CreateInbound {
         public void request(final Request request) {
             final Inbound inbound = request.toDomain();
+            final List<InboundProduct> products = request.toProducts();
+            inbound.assignProducts(products);
         }
 
         public record Request(
@@ -123,10 +146,13 @@ class CreateInboundTest {
                         title,
                         estimatedArrivalAt,
                         orderRequestedAt,
-                        description,
-                        inboundProducts.stream()
-                                .map(Product::toDomain)
-                                .collect(Collectors.toList()));
+                        description);
+            }
+
+            public List<InboundProduct> toProducts() {
+                return inboundProducts.stream()
+                        .map(Product::toDomain)
+                        .toList();
             }
 
             public record Product(
