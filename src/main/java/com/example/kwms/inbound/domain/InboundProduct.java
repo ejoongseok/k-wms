@@ -1,8 +1,8 @@
-package com.example.kwms.inbound;
+package com.example.kwms.inbound.domain;
 
 import org.springframework.util.Assert;
 
-class InboundProduct {
+public class InboundProduct {
     private final Long productNo;
     private final Long requestQuantity;
     private final Long unitPrice;
@@ -32,7 +32,7 @@ class InboundProduct {
         this.description = description;
     }
 
-    public void assignInbound(final Inbound inbound) {
+    void assignInbound(final Inbound inbound) {
         Assert.notNull(inbound, "입고는 필수입니다.");
         this.inbound = inbound;
     }

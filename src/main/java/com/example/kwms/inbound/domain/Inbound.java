@@ -1,4 +1,4 @@
-package com.example.kwms.inbound;
+package com.example.kwms.inbound.domain;
 
 import org.springframework.util.Assert;
 
@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-class Inbound {
+public class Inbound {
     private final String title;
     private final LocalDateTime estimatedArrivalAt;
     private final LocalDateTime orderRequestedAt;

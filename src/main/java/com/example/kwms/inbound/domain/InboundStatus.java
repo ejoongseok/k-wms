@@ -1,4 +1,4 @@
-package com.example.kwms.inbound;
+package com.example.kwms.inbound.domain;
 
 public enum InboundStatus {
     ORDER_REQUESTED("발주 요청");

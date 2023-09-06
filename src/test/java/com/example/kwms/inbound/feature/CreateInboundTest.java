@@ -1,4 +1,4 @@
-package com.example.kwms.inbound;
+package com.example.kwms.inbound.feature;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

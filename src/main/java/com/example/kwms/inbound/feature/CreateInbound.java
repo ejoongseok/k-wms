@@ -1,5 +1,7 @@
-package com.example.kwms.inbound;
+package com.example.kwms.inbound.feature;
 
+import com.example.kwms.inbound.domain.Inbound;
+import com.example.kwms.inbound.domain.InboundProduct;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -26,7 +28,7 @@ class CreateInbound {
             String description,
             @NotEmpty(message = "입고 상품은 필수입니다.")
             List<Request.Product> inboundProducts) {
-        public Inbound toDomain() {
+        Inbound toDomain() {
             return new Inbound(
                     title,
                     estimatedArrivalAt,
@@ -34,7 +36,7 @@ class CreateInbound {
                     description);
         }
 
-        public List<InboundProduct> toProducts() {
+        List<InboundProduct> toProducts() {
             return inboundProducts.stream()
                     .map(Request.Product::toDomain)
                     .toList();
@@ -50,7 +52,7 @@ class CreateInbound {
                 @Min(value = 0, message = "상품 입고 요청 단가는 0원 이상이어야 합니다.")
                 Long unitPrice,
                 String description) {
-            public InboundProduct toDomain() {
+            InboundProduct toDomain() {
                 return new InboundProduct(
                         productNo,
                         requestQuantity,
