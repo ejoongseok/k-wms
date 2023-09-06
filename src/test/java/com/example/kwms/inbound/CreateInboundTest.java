@@ -17,7 +17,10 @@ class CreateInboundTest {
     @DisplayName("입고 생성")
     void createInbound() {
         final CreateInbound.Request request = new CreateInbound.Request();
+
         createInbound.request(request);
+
+        // inboundRepository.findById(1L).asn();
     }
 
     private class CreateInbound {
