@@ -3,25 +3,32 @@ package com.example.kwms.inbound.feature;
 import com.example.kwms.inbound.domain.Inbound;
 import com.example.kwms.inbound.domain.InboundProduct;
 import com.example.kwms.inbound.domain.InboundRepository;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 
-@Component
+@RestController
 @RequiredArgsConstructor
-class CreateInbound {
+public class CreateInbound {
     private final InboundRepository inboundRepository;
 
     @Transactional
-    public void request(final Request request) {
+    @PostMapping("/inbounds")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void request(@RequestBody @Valid final Request request) {
         final List<InboundProduct> products = request.toProducts();
         final Inbound inbound = request.toDomain();
 
