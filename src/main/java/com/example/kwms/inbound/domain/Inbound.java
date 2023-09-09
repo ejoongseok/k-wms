@@ -28,6 +28,7 @@ public class Inbound {
     private Long inboundNo;
     @Column(name = "title", nullable = false)
     @Comment("입고명")
+    @Getter
     private String title;
     @Column(name = "estimated_arrival_at", nullable = false)
     @Comment("입고 예정일")
@@ -73,4 +74,26 @@ public class Inbound {
         inboundProducts.add(inboundProduct);
     }
 
+    public void update(
+            final String title,
+            final LocalDateTime estimatedArrivalAt,
+            final LocalDateTime orderRequestedAt,
+            final String description) {
+        validateUpdate(title, estimatedArrivalAt, orderRequestedAt, description);
+        this.title = title;
+        this.estimatedArrivalAt = estimatedArrivalAt;
+        this.orderRequestedAt = orderRequestedAt;
+        this.description = description;
+    }
+
+    private void validateUpdate(
+            final String title,
+            final LocalDateTime estimatedArrivalAt,
+            final LocalDateTime orderRequestedAt,
+            final String description) {
+        Assert.hasText(title, "입고 제목은 필수입니다.");
+        Assert.notNull(estimatedArrivalAt, "입고 예정일은 필수입니다.");
+        Assert.notNull(orderRequestedAt, "주문 요청일은 필수입니다.");
+        Assert.notNull(description, "입고 설명은 필수입니다.");
+    }
 }
