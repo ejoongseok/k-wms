@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
@@ -37,6 +38,7 @@ public class Inbound {
     @Column(name = "description")
     @Comment("입고 설명")
     private String description;
+    @Getter
     @OneToMany(mappedBy = "inbound", orphanRemoval = true, cascade = CascadeType.ALL)
     private final List<InboundProduct> inboundProducts = new ArrayList<>();
 
@@ -62,4 +64,13 @@ public class Inbound {
             inboundProducts.add(product);
         }
     }
+
+    public void addProduct(final InboundProduct inboundProduct) {
+        Assert.notNull(inboundProduct, "입고 상품은 필수입니다.");
+
+        inboundProduct.added();
+        inboundProduct.assignInbound(this);
+        inboundProducts.add(inboundProduct);
+    }
+
 }

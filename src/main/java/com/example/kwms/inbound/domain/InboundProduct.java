@@ -68,4 +68,7 @@ public class InboundProduct {
         this.inbound = inbound;
     }
 
+    void added() {
+        isAdded = true;
+    }
 }
