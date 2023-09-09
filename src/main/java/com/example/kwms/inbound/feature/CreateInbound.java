@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
 class CreateInbound {
     public void request(final Request request) {
         final List<InboundProduct> products = request.toProducts();
