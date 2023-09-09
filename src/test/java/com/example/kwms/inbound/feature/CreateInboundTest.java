@@ -1,20 +1,22 @@
 package com.example.kwms.inbound.feature;
 
-import org.junit.jupiter.api.BeforeEach;
+import com.example.kwms.common.ApiTest;
+import com.example.kwms.inbound.domain.InboundRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-class CreateInboundTest {
+import static org.assertj.core.api.Assertions.assertThat;
 
+class CreateInboundTest extends ApiTest {
+
+    @Autowired
     private CreateInbound createInbound;
-
-    @BeforeEach
-    void setUp() {
-        createInbound = new CreateInbound();
-    }
+    @Autowired
+    private InboundRepository inboundRepository;
 
     @Test
     @DisplayName("입고 생성")
@@ -36,7 +38,7 @@ class CreateInboundTest {
 
         createInbound.request(request);
 
-        // inboundRepository.findById(1L).asn();
+        assertThat(inboundRepository.findAll()).hasSize(1);
     }
 
 }
