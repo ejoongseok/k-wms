@@ -17,12 +17,16 @@ class AppendInboundProductTest {
     @Test
     @DisplayName("입고 상품을 추가한다.")
     void appendInboundProduct() {
-        appendInboundProduct.request();
+        final AppendInboundProduct.Request request = new AppendInboundProduct.Request();
+        appendInboundProduct.request(request);
     }
 
     private class AppendInboundProduct {
-        public void request() {
+        public void request(final Request request) {
             throw new UnsupportedOperationException("Unsupported request");
+        }
+
+        public record Request() {
         }
     }
 }
