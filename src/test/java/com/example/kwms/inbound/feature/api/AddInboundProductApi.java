@@ -4,6 +4,7 @@ import com.example.kwms.common.Scenario;
 import com.example.kwms.inbound.feature.AddInboundProduct;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.springframework.http.HttpStatus;
 
 public class AddInboundProductApi {
 
@@ -61,7 +62,7 @@ public class AddInboundProductApi {
                 .when()
                 .post("/inbounds/products")
                 .then().log().all()
-                .statusCode(201);
+                .statusCode(HttpStatus.CREATED.value());
         return new Scenario();
     }
 }
