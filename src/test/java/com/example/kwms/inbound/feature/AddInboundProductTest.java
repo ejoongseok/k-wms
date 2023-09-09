@@ -19,7 +19,7 @@ class AddInboundProductTest extends ApiTest {
     @Test
     @DisplayName("입고 상품을 추가한다.")
     @Transactional
-    void appendInboundProduct() {
+    void addInboundProduct() {
         Scenario.createInbound().request()
                 .addInboundProduct().request();
 

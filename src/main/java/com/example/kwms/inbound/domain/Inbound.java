@@ -1,5 +1,6 @@
 package com.example.kwms.inbound.domain;
 
+import com.example.kwms.common.NotFoundException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -95,5 +96,40 @@ public class Inbound {
         Assert.notNull(estimatedArrivalAt, "입고 예정일은 필수입니다.");
         Assert.notNull(orderRequestedAt, "주문 요청일은 필수입니다.");
         Assert.notNull(description, "입고 설명은 필수입니다.");
+    }
+
+    public void updateProduct(
+            final Long inboundProductNo,
+            final Long productNo,
+            final Long requestQuantity,
+            final Long unitPrice,
+            final String description) {
+        validateUpdateProduct(inboundProductNo, productNo, requestQuantity, unitPrice);
+        final InboundProduct inboundProduct = getInboundProduct(inboundProductNo);
+
+        inboundProduct.update(productNo, requestQuantity, unitPrice, description);
+    }
+
+    private void validateUpdateProduct(
+            final Long inboundProductNo,
+            final Long productNo,
+            final Long requestQuantity,
+            final Long unitPrice) {
+        Assert.notNull(inboundProductNo, "입고 상품 번호는 필수입니다.");
+        Assert.notNull(productNo, "상품 번호는 필수입니다.");
+        Assert.notNull(requestQuantity, "상품 입고 요청 수량은 필수입니다.");
+        if (1 > requestQuantity)
+            throw new IllegalArgumentException("상품 입고 요청 수량은 1개 이상이어야 합니다.");
+        Assert.notNull(unitPrice, "상품 입고 요청 단가는 필수입니다.");
+        if (0 > unitPrice)
+            throw new IllegalArgumentException("상품 입고 요청 단가는 0원 이상이어야 합니다.");
+    }
+
+    private InboundProduct getInboundProduct(final Long inboundProductNo) {
+        return inboundProducts.stream()
+                .filter(product -> product.equalsId(inboundProductNo))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(
+                        "입고 상품이 존재하지 않습니다. 입고 상품 번호: %s".formatted(inboundProductNo)));
     }
 }
