@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
@@ -16,6 +17,7 @@ import org.springframework.util.Assert;
 @Table(name = "inbound_product")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class InboundProduct {
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "inbound_product_no")
@@ -32,6 +34,7 @@ public class InboundProduct {
     private Long unitPrice;
     @Column(name = "description")
     @Comment("상품 입고 설명")
+    @Getter
     private String description;
     @ManyToOne
     @JoinColumn(name = "inbound_no", nullable = false)
@@ -49,6 +52,18 @@ public class InboundProduct {
             final Long requestQuantity,
             final Long unitPrice,
             final String description) {
+        validateConstructor(productNo, requestQuantity, unitPrice);
+
+        this.productNo = productNo;
+        this.requestQuantity = requestQuantity;
+        this.unitPrice = unitPrice;
+        this.description = description;
+    }
+
+    private void validateConstructor(
+            final Long productNo,
+            final Long requestQuantity,
+            final Long unitPrice) {
         Assert.notNull(productNo, "상품 번호는 필수입니다.");
         Assert.notNull(requestQuantity, "상품 입고 요청 수량은 필수입니다.");
         if (1 > requestQuantity)
@@ -56,11 +71,6 @@ public class InboundProduct {
         Assert.notNull(unitPrice, "상품 입고 요청 단가는 필수입니다.");
         if (0 > unitPrice)
             throw new IllegalArgumentException("상품 입고 요청 단가는 0원 이상이어야 합니다.");
-
-        this.productNo = productNo;
-        this.requestQuantity = requestQuantity;
-        this.unitPrice = unitPrice;
-        this.description = description;
     }
 
     void assignInbound(final Inbound inbound) {
@@ -70,5 +80,34 @@ public class InboundProduct {
 
     void added() {
         isAdded = true;
+    }
+
+    void update(
+            final Long productNo,
+            final Long requestQuantity,
+            final Long unitPrice,
+            final String description) {
+        validateUpdate(productNo, requestQuantity, unitPrice);
+        this.productNo = productNo;
+        this.requestQuantity = requestQuantity;
+        this.unitPrice = unitPrice;
+        this.description = description;
+    }
+
+    private void validateUpdate(
+            final Long productNo,
+            final Long requestQuantity,
+            final Long unitPrice) {
+        Assert.notNull(productNo, "상품 번호는 필수입니다.");
+        Assert.notNull(requestQuantity, "상품 입고 요청 수량은 필수입니다.");
+        if (1 > requestQuantity)
+            throw new IllegalArgumentException("상품 입고 요청 수량은 1개 이상이어야 합니다.");
+        Assert.notNull(unitPrice, "상품 입고 요청 단가는 필수입니다.");
+        if (0 > unitPrice)
+            throw new IllegalArgumentException("상품 입고 요청 단가는 0원 이상이어야 합니다.");
+    }
+
+    boolean equalsId(final Long inboundProductNo) {
+        return this.inboundProductNo.equals(inboundProductNo);
     }
 }

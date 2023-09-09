@@ -23,8 +23,8 @@ class UpdateInboundTest extends ApiTest {
     }
 
     @Test
-    @DisplayName("입고 생성")
-    void createInbound() {
+    @DisplayName("입고 수정")
+    void updateInbound() {
         final Inbound before = inboundRepository.getBy(1L);
         assertThat(before.getTitle()).isEqualTo("블랙핑크 앨범 입고");
 
