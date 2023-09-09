@@ -3,7 +3,6 @@ package com.example.kwms.inbound.domain;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,11 +39,6 @@ public class Inbound {
     private String description;
     @OneToMany(mappedBy = "inbound", orphanRemoval = true, cascade = CascadeType.ALL)
     private final List<InboundProduct> inboundProducts = new ArrayList<>();
-    @Enumerated
-    @Column(name = "status", nullable = false)
-    @Comment("입고 상태")
-    private InboundStatus status;
-
 
     public Inbound(
             final String title,
@@ -59,7 +53,6 @@ public class Inbound {
         this.estimatedArrivalAt = estimatedArrivalAt;
         this.orderRequestedAt = orderRequestedAt;
         this.description = description;
-        status = InboundStatus.ORDER_REQUESTED;
     }
 
     public void assignProducts(final List<InboundProduct> products) {
