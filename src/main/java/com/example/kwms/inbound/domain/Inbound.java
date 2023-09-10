@@ -44,16 +44,22 @@ public class Inbound {
     @Getter
     @OneToMany(mappedBy = "inbound", orphanRemoval = true, cascade = CascadeType.ALL)
     private final List<InboundProduct> inboundProducts = new ArrayList<>();
+    @Column(name = "warehouse_no", nullable = false)
+    @Comment("창고 번호")
+    private Long warehouseNo;
 
     public Inbound(
+            final Long warehouseNo,
             final String title,
             final LocalDateTime estimatedArrivalAt,
             final LocalDateTime orderRequestedAt,
             final String description) {
+        Assert.notNull(warehouseNo, "창고 번호는 필수입니다.");
         Assert.hasText(title, "입고 제목은 필수입니다.");
         Assert.notNull(estimatedArrivalAt, "입고 예정일은 필수입니다.");
         Assert.notNull(orderRequestedAt, "주문 요청일은 필수입니다.");
         Assert.notNull(inboundProducts, "입고 상품은 필수입니다.");
+        this.warehouseNo = warehouseNo;
         this.title = title;
         this.estimatedArrivalAt = estimatedArrivalAt;
         this.orderRequestedAt = orderRequestedAt;
@@ -93,11 +99,13 @@ public class Inbound {
     }
 
     public void update(
+            final Long warehouseNo,
             final String title,
             final LocalDateTime estimatedArrivalAt,
             final LocalDateTime orderRequestedAt,
             final String description) {
-        validateUpdate(title, estimatedArrivalAt, orderRequestedAt, description);
+        validateUpdate(warehouseNo, title, estimatedArrivalAt, orderRequestedAt, description);
+        this.warehouseNo = warehouseNo;
         this.title = title;
         this.estimatedArrivalAt = estimatedArrivalAt;
         this.orderRequestedAt = orderRequestedAt;
@@ -105,10 +113,12 @@ public class Inbound {
     }
 
     private void validateUpdate(
+            final Long warehouseNo,
             final String title,
             final LocalDateTime estimatedArrivalAt,
             final LocalDateTime orderRequestedAt,
             final String description) {
+        Assert.notNull(warehouseNo, "창고 번호는 필수입니다.");
         Assert.hasText(title, "입고 제목은 필수입니다.");
         Assert.notNull(estimatedArrivalAt, "입고 예정일은 필수입니다.");
         Assert.notNull(orderRequestedAt, "주문 요청일은 필수입니다.");

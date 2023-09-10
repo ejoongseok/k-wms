@@ -56,14 +56,20 @@ public class Location {
     @Getter
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Inventory> inventories = new ArrayList<>();
+    @Column(name = "warehouse_no", nullable = false)
+    @Comment("창고 번호")
+    private Long warehouseNo;
 
     public Location(
+            final Long warehouseNo,
             final String locationBarcode,
             final StorageType storageType,
             final UsagePurpose usagePurpose) {
+        Assert.notNull(warehouseNo, "창고 번호는 필수입니다.");
         Assert.hasText(locationBarcode, "로케이션 바코드는 필수입니다.");
         Assert.notNull(storageType, "로케이션 유형은 필수입니다.");
         Assert.notNull(usagePurpose, "로케이션 용도는 필수입니다.");
+        this.warehouseNo = warehouseNo;
         this.locationBarcode = locationBarcode;
         this.storageType = storageType;
         this.usagePurpose = usagePurpose;
@@ -111,6 +117,13 @@ public class Location {
                             "로케이션 바코드: %s, 하위 로케이션 바코드: %s")
                             .formatted(locationBarcode, location.locationBarcode));
         }
+        if (!warehouseNo.equals(location.warehouseNo)) {
+            throw new IllegalArgumentException("다른 창고의 로케이션은 추가할 수 없습니다.");
+        }
+    }
+
+    private Long getWarehouseNo() {
+        return warehouseNo;
     }
 
     private int getSize() {

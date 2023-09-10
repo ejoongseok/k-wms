@@ -2,6 +2,7 @@ package com.example.kwms.location.domain;
 
 public class LocationFixture {
 
+    private final Long warehouseNo = 1L;
     private String locationBarcode = "TOTE-001";
     private StorageType storageType = StorageType.TOTE;
     private UsagePurpose usagePurpose = UsagePurpose.MOVE;
@@ -27,6 +28,7 @@ public class LocationFixture {
 
     public Location build() {
         return new Location(
+                warehouseNo,
                 locationBarcode,
                 storageType,
                 usagePurpose

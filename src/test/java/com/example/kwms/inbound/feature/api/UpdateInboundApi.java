@@ -9,12 +9,23 @@ import org.springframework.http.HttpStatus;
 import java.time.LocalDateTime;
 
 public class UpdateInboundApi {
+    private Long warehouseNo = 1L;
 
-    private final Long inboundNo = 1L;
+    private Long inboundNo = 1L;
     private String title = "블랙핑크 앨범 수정";
     private LocalDateTime estimatedArrivalAt = LocalDateTime.now().plusDays(1L);
     private LocalDateTime orderRequestedAt = LocalDateTime.now();
     private String description = "23년도 블랙핑크 신규 앨범 주문";
+
+    public UpdateInboundApi warehouseNo(final Long warehouseNo) {
+        this.warehouseNo = warehouseNo;
+        return this;
+    }
+
+    public UpdateInboundApi inboundNo(final Long inboundNo) {
+        this.inboundNo = inboundNo;
+        return this;
+    }
 
     public UpdateInboundApi title(final String title) {
         this.title = title;
@@ -39,6 +50,7 @@ public class UpdateInboundApi {
 
     public Scenario request() {
         final UpdateInbound.Request request = new UpdateInbound.Request(
+                warehouseNo,
                 inboundNo,
                 title,
                 estimatedArrivalAt,
