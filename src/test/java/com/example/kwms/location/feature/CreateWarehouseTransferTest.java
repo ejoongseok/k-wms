@@ -1,5 +1,6 @@
 package com.example.kwms.location.feature;
 
+import com.example.kwms.location.domain.Inventory;
 import com.example.kwms.location.domain.InventoryRepository;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -45,8 +46,24 @@ public class CreateWarehouseTransferTest {
 
     private class CreateWarehouseTransfer {
         private InventoryRepository inventoryRepository;
-        public void request(final Request request) {
 
+        //TODO 나중에 락 추가하기
+        public void request(final Request request) {
+            validate(request);
+        }
+
+        private void validate(final Request request) {
+            for (final Request.Product product : request.products) {
+                final List<Inventory> inventories = inventoryRepository.listBy(request.fromWarehouseNo, product.productNo);
+                final long totalQuantity = inventories.stream()
+                        .mapToLong(Inventory::getQuantity)
+                        .sum();
+                if (totalQuantity < product.quantity) {
+                    throw new IllegalArgumentException(
+                            "재고가 부족합니다. 재고 수량: %d, 요청 수량: %d"
+                                    .formatted(totalQuantity, product.quantity));
+                }
+            }
         }
 
         public record Request(

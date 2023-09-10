@@ -133,7 +133,7 @@ public class Location {
         }
     }
 
-    private Long getWarehouseNo() {
+    Long getWarehouseNo() {
         return warehouseNo;
     }
 

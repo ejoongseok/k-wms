@@ -39,6 +39,9 @@ public class Inventory {
     @Column(name = "product_no", nullable = false)
     @Comment("상품 번호")
     private Long productNo;
+    @Column(name = "warehouse_no", nullable = false)
+    @Comment("창고 번호")
+    private Long warehouseNo;
 
     Inventory(final Location location, final LPN lpn) {
         Assert.notNull(location, "로케이션은 필수입니다.");
@@ -47,6 +50,7 @@ public class Inventory {
         this.lpn = lpn;
         quantity = 1L;
         productNo = lpn.getProductNo();
+        warehouseNo = location.getWarehouseNo();
     }
 
     Inventory(final Location location, final LPN lpn, final Long quantity) {
@@ -61,6 +65,7 @@ public class Inventory {
         this.lpn = lpn;
         this.quantity = quantity;
         productNo = lpn.getProductNo();
+        warehouseNo = location.getWarehouseNo();
     }
 
     public boolean equalsLPN(final LPN lpn) {
