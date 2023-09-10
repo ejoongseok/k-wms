@@ -1,6 +1,7 @@
 package com.example.kwms.inbound.domain;
 
 import com.example.kwms.common.NotFoundException;
+import com.google.common.annotations.VisibleForTesting;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -57,6 +58,22 @@ public class Inbound {
         this.estimatedArrivalAt = estimatedArrivalAt;
         this.orderRequestedAt = orderRequestedAt;
         this.description = description;
+    }
+
+    @VisibleForTesting
+    Inbound(
+            final Long inboundNo,
+            final String title,
+            final LocalDateTime estimatedArrivalAt,
+            final LocalDateTime orderRequestedAt,
+            final String description,
+            final List<InboundProduct> inboundProducts) {
+        this.inboundNo = inboundNo;
+        this.title = title;
+        this.estimatedArrivalAt = estimatedArrivalAt;
+        this.orderRequestedAt = orderRequestedAt;
+        this.description = description;
+        this.inboundProducts.addAll(inboundProducts);
     }
 
     public void assignProducts(final List<InboundProduct> products) {
@@ -131,5 +148,21 @@ public class Inbound {
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException(
                         "입고 상품이 존재하지 않습니다. 입고 상품 번호: %s".formatted(inboundProductNo)));
+    }
+
+    public void registerInspectionResult(
+            final Long inboundProductNo,
+            final LocalDateTime inspectedAt,
+            final LocalDateTime arrivedAt,
+            final String inspectionComment,
+            final Long acceptableQuantity,
+            final Long rejectedQuantity) {
+        final InboundProduct inboundProduct = getInboundProduct(inboundProductNo);
+        inboundProduct.registerInspectionResult(
+                inspectedAt,
+                arrivedAt,
+                inspectionComment,
+                acceptableQuantity,
+                rejectedQuantity);
     }
 }
