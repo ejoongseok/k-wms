@@ -1,5 +1,6 @@
 package com.example.kwms.location.domain;
 
+import com.example.kwms.inbound.domain.LPN;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,6 +22,7 @@ import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "location")
@@ -50,6 +52,9 @@ public class Location {
     @JoinColumn(name = "parent_location_no", nullable = true)
     @Comment("부모 로케이션 ID")
     private Location parent;
+    @Getter
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<Inventory> inventories = new ArrayList<>();
 
     public Location(
             final String locationBarcode,
@@ -124,6 +129,20 @@ public class Location {
         }
 
         return false;
+    }
+
+    public void addInventory(final LPN lpn) {
+        Assert.notNull(lpn, "LPN은 필수입니다.");
+        findInventory(lpn)
+                .ifPresentOrElse(
+                        Inventory::increaseQuantity,
+                        () -> inventories.add(new Inventory(this, lpn)));
+    }
+
+    private Optional<Inventory> findInventory(final LPN lpn) {
+        return inventories.stream()
+                .filter(inventory -> inventory.equalsLPN(lpn))
+                .findFirst();
     }
 
 }
