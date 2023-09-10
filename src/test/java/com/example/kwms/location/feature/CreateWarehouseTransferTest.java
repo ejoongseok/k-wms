@@ -49,12 +49,14 @@ public class CreateWarehouseTransferTest {
 
         //TODO 나중에 락 추가하기
         public void request(final Request request) {
-            validate(request);
+            validate(request.fromWarehouseNo, request.products);
         }
 
-        private void validate(final Request request) {
-            for (final Request.Product product : request.products) {
-                final List<Inventory> inventories = inventoryRepository.listBy(request.fromWarehouseNo, product.productNo);
+        private void validate(
+                final Long fromWarehouseNo,
+                final List<Request.Product> products) {
+            for (final Request.Product product : products) {
+                final List<Inventory> inventories = inventoryRepository.listBy(fromWarehouseNo, product.productNo);
                 final long totalQuantity = inventories.stream()
                         .mapToLong(Inventory::getQuantity)
                         .sum();
