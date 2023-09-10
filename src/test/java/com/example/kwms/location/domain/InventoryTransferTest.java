@@ -41,7 +41,6 @@ class InventoryTransferTest {
         assertThat(inventories).hasSize(1);
         assertThat(inventories.get(0).equalsLPN(lpn)).isTrue();
         assertThat(inventories.get(0).getQuantity()).isEqualTo(9L);
-
         final List<Inventory> inventories2 = tote2.getInventories();
         assertThat(inventories2).hasSize(1);
         assertThat(inventories2.get(0).equalsLPN(lpn)).isTrue();
