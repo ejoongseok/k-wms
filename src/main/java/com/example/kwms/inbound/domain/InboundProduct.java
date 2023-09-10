@@ -211,7 +211,9 @@ public class InboundProduct {
         lpn.assignInboundProduct(this);
     }
 
-    private void validateAssignLPN(final String lpnBarcode, final LocalDateTime expiringAt) {
+    private void validateAssignLPN(
+            final String lpnBarcode,
+            final LocalDateTime expiringAt) {
         if (null == inspectedAt) {
             throw new IllegalStateException("검수가 완료되지 않은 상품은 LPN을 등록할 수 없습니다.");
         }
