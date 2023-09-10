@@ -26,6 +26,6 @@ public class InventoryTransfer {
             throw new IllegalArgumentException("이동할 수량은 0보다 커야 합니다.");
         }
         currentLocation.decreaseInventory(lpn, quantity);
-        targetLocation.transferInventory(lpn, quantity);
+        targetLocation.addManualInventory(lpn, quantity);
     }
 }
