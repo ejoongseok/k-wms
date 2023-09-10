@@ -14,14 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class moveLocationTest extends ApiTest {
+public class AppendLocationTest extends ApiTest {
 
     @Autowired
     private LocationRepository locationRepository;
 
 
     @BeforeEach
-    void moveLocationSetUp() {
+    void appendLocationSetUp() {
         Scenario.createLocation()
                 .locationBarcode("TOTE-001")
                 .storageType(StorageType.TOTE)
@@ -37,11 +37,11 @@ public class moveLocationTest extends ApiTest {
     @Test
     @DisplayName("로케이션을 대상 로케이션의 하위로 이동시킨다.")
     @Transactional
-    void moveLocation() {
+    void appendLocation() {
         final String currentLocationBarcode = "TOTE-001";
         final String targetLocationBarcode = "PALLET-001";
 
-        Scenario.moveLocation()
+        Scenario.appendLocation()
                 .currentLocationBarcode(currentLocationBarcode)
                 .targetLocationBarcode(targetLocationBarcode)
                 .request();

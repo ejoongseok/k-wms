@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class MoveLocation {
+public class AppendLocation {
 
     private final LocationRepository locationRepository;
 
-    @PostMapping("/locations/move")
+    @PostMapping("/locations/append")
     @Transactional
     public void request(@RequestBody @Valid final Request request) {
         final Location current = locationRepository.getBy(request.currentLocationBarcode);
