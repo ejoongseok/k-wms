@@ -25,6 +25,7 @@ public class UpdateInbound {
         final Inbound inbound = inboundRepository.getBy(request.inboundNo);
 
         inbound.update(
+                request.warehouseNo,
                 request.title,
                 request.estimatedArrivalAt,
                 request.orderRequestedAt,
@@ -33,6 +34,8 @@ public class UpdateInbound {
     }
 
     public record Request(
+            @NotNull(message = "창고 번호는 필수입니다.")
+            Long warehouseNo,
             @NotNull(message = "입고 번호는 필수입니다.")
             Long inboundNo,
             @NotBlank(message = "입고 제목은 필수입니다.")

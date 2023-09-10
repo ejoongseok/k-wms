@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CreateInboundApi {
-
+    private final Long warehouseNo = 1L;
     private String title = "블랙핑크 앨범 입고";
     private LocalDateTime estimatedArrivalAt = LocalDateTime.now().plusDays(1L);
     private LocalDateTime orderRequestedAt = LocalDateTime.now();
@@ -50,6 +50,7 @@ public class CreateInboundApi {
 
     public Scenario request() {
         final CreateInbound.Request request = new CreateInbound.Request(
+                warehouseNo,
                 title,
                 estimatedArrivalAt,
                 orderRequestedAt,

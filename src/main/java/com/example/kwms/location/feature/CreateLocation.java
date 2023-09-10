@@ -39,6 +39,8 @@ public class CreateLocation {
     }
 
     public record Request(
+            @NotNull(message = "창고 번호는 필수입니다.")
+            Long warehouseNo,
             @NotBlank(message = "로케이션 바코드는 필수입니다.")
             String locationBarcode,
             @NotNull(message = "로케이션 유형은 필수입니다.")
@@ -47,6 +49,7 @@ public class CreateLocation {
             UsagePurpose usagePurpose) {
         public Location toDomain() {
             return new Location(
+                    warehouseNo,
                     locationBarcode,
                     storageType,
                     usagePurpose

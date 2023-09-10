@@ -38,6 +38,8 @@ public class CreateInbound {
     }
 
     public record Request(
+            @NotNull(message = "창고 번호는 필수입니다.")
+            Long warehouseNo,
             @NotBlank(message = "입고 제목은 필수입니다.")
             String title,
             @NotNull(message = "입고 예정일은 필수입니다.")
@@ -49,6 +51,7 @@ public class CreateInbound {
             List<Request.Product> inboundProducts) {
         Inbound toDomain() {
             return new Inbound(
+                    warehouseNo,
                     title,
                     estimatedArrivalAt,
                     orderRequestedAt,

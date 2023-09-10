@@ -9,9 +9,15 @@ import io.restassured.http.ContentType;
 import org.springframework.http.HttpStatus;
 
 public class CreateLocationApi {
+    private Long warehouseNo = 1L;
     private String locationBarcode = "TOTE-001";
     private StorageType storageType = StorageType.TOTE;
     private UsagePurpose usagePurpose = UsagePurpose.MOVE;
+
+    public CreateLocationApi warehouseNo(final Long warehouseNo) {
+        this.warehouseNo = warehouseNo;
+        return this;
+    }
 
     public CreateLocationApi locationBarcode(final String locationBarcode) {
         this.locationBarcode = locationBarcode;
@@ -30,6 +36,7 @@ public class CreateLocationApi {
 
     public Scenario request() {
         final CreateLocation.Request request = new CreateLocation.Request(
+                warehouseNo,
                 locationBarcode,
                 storageType,
                 usagePurpose
