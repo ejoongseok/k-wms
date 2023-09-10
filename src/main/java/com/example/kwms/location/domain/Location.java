@@ -145,4 +145,18 @@ public class Location {
                 .findFirst();
     }
 
+    public void addManualInventory(final LPN lpn, final Long quantity) {
+        validateAddManualInventory(lpn, quantity);
+        findInventory(lpn)
+                .ifPresentOrElse(
+                        inventory -> inventory.increaseQuantity(quantity),
+                        () -> inventories.add(new Inventory(this, lpn, quantity)));
+    }
+
+    private void validateAddManualInventory(final LPN lpn, final Long quantity) {
+        Assert.notNull(lpn, "LPN은 필수입니다.");
+        Assert.notNull(quantity, "수량은 필수입니다.");
+        if (0 >= quantity)
+            throw new IllegalArgumentException("수량은 0개 이상이어야 합니다.");
+    }
 }

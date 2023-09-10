@@ -45,6 +45,19 @@ public class Inventory {
         quantity = 1L;
     }
 
+    public Inventory(final Location location, final LPN lpn, final Long quantity) {
+        Assert.notNull(location, "로케이션은 필수입니다.");
+        Assert.notNull(lpn, "LPN은 필수입니다.");
+        Assert.notNull(quantity, "수량은 필수입니다.");
+        if (0 >= quantity) {
+            throw new IllegalArgumentException("수량은 0보다 커야 합니다.");
+        }
+
+        this.location = location;
+        this.lpn = lpn;
+        this.quantity = quantity;
+    }
+
     public boolean equalsLPN(final LPN lpn) {
         return this.lpn.equals(lpn);
     }
@@ -53,4 +66,10 @@ public class Inventory {
         quantity++;
     }
 
+    public void increaseQuantity(final Long quantity) {
+        if (0 > quantity) {
+            throw new IllegalArgumentException("수량은 0보다 커야 합니다.");
+        }
+        this.quantity += quantity;
+    }
 }

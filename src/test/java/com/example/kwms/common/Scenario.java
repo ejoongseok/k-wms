@@ -7,6 +7,7 @@ import com.example.kwms.inbound.feature.api.RegisterInboundProductInspectionResu
 import com.example.kwms.inbound.feature.api.UpdateInboundApi;
 import com.example.kwms.inbound.feature.api.UpdateInboundProductApi;
 import com.example.kwms.location.feature.api.AddInventoryApi;
+import com.example.kwms.location.feature.api.AddManualInventoryApi;
 import com.example.kwms.location.feature.api.AppendLocationApi;
 import com.example.kwms.location.feature.api.CreateLocationApi;
 
@@ -45,5 +46,9 @@ public class Scenario {
 
     public static AddInventoryApi addInventory() {
         return new AddInventoryApi();
+    }
+
+    public static AddManualInventoryApi addManualInventory() {
+        return new AddManualInventoryApi();
     }
 }

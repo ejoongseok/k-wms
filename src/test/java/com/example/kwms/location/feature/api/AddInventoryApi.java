@@ -5,8 +5,8 @@ import io.restassured.RestAssured;
 import org.springframework.http.HttpStatus;
 
 public class AddInventoryApi {
-    private String locationBarcode;
-    private String lpnBarcode;
+    private String locationBarcode = "TOTE-001";
+    private String lpnBarcode = "LPN-001";
 
     public AddInventoryApi locationBarcode(final String locationBarcode) {
         this.locationBarcode = locationBarcode;
