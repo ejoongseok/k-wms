@@ -23,6 +23,7 @@ public class AppendLocation {
         final Location target = locationRepository.getBy(request.targetLocationBarcode);
 
         target.appendLocation(current);
+        //TODO current의 현재 혹은 하위 로케이션 중 집품이 진행되는 상품이 있으면 이동 불가 예외 처리한다.
     }
 
     public record Request(
