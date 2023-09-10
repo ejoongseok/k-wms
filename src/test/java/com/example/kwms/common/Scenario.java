@@ -11,6 +11,7 @@ import com.example.kwms.location.feature.api.AddManualInventoryApi;
 import com.example.kwms.location.feature.api.AdjustInventoryApi;
 import com.example.kwms.location.feature.api.AppendLocationApi;
 import com.example.kwms.location.feature.api.CreateLocationApi;
+import com.example.kwms.location.feature.api.CreateWarehouseApi;
 import com.example.kwms.location.feature.api.TransferInventoryApi;
 
 public class Scenario {
@@ -60,5 +61,9 @@ public class Scenario {
 
     public static TransferInventoryApi transferInventory() {
         return new TransferInventoryApi();
+    }
+
+    public static CreateWarehouseApi createWarehouse() {
+        return new CreateWarehouseApi();
     }
 }

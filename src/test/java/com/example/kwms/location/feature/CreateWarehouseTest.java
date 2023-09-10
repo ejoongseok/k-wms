@@ -1,31 +1,25 @@
 package com.example.kwms.location.feature;
 
-import org.junit.jupiter.api.BeforeEach;
+import com.example.kwms.common.ApiTest;
+import com.example.kwms.common.Scenario;
+import com.example.kwms.location.domain.WarehouseRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class CreateWarehouseTest {
+import static org.assertj.core.api.Assertions.assertThat;
 
-    private CreateWarehouse createWarehouse;
+public class CreateWarehouseTest extends ApiTest {
 
-    @BeforeEach
-    void setUp() {
-        createWarehouse = new CreateWarehouse();
-    }
+    @Autowired
+    private WarehouseRepository warehouseRepository;
 
     @Test
     @DisplayName("창고를 생성한다.")
     void createWarehouse() {
-        final CreateWarehouse.Request request = new CreateWarehouse.Request();
-        createWarehouse.request(request);
+        Scenario.createWarehouse().request();
+
+        assertThat(warehouseRepository.findAll()).hasSize(1);
     }
 
-    private class CreateWarehouse {
-        public void request(final Request request) {
-            throw new UnsupportedOperationException("Unsupported request");
-        }
-
-        public record Request() {
-        }
-    }
 }
