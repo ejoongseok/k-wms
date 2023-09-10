@@ -6,6 +6,7 @@ import com.example.kwms.inbound.feature.api.CreateLPNApi;
 import com.example.kwms.inbound.feature.api.RegisterInboundProductInspectionResultApi;
 import com.example.kwms.inbound.feature.api.UpdateInboundApi;
 import com.example.kwms.inbound.feature.api.UpdateInboundProductApi;
+import com.example.kwms.location.feature.api.AppendLocationApi;
 import com.example.kwms.location.feature.api.CreateLocationApi;
 
 public class Scenario {
@@ -35,5 +36,9 @@ public class Scenario {
 
     public static CreateLocationApi createLocation() {
         return new CreateLocationApi();
+    }
+
+    public static AppendLocationApi appendLocation() {
+        return new AppendLocationApi();
     }
 }

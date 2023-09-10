@@ -1,20 +1,31 @@
 package com.example.kwms.location.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "location")
-@NoArgsConstructor
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+@EqualsAndHashCode(of = "locationBarcode")
 public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +43,13 @@ public class Location {
     @Column(name = "usage_purpose", nullable = false)
     @Comment("로케이션 용도")
     private UsagePurpose usagePurpose;
+    @Getter
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<Location> children = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_location_no", nullable = true)
+    @Comment("부모 로케이션 ID")
+    private Location parent;
 
     public Location(
             final String locationBarcode,
@@ -45,4 +63,67 @@ public class Location {
         this.usagePurpose = usagePurpose;
 
     }
+
+    public void appendLocation(final Location current) {
+        validateAppendLocation(current);
+        children.add(current);
+        current.parent = this;
+    }
+
+    private void validateAppendLocation(final Location location) {
+        Assert.notNull(location, "추가할 로케이션은 필수입니다.");
+        if (equals(location)) {
+            throw new IllegalArgumentException("자기 자신을 추가할 수 없습니다.");
+        }
+
+        final int currentSize = location.getSize();
+        final int targetSize = getSize();
+        if (currentSize >= targetSize) {
+            throw new IllegalArgumentException(
+                    ("크기가 같거나 더 큰 로케이션이 하위 로케이션으로 추가될 수 없습니다. " +
+                            "현재 로케이션 바코드: %s 유형/사이즈: %s/%d, " +
+                            "추가하려는 로케이션 바코드: %s 유형/사이즈: %s/%d")
+                            .formatted(
+                                    locationBarcode,
+                                    storageType,
+                                    getSize(),
+                                    location.locationBarcode,
+                                    location.storageType,
+                                    location.getSize()
+                            ));
+        }
+        if (contains(location, this)) {
+            throw new IllegalArgumentException(
+                    ("이미 상위 로케이션으로 추가된 로케이션입니다. " +
+                            "로케이션 바코드: %s, 상위 로케이션 바코드: %s")
+                            .formatted(location.locationBarcode, locationBarcode));
+        }
+
+        if (contains(this, location)) {
+            throw new IllegalArgumentException(
+                    ("이미 하위 로케이션으로 추가된 로케이션입니다. " +
+                            "로케이션 바코드: %s, 하위 로케이션 바코드: %s")
+                            .formatted(locationBarcode, location.locationBarcode));
+        }
+    }
+
+    private int getSize() {
+        return storageType.getSize();
+    }
+
+
+    private boolean contains(final Location root, final Location target) {
+        if (root.equals(target)) {
+            return true;
+        }
+
+        for (final Location child : root.children) {
+            if (contains(child, target)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }
