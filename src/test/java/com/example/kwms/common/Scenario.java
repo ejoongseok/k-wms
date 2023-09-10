@@ -13,6 +13,7 @@ import com.example.kwms.location.feature.api.AppendLocationApi;
 import com.example.kwms.location.feature.api.CreateLocationApi;
 import com.example.kwms.location.feature.api.CreateWarehouseApi;
 import com.example.kwms.location.feature.api.TransferInventoryApi;
+import com.example.kwms.location.feature.api.UpdateLocationApi;
 import com.example.kwms.location.feature.api.UpdateWarehouseApi;
 
 public class Scenario {
@@ -70,5 +71,9 @@ public class Scenario {
 
     public static UpdateWarehouseApi updateWarehouse() {
         return new UpdateWarehouseApi();
+    }
+
+    public static UpdateLocationApi updateLocation() {
+        return new UpdateLocationApi();
     }
 }
