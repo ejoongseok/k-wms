@@ -1,8 +1,12 @@
 package com.example.kwms.location.domain;
 
+import com.example.kwms.inbound.domain.LPN;
+import com.example.kwms.inbound.domain.LPNFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static com.example.kwms.location.domain.LocationFixture.aLocation;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -83,4 +87,42 @@ class LocationTest {
                         "추가하려는 로케이션 바코드: TOTE-001 유형/사이즈: TOTE/1");
     }
 
+    @Test
+    @DisplayName("로케이션에 재고를 추가한다.")
+    void addInventory() {
+        final LPN lpn = LPNFixture.aLPN()
+                .lpnBarcode("LPN-001")
+                .build();
+        final Location tote = aLocation()
+                .locationBarcode("TOTE-001")
+                .storageType(StorageType.TOTE)
+                .usagePurpose(UsagePurpose.MOVE)
+                .build();
+        tote.addInventory(lpn);
+
+        final List<Inventory> inventories = tote.getInventories();
+        assertThat(inventories).hasSize(1);
+        assertThat(inventories.get(0).equalsLPN(lpn)).isTrue();
+        assertThat(inventories.get(0).getQuantity()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("로케이션에 재고를 추가한다.")
+    void addInventory2() {
+        final LPN lpn = LPNFixture.aLPN()
+                .lpnBarcode("LPN-001")
+                .build();
+        final Location tote = aLocation()
+                .locationBarcode("TOTE-001")
+                .storageType(StorageType.TOTE)
+                .usagePurpose(UsagePurpose.MOVE)
+                .build();
+        tote.addInventory(lpn);
+        tote.addInventory(lpn);
+
+        final List<Inventory> inventories = tote.getInventories();
+        assertThat(inventories).hasSize(1);
+        assertThat(inventories.get(0).equalsLPN(lpn)).isTrue();
+        assertThat(inventories.get(0).getQuantity()).isEqualTo(2L);
+    }
 }
