@@ -125,4 +125,67 @@ class LocationTest {
         assertThat(inventories.get(0).equalsLPN(lpn)).isTrue();
         assertThat(inventories.get(0).getQuantity()).isEqualTo(2L);
     }
+
+
+    @Test
+    @DisplayName("로케이션에 재고 수량을 직접입력해서 추가한다.")
+    void addManualInventory() {
+        final LPN lpn = LPNFixture.aLPN()
+                .lpnBarcode("LPN-001")
+                .build();
+        final Location tote = aLocation()
+                .locationBarcode("TOTE-001")
+                .storageType(StorageType.TOTE)
+                .usagePurpose(UsagePurpose.MOVE)
+                .build();
+        final Long quantity = 10L;
+        tote.addManualInventory(lpn, quantity);
+
+        final List<Inventory> inventories = tote.getInventories();
+        assertThat(inventories).hasSize(1);
+        assertThat(inventories.get(0).equalsLPN(lpn)).isTrue();
+        assertThat(inventories.get(0).getQuantity()).isEqualTo(10L);
+    }
+
+    @Test
+    @DisplayName("로케이션에 재고 수량을 직접입력해서 추가한다.")
+    void addManualInventory2() {
+        final LPN lpn = LPNFixture.aLPN()
+                .lpnBarcode("LPN-001")
+                .build();
+        final Location tote = aLocation()
+                .locationBarcode("TOTE-001")
+                .storageType(StorageType.TOTE)
+                .usagePurpose(UsagePurpose.MOVE)
+                .build();
+        final Long quantity = 10L;
+        tote.addManualInventory(lpn, quantity);
+        tote.addManualInventory(lpn, quantity);
+
+        final List<Inventory> inventories = tote.getInventories();
+        assertThat(inventories).hasSize(1);
+        assertThat(inventories.get(0).equalsLPN(lpn)).isTrue();
+        assertThat(inventories.get(0).getQuantity()).isEqualTo(20L);
+    }
+
+
+    @Test
+    @DisplayName("추가하려고 입력한 재고 수량이 0보다 작으면 예외가 발생한다.")
+    void fail_addManualInventory() {
+        final LPN lpn = LPNFixture.aLPN()
+                .lpnBarcode("LPN-001")
+                .build();
+        final Location tote = aLocation()
+                .locationBarcode("TOTE-001")
+                .storageType(StorageType.TOTE)
+                .usagePurpose(UsagePurpose.MOVE)
+                .build();
+        final Long quantity = 0L;
+        assertThatThrownBy(() -> {
+            tote.addManualInventory(lpn, quantity);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("수량은 0개 이상이어야 합니다.");
+    }
+
+
 }
