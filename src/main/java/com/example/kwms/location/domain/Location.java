@@ -82,6 +82,15 @@ public class Location {
         validateAppendLocation(current);
         children.add(current);
         current.parent = this;
+
+        recursivelyChangeUsagePurpose(current, usagePurpose);
+    }
+
+    private void recursivelyChangeUsagePurpose(final Location current, final UsagePurpose usagePurpose) {
+        current.changeUsagePurpose(usagePurpose);
+        for (final Location child : current.children) {
+            recursivelyChangeUsagePurpose(child, usagePurpose);
+        }
     }
 
     private void validateAppendLocation(final Location location) {
@@ -223,4 +232,11 @@ public class Location {
         Assert.hasText(locationBarcode, "로케이션 바코드는 필수입니다.");
         Assert.notNull(usagePurpose, "로케이션 용도는 필수입니다.");
     }
+
+    public void changeUsagePurpose(final UsagePurpose usagePurpose) {
+        Assert.notNull(usagePurpose, "로케이션 용도는 필수입니다.");
+        recursivelyChangeUsagePurpose(this, usagePurpose);
+
+    }
+
 }

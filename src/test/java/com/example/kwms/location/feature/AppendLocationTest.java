@@ -25,7 +25,7 @@ public class AppendLocationTest extends ApiTest {
         Scenario.createLocation()
                 .locationBarcode("TOTE-001")
                 .storageType(StorageType.TOTE)
-                .usagePurpose(UsagePurpose.MOVE)
+                .usagePurpose(UsagePurpose.DISPLAY)
                 .request();
         Scenario.createLocation()
                 .locationBarcode("PALLET-001")
@@ -48,6 +48,7 @@ public class AppendLocationTest extends ApiTest {
 
         final Location pallet = locationRepository.getBy(targetLocationBarcode);
         assertThat(pallet.getChildren()).hasSize(1);
+        assertThat(pallet.getChildren().get(0).getUsagePurpose()).isEqualTo(UsagePurpose.MOVE);
     }
 
 }
