@@ -6,11 +6,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
 
 @Entity
+@Getter
 @Table(name = "warehouse")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Warehouse {
@@ -45,7 +47,7 @@ public class Warehouse {
             final String managerName,
             final String managerTelNumber,
             final String description) {
-        validateWarehouse(name, address, telNumber, managerName, managerTelNumber);
+        validateConstructor(name, address, telNumber, managerName, managerTelNumber);
         this.name = name;
         this.address = address;
         this.telNumber = telNumber;
@@ -54,7 +56,36 @@ public class Warehouse {
         this.description = description;
     }
 
-    private void validateWarehouse(
+    private void validateConstructor(
+            final String name,
+            final String address,
+            final String telNumber,
+            final String managerName,
+            final String managerTelNumber) {
+        Assert.hasText(name, "창고명은 필수입니다.");
+        Assert.hasText(address, "주소는 필수입니다.");
+        Assert.hasText(telNumber, "전화번호는 필수입니다.");
+        Assert.hasText(managerName, "담당자명은 필수입니다.");
+        Assert.hasText(managerTelNumber, "담당자 연락처는 필수입니다.");
+    }
+
+    public void update(
+            final String name,
+            final String address,
+            final String telNumber,
+            final String managerName,
+            final String managerTelNumber,
+            final String description) {
+        validateUpdate(name, address, telNumber, managerName, managerTelNumber);
+        this.name = name;
+        this.address = address;
+        this.telNumber = telNumber;
+        this.managerName = managerName;
+        this.managerTelNumber = managerTelNumber;
+        this.description = description;
+    }
+
+    private void validateUpdate(
             final String name,
             final String address,
             final String telNumber,
