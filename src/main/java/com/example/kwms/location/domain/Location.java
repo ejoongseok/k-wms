@@ -205,7 +205,7 @@ public class Location {
             throw new IllegalArgumentException("수량은 0개 이상이어야 합니다.");
     }
 
-    public void decreaseInventory(final LPN lpn, final Long quantity) {
+    void decreaseInventory(final LPN lpn, final Long quantity) {
         validateDecreaseInventory(lpn, quantity);
         final Inventory inventory = getInventory(lpn);
         inventory.decreaseQuantity(quantity);
@@ -233,7 +233,7 @@ public class Location {
         Assert.notNull(usagePurpose, "로케이션 용도는 필수입니다.");
     }
 
-    public void changeUsagePurpose(final UsagePurpose usagePurpose) {
+    private void changeUsagePurpose(final UsagePurpose usagePurpose) {
         Assert.notNull(usagePurpose, "로케이션 용도는 필수입니다.");
         this.usagePurpose = usagePurpose;
 
