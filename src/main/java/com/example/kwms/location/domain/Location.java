@@ -235,11 +235,8 @@ public class Location {
 
     public void changeUsagePurpose(final UsagePurpose usagePurpose) {
         Assert.notNull(usagePurpose, "로케이션 용도는 필수입니다.");
-        this.usagePurpose = usagePurpose;
+        recursivelyChangeUsagePurpose(this, usagePurpose);
 
     }
 
-    public void warehouseMove() {
-        recursivelyChangeUsagePurpose(this, UsagePurpose.WAREHOUSE_MOVE);
-    }
 }
