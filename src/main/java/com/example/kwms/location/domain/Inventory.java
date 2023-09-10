@@ -80,4 +80,15 @@ public class Inventory {
         }
         this.quantity = quantity;
     }
+
+    void decreaseQuantity(final Long quantity) {
+        if (0 > quantity) {
+            throw new IllegalArgumentException("수량은 0보다 커야 합니다.");
+        }
+        if (quantity > this.quantity) {
+            throw new IllegalArgumentException("감소시킬 수량은 재고 수량보다 작아야 합니다. " +
+                    "현재 재고 수량: %d, 감소시킬 수량: %d".formatted(this.quantity, quantity));
+        }
+        this.quantity -= quantity;
+    }
 }
