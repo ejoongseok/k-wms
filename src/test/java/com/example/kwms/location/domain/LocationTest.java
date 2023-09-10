@@ -188,4 +188,47 @@ class LocationTest {
     }
 
 
+    @Test
+    @DisplayName("로케이션에 재고 수량을 조정한다.")
+    void adjustInventory() {
+        final LPN lpn = LPNFixture.aLPN()
+                .lpnBarcode("LPN-001")
+                .build();
+        final Location tote = aLocation()
+                .locationBarcode("TOTE-001")
+                .storageType(StorageType.TOTE)
+                .usagePurpose(UsagePurpose.MOVE)
+                .build();
+        final Long quantity = 10L;
+        tote.addManualInventory(lpn, quantity);
+
+        tote.adjustInventory(lpn, 1L);
+
+        final List<Inventory> inventories = tote.getInventories();
+        assertThat(inventories).hasSize(1);
+        assertThat(inventories.get(0).equalsLPN(lpn)).isTrue();
+        assertThat(inventories.get(0).getQuantity()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("로케이션에 재고 수량을 조정한다. - 조정하려는 수량이 0보다 작으면 예외가 발생한다.")
+    void fail_adjustInventory() {
+        final LPN lpn = LPNFixture.aLPN()
+                .lpnBarcode("LPN-001")
+                .build();
+        final Location tote = aLocation()
+                .locationBarcode("TOTE-001")
+                .storageType(StorageType.TOTE)
+                .usagePurpose(UsagePurpose.MOVE)
+                .build();
+        final Long quantity = 10L;
+        tote.addManualInventory(lpn, quantity);
+
+        assertThatThrownBy(() -> {
+            tote.adjustInventory(lpn, -1L);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("수량은 0개 이상이어야 합니다.");
+
+    }
+
 }
