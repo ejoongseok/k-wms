@@ -1,5 +1,6 @@
 package com.example.kwms.inbound.domain;
 
+import com.google.common.annotations.VisibleForTesting;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "inbound_product")
@@ -46,6 +49,22 @@ public class InboundProduct {
     @Column(name = "is_added", nullable = false)
     @Comment("추가 여부")
     private boolean isAdded;
+    @Column(name = "inspected_at")
+    @Comment("검수 일시")
+    @Getter
+    private LocalDateTime inspectedAt;
+    @Column(name = "arrived_at")
+    @Comment("입고 일시")
+    private LocalDateTime arrivedAt;
+    @Column(name = "inspection_comment")
+    @Comment("검수 코멘트")
+    private String inspectionComment;
+    @Column(name = "acceptable_quantity")
+    @Comment("정상 수량")
+    private Long acceptableQuantity;
+    @Column(name = "rejected_quantity")
+    @Comment("불량 수량")
+    private Long rejectedQuantity;
 
     public InboundProduct(
             final Long productNo,
@@ -58,6 +77,32 @@ public class InboundProduct {
         this.requestQuantity = requestQuantity;
         this.unitPrice = unitPrice;
         this.description = description;
+    }
+
+    @VisibleForTesting
+    public InboundProduct(
+            final Long inboundProductNo,
+            final Long productNo,
+            final Long requestQuantity,
+            final Long unitPrice,
+            final String description,
+            final boolean isAdded,
+            final LocalDateTime inspectedAt,
+            final LocalDateTime arrivedAt,
+            final String inspectionComment,
+            final Long acceptableQuantity,
+            final Long rejectedQuantity) {
+        this.inboundProductNo = inboundProductNo;
+        this.productNo = productNo;
+        this.requestQuantity = requestQuantity;
+        this.unitPrice = unitPrice;
+        this.description = description;
+        this.isAdded = isAdded;
+        this.inspectedAt = inspectedAt;
+        this.arrivedAt = arrivedAt;
+        this.inspectionComment = inspectionComment;
+        this.acceptableQuantity = acceptableQuantity;
+        this.rejectedQuantity = rejectedQuantity;
     }
 
     private void validateConstructor(
@@ -98,6 +143,8 @@ public class InboundProduct {
             final Long productNo,
             final Long requestQuantity,
             final Long unitPrice) {
+        if (null != inspectedAt)
+            throw new IllegalStateException("이미 검수가 완료된 상품은 변경할 수 없습니다.");
         Assert.notNull(productNo, "상품 번호는 필수입니다.");
         Assert.notNull(requestQuantity, "상품 입고 요청 수량은 필수입니다.");
         if (1 > requestQuantity)
@@ -109,5 +156,43 @@ public class InboundProduct {
 
     boolean equalsId(final Long inboundProductNo) {
         return this.inboundProductNo.equals(inboundProductNo);
+    }
+
+    void registerInspectionResult(
+            final LocalDateTime inspectedAt,
+            final LocalDateTime arrivedAt,
+            final String inspectionComment,
+            final Long acceptableQuantity,
+            final Long rejectedQuantity) {
+        validateRegisterInspectionResult(
+                inspectedAt,
+                arrivedAt,
+                inspectionComment,
+                acceptableQuantity,
+                rejectedQuantity);
+        this.inspectedAt = inspectedAt;
+        this.arrivedAt = arrivedAt;
+        this.inspectionComment = inspectionComment;
+        this.acceptableQuantity = acceptableQuantity;
+        this.rejectedQuantity = rejectedQuantity;
+    }
+
+    private void validateRegisterInspectionResult(
+            final LocalDateTime inspectedAt,
+            final LocalDateTime arrivedAt,
+            final String inspectionComment,
+            final Long acceptableQuantity,
+            final Long rejectedQuantity) {
+        if (null != this.inspectedAt)
+            throw new IllegalStateException("이미 검수가 완료된 상품입니다.");
+        Assert.notNull(inspectedAt, "검수 일시는 필수입니다.");
+        Assert.notNull(arrivedAt, "입고 일시는 필수입니다.");
+        Assert.notNull(inspectionComment, "검수 코멘트는 필수입니다.");
+        Assert.notNull(acceptableQuantity, "정상 수량은 필수입니다.");
+        if (0 > acceptableQuantity)
+            throw new IllegalArgumentException("정상 수량은 0개 이상이어야 합니다.");
+        Assert.notNull(rejectedQuantity, "불량 수량은 필수입니다.");
+        if (0 > rejectedQuantity)
+            throw new IllegalArgumentException("불량 수량은 0개 이상이어야 합니다.");
     }
 }
