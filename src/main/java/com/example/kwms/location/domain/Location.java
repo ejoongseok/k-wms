@@ -35,6 +35,7 @@ public class Location {
     @Column(name = "location_no")
     @Comment("로케이션 번호")
     private Long locationNo;
+    @Getter
     @Column(name = "location_barcode", nullable = false, unique = true)
     @Comment("로케이션 바코드")
     private String locationBarcode;
@@ -45,6 +46,7 @@ public class Location {
     @Enumerated(EnumType.STRING)
     @Column(name = "usage_purpose", nullable = false)
     @Comment("로케이션 용도")
+    @Getter
     private UsagePurpose usagePurpose;
     @Getter
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -207,4 +209,18 @@ public class Location {
             throw new IllegalArgumentException("수량은 0개 이상이어야 합니다.");
     }
 
+    public void update(
+            final String locationBarcode,
+            final UsagePurpose usagePurpose) {
+        validateUpdate(locationBarcode, usagePurpose);
+        this.locationBarcode = locationBarcode;
+        this.usagePurpose = usagePurpose;
+    }
+
+    private void validateUpdate(
+            final String locationBarcode,
+            final UsagePurpose usagePurpose) {
+        Assert.hasText(locationBarcode, "로케이션 바코드는 필수입니다.");
+        Assert.notNull(usagePurpose, "로케이션 용도는 필수입니다.");
+    }
 }
