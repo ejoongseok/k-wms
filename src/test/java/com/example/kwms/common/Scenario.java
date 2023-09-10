@@ -7,6 +7,7 @@ import com.example.kwms.inbound.feature.api.RegisterInboundProductInspectionResu
 import com.example.kwms.inbound.feature.api.UpdateInboundApi;
 import com.example.kwms.inbound.feature.api.UpdateInboundProductApi;
 import com.example.kwms.location.feature.api.CreateLocationApi;
+import com.example.kwms.location.feature.api.MoveLocationApi;
 
 public class Scenario {
     public static CreateInboundApi createInbound() {
@@ -35,5 +36,9 @@ public class Scenario {
 
     public static CreateLocationApi createLocation() {
         return new CreateLocationApi();
+    }
+
+    public static MoveLocationApi moveLocation() {
+        return new MoveLocationApi();
     }
 }
