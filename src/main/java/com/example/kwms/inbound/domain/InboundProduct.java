@@ -1,6 +1,7 @@
 package com.example.kwms.inbound.domain;
 
 import com.google.common.annotations.VisibleForTesting;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +17,8 @@ import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "inbound_product")
@@ -65,6 +69,8 @@ public class InboundProduct {
     @Column(name = "rejected_quantity")
     @Comment("불량 수량")
     private Long rejectedQuantity;
+    @OneToMany(mappedBy = "inboundProduct", orphanRemoval = true, cascade = CascadeType.ALL)
+    private final List<LPN> lpns = new ArrayList<>();
 
     public InboundProduct(
             final Long productNo,
@@ -194,5 +200,32 @@ public class InboundProduct {
         Assert.notNull(rejectedQuantity, "불량 수량은 필수입니다.");
         if (0 > rejectedQuantity)
             throw new IllegalArgumentException("불량 수량은 0개 이상이어야 합니다.");
+    }
+
+    void assignLPN(
+            final String lpnBarcode,
+            final LocalDateTime expiringAt) {
+        validateAssignLPN(lpnBarcode, expiringAt);
+        final LPN lpn = new LPN(lpnBarcode, expiringAt);
+        lpns.add(lpn);
+        lpn.assignInboundProduct(this);
+    }
+
+    private void validateAssignLPN(final String lpnBarcode, final LocalDateTime expiringAt) {
+        if (null == inspectedAt) {
+            throw new IllegalStateException("검수가 완료되지 않은 상품은 LPN을 등록할 수 없습니다.");
+        }
+        Assert.hasText(lpnBarcode, "LPN 바코드는 필수입니다.");
+        Assert.notNull(expiringAt, "유통기한은 필수입니다.");
+        lpns.stream()
+                .filter(lpn -> lpn.equalsBarcode(lpnBarcode))
+                .findAny()
+                .ifPresent(lpn -> {
+                    throw new IllegalArgumentException("이미 등록된 LPN 바코드입니다.");
+                });
+    }
+
+    public List<LPN> getLpns() {
+        return lpns;
     }
 }

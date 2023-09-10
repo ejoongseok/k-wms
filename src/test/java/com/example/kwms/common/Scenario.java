@@ -2,6 +2,7 @@ package com.example.kwms.common;
 
 import com.example.kwms.inbound.feature.api.AddInboundProductApi;
 import com.example.kwms.inbound.feature.api.CreateInboundApi;
+import com.example.kwms.inbound.feature.api.CreateLPNApi;
 import com.example.kwms.inbound.feature.api.RegisterInboundProductInspectionResultApi;
 import com.example.kwms.inbound.feature.api.UpdateInboundApi;
 import com.example.kwms.inbound.feature.api.UpdateInboundProductApi;
@@ -25,5 +26,9 @@ public class Scenario {
 
     public static RegisterInboundProductInspectionResultApi registerInboundProductInspectionResult() {
         return new RegisterInboundProductInspectionResultApi();
+    }
+
+    public static CreateLPNApi createLPN() {
+        return new CreateLPNApi();
     }
 }
