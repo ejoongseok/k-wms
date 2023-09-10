@@ -165,4 +165,22 @@ public class Inbound {
                 acceptableQuantity,
                 rejectedQuantity);
     }
+
+    public void assignLPN(
+            final Long inboundProductNo,
+            final String lpnBarcode,
+            final LocalDateTime expiringAt) {
+        validateAssignLPN(inboundProductNo, lpnBarcode, expiringAt);
+        final InboundProduct inboundProduct = getInboundProduct(inboundProductNo);
+        inboundProduct.assignLPN(lpnBarcode, expiringAt);
+    }
+
+    private void validateAssignLPN(
+            final Long inboundProductNo,
+            final String lpnBarcode,
+            final LocalDateTime expiringAt) {
+        Assert.notNull(inboundProductNo, "입고 상품 번호는 필수입니다.");
+        Assert.hasText(lpnBarcode, "LPN 바코드는 필수입니다.");
+        Assert.notNull(expiringAt, "유통기한은 필수입니다.");
+    }
 }

@@ -108,4 +108,48 @@ class InboundTest {
         }).isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("이미 검수가 완료된 상품입니다.");
     }
+
+    @Test
+    @DisplayName("LPN 바코드 할당")
+    public void assignLPN() {
+        final Inbound inbound = aInbound().build();
+        final List<InboundProduct> inboundProducts = inbound.getInboundProducts();
+        final InboundProduct inboundProduct = inboundProducts.get(0);
+        assertThat(inboundProduct.getLpns()).isEmpty();
+
+        final String lpnBarcode = "1234567890";
+        final LocalDateTime expiringAt = LocalDateTime.now().plusDays(30);
+        final long inboundProductNo = 1L;
+        inbound.assignLPN(
+                inboundProductNo,
+                lpnBarcode,
+                expiringAt
+        );
+
+        assertThat(inboundProduct.getLpns()).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("검수가 완료되지 않은 상품은 LPN을 등록할 수 없다.")
+    public void fail_assignLPN() {
+        final Inbound inbound = aInbound()
+                .inboundProducts(aNoInspectedInboundProduct().description("상품 입고 설명"))
+                .build();
+        final List<InboundProduct> inboundProducts = inbound.getInboundProducts();
+        final InboundProduct inboundProduct = inboundProducts.get(0);
+        assertThat(inboundProduct.getLpns()).isEmpty();
+
+        final String lpnBarcode = "1234567890";
+        final LocalDateTime expiringAt = LocalDateTime.now().plusDays(30);
+        final long inboundProductNo = 1L;
+        assertThatThrownBy(() -> {
+            inbound.assignLPN(
+                    inboundProductNo,
+                    lpnBarcode,
+                    expiringAt
+            );
+        }).isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("검수가 완료되지 않은 상품은 LPN을 등록할 수 없습니다.");
+
+    }
 }
