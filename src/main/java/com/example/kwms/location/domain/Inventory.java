@@ -72,4 +72,12 @@ public class Inventory {
         }
         this.quantity += quantity;
     }
+
+    public void adjustInventory(final Long quantity) {
+        Assert.notNull(quantity, "수량은 필수입니다.");
+        if (0 > quantity) {
+            throw new IllegalArgumentException("수량은 0보다 커야 합니다.");
+        }
+        this.quantity = quantity;
+    }
 }

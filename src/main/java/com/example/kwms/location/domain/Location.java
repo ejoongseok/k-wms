@@ -1,5 +1,6 @@
 package com.example.kwms.location.domain;
 
+import com.example.kwms.common.NotFoundException;
 import com.example.kwms.inbound.domain.LPN;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -157,6 +158,26 @@ public class Location {
         Assert.notNull(lpn, "LPN은 필수입니다.");
         Assert.notNull(quantity, "수량은 필수입니다.");
         if (0 >= quantity)
+            throw new IllegalArgumentException("수량은 0개 이상이어야 합니다.");
+    }
+
+    public void adjustInventory(final LPN lpn, final Long quantity) {
+        validateAdjustInventory(lpn, quantity);
+        final Inventory inventory = getInventory(lpn);
+        inventory.adjustInventory(quantity);
+    }
+
+    private Inventory getInventory(final LPN lpn) {
+        return findInventory(lpn)
+                .orElseThrow(() -> new NotFoundException(
+                        "해당 LPN이 존재하지 않습니다. LPN 바코드: %s"
+                                .formatted(lpn.getLpnBarcode())));
+    }
+
+    private void validateAdjustInventory(final LPN lpn, final Long quantity) {
+        Assert.notNull(lpn, "LPN은 필수입니다.");
+        Assert.notNull(quantity, "수량은 필수입니다.");
+        if (0 > quantity)
             throw new IllegalArgumentException("수량은 0개 이상이어야 합니다.");
     }
 }
