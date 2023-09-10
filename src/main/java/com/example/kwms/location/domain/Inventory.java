@@ -36,6 +36,9 @@ public class Inventory {
     @Column(name = "quantity", nullable = false)
     @Comment("재고 수량")
     private Long quantity;
+    @Column(name = "product_no", nullable = false)
+    @Comment("상품 번호")
+    private Long productNo;
 
     Inventory(final Location location, final LPN lpn) {
         Assert.notNull(location, "로케이션은 필수입니다.");
@@ -43,9 +46,10 @@ public class Inventory {
         this.location = location;
         this.lpn = lpn;
         quantity = 1L;
+        productNo = lpn.getProductNo();
     }
 
-    public Inventory(final Location location, final LPN lpn, final Long quantity) {
+    Inventory(final Location location, final LPN lpn, final Long quantity) {
         Assert.notNull(location, "로케이션은 필수입니다.");
         Assert.notNull(lpn, "LPN은 필수입니다.");
         Assert.notNull(quantity, "수량은 필수입니다.");
@@ -56,6 +60,7 @@ public class Inventory {
         this.location = location;
         this.lpn = lpn;
         this.quantity = quantity;
+        productNo = lpn.getProductNo();
     }
 
     public boolean equalsLPN(final LPN lpn) {
@@ -66,14 +71,14 @@ public class Inventory {
         quantity++;
     }
 
-    public void increaseQuantity(final Long quantity) {
+    void increaseQuantity(final Long quantity) {
         if (0 > quantity) {
             throw new IllegalArgumentException("수량은 0보다 커야 합니다.");
         }
         this.quantity += quantity;
     }
 
-    public void adjustInventory(final Long quantity) {
+    void adjustInventory(final Long quantity) {
         Assert.notNull(quantity, "수량은 필수입니다.");
         if (0 > quantity) {
             throw new IllegalArgumentException("수량은 0보다 커야 합니다.");

@@ -54,4 +54,8 @@ public class LPN {
     boolean equalsBarcode(final String lpnBarcode) {
         return this.lpnBarcode.equals(lpnBarcode);
     }
+
+    public Long getProductNo() {
+        return inboundProduct.getProductNo();
+    }
 }
