@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
@@ -23,6 +24,7 @@ public class PackagingMaterial {
     @Column(name = "packaging_material_no")
     @Comment("포장재 번호")
     private Long packagingMaterialNo;
+    @Getter
     @Column(name = "name", nullable = false)
     @Comment("포장재 이름")
     private String name;
@@ -75,8 +77,56 @@ public class PackagingMaterial {
         Assert.hasText(code, "포장재 코드는 필수입니다.");
         Assert.notNull(packagingMaterialDimension, "포장재 치수는 필수입니다.");
         Assert.notNull(weightInGrams, "무게는 필수입니다.");
+        if (1 > weightInGrams) {
+            throw new IllegalArgumentException("무게는 1g 이상이어야 합니다.");
+        }
         Assert.notNull(maxWeightInGrams, "최대 무게는 필수입니다.");
+        if (1 > maxWeightInGrams) {
+            throw new IllegalArgumentException("최대 무게는 1g 이상이어야 합니다.");
+        }
         Assert.notNull(materialType, "포장재 종류는 필수입니다.");
     }
 
+    public void update(
+            final String name,
+            final String code,
+            final PackagingMaterialDimension packagingMaterialDimension,
+            final Long weightInGrams,
+            final Long maxWeightInGrams,
+            final MaterialType materialType) {
+        validateUpdate(
+                name,
+                code,
+                packagingMaterialDimension,
+                weightInGrams,
+                maxWeightInGrams,
+                materialType);
+        this.name = name;
+        this.code = code;
+        this.packagingMaterialDimension = packagingMaterialDimension;
+        this.weightInGrams = weightInGrams;
+        this.maxWeightInGrams = maxWeightInGrams;
+        this.materialType = materialType;
+    }
+
+    private void validateUpdate(
+            final String name,
+            final String code,
+            final PackagingMaterialDimension packagingMaterialDimension,
+            final Long weightInGrams,
+            final Long maxWeightInGrams,
+            final MaterialType materialType) {
+        Assert.hasText(name, "포장재 이름은 필수입니다.");
+        Assert.hasText(code, "포장재 코드는 필수입니다.");
+        Assert.notNull(packagingMaterialDimension, "포장재 치수는 필수입니다.");
+        Assert.notNull(weightInGrams, "무게는 필수입니다.");
+        if (1 > weightInGrams) {
+            throw new IllegalArgumentException("무게는 1g 이상이어야 합니다.");
+        }
+        Assert.notNull(maxWeightInGrams, "최대 무게는 필수입니다.");
+        if (1 > maxWeightInGrams) {
+            throw new IllegalArgumentException("최대 무게는 1g 이상이어야 합니다.");
+        }
+        Assert.notNull(materialType, "포장재 종류는 필수입니다.");
+    }
 }
