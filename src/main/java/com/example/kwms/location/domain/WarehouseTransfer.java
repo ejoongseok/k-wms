@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
@@ -34,6 +35,7 @@ public class WarehouseTransfer {
     private Long toWarehouseNo;
     @Column(name = "barcode", nullable = false, unique = true)
     @Comment("바코드")
+    @Getter
     private String barcode;
     @OneToMany(mappedBy = "warehouseTransfer", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<WarehouseTransferProduct> products;
@@ -52,5 +54,18 @@ public class WarehouseTransfer {
         this.barcode = barcode;
         this.products = products;
         products.forEach(product -> product.assignWarehouseTransfer(this));
+    }
+
+    //TODO 대기 상태일때만 변경 가능
+    public void update(
+            final Long fromWarehouseNo,
+            final Long toWarehouseNo,
+            final String barcode) {
+        Assert.notNull(fromWarehouseNo, "출발 창고 번호는 필수입니다.");
+        Assert.notNull(toWarehouseNo, "도착 창고 번호는 필수입니다.");
+        Assert.hasText(barcode, "바코드는 필수입니다.");
+        this.fromWarehouseNo = fromWarehouseNo;
+        this.toWarehouseNo = toWarehouseNo;
+        this.barcode = barcode;
     }
 }
