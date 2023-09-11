@@ -292,4 +292,8 @@ public class Location {
     public void warehouseTransferred() {
         recursivelyChangeUsagePurpose(this, UsagePurpose.WAREHOUSE_TRANSFER);
     }
+
+    public void updateUsagePurpose(final String usagePurpose) {
+        recursivelyChangeUsagePurpose(this, UsagePurpose.from(usagePurpose));
+    }
 }
