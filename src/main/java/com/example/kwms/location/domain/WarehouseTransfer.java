@@ -1,5 +1,6 @@
 package com.example.kwms.location.domain;
 
+import com.example.kwms.common.NotFoundException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,6 +39,7 @@ public class WarehouseTransfer {
     @Getter
     private String barcode;
     @OneToMany(mappedBy = "warehouseTransfer", orphanRemoval = true, cascade = CascadeType.ALL)
+    @Getter
     private List<WarehouseTransferProduct> products;
 
     public WarehouseTransfer(
@@ -67,5 +69,32 @@ public class WarehouseTransfer {
         this.fromWarehouseNo = fromWarehouseNo;
         this.toWarehouseNo = toWarehouseNo;
         this.barcode = barcode;
+    }
+
+    public void updateProduct(
+            final Long warehouseTransferProductNo,
+            final Long productNo,
+            final Long quantity) {
+        validateUpdateProduct(warehouseTransferProductNo, productNo, quantity);
+
+        final WarehouseTransferProduct warehouseTransferProduct = getWarehouseTransferProduct(warehouseTransferProductNo);
+
+        warehouseTransferProduct.update(productNo, quantity);
+    }
+
+    private void validateUpdateProduct(final Long warehouseTransferProductNo, final Long productNo, final Long quantity) {
+        Assert.notNull(warehouseTransferProductNo, "창고간 재고이동 상품 번호는 필수입니다.");
+        Assert.notNull(productNo, "상품 번호는 필수입니다.");
+        Assert.notNull(quantity, "수량은 필수입니다.");
+        if (1 > quantity) {
+            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다.");
+        }
+    }
+
+    private WarehouseTransferProduct getWarehouseTransferProduct(final Long warehouseTransferProductNo) {
+        return products.stream()
+                .filter(product -> warehouseTransferProductNo.equals(product.getWarehouseTransferProductNo()))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("창고간 재고이동 상품이 존재하지 않습니다. 상품 번호: %d".formatted(warehouseTransferProductNo)));
     }
 }
