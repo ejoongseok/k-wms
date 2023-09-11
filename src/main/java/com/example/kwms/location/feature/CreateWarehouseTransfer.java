@@ -11,22 +11,25 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-class CreateWarehouseTransfer {
+public class CreateWarehouseTransfer {
     private final InventoryRepository inventoryRepository;
     private final WarehouseTransferRepository warehouseTransferRepository;
 
     //TODO 나중에 락 추가하기
     @PostMapping("/warehouse-transfers")
     @Transactional
+    @ResponseStatus(HttpStatus.CREATED)
     public void request(@RequestBody @Valid final Request request) {
         validate(request.fromWarehouseNo, request.products);
 

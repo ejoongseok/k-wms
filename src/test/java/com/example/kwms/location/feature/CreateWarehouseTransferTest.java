@@ -2,17 +2,18 @@ package com.example.kwms.location.feature;
 
 import com.example.kwms.common.ApiTest;
 import com.example.kwms.common.Scenario;
+import com.example.kwms.location.domain.WarehouseTransferRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CreateWarehouseTransferTest extends ApiTest {
 
     @Autowired
-    private CreateWarehouseTransfer createWarehouseTransfer;
+    private WarehouseTransferRepository warehouseTransferRepository;
 
     @BeforeEach
     void createWarehouseTransferSetUp() {
@@ -35,24 +36,10 @@ public class CreateWarehouseTransferTest extends ApiTest {
     @Test
     @DisplayName("창고간 재고 이동을 생성한다.")
     void createWarehouseTransfer() {
-        final Long productNo = 1L;
-        final Long quantity = 1L;
-        final CreateWarehouseTransfer.Request.Product product = new CreateWarehouseTransfer.Request.Product(
-                productNo,
-                quantity
-        );
-        final List<CreateWarehouseTransfer.Request.Product> products = List.of(product);
-        final Long fromWarehouseNo = 1L;
-        final Long toWarehouseNo = 2L;
-        final String barcode = "WT-001";
-        final CreateWarehouseTransfer.Request request = new CreateWarehouseTransfer.Request(
-                fromWarehouseNo,
-                toWarehouseNo,
-                barcode,
-                products
-        );
 
-        createWarehouseTransfer.request(request);
+        Scenario.createWarehouseTransfer().request();
+
+        assertThat(warehouseTransferRepository.findAll()).hasSize(1);
     }
 
 }
