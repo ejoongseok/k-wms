@@ -4,10 +4,10 @@ import com.example.kwms.common.Scenario;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
-public class ShipmentWarehouseTransferApi {
+public class ReceiveWarehouseTransferApi {
     private String warehouseTransferBarcode = "WT-001";
 
-    public ShipmentWarehouseTransferApi warehouseTransferBarcode(final String warehouseTransferBarcode) {
+    public ReceiveWarehouseTransferApi warehouseTransferBarcode(final String warehouseTransferBarcode) {
         this.warehouseTransferBarcode = warehouseTransferBarcode;
         return this;
     }
@@ -16,7 +16,7 @@ public class ShipmentWarehouseTransferApi {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/warehouse-transfers/{warehouseTransferBarcode}/shipment", warehouseTransferBarcode)
+                .post("/warehouse-transfers/{warehouseTransferBarcode}/receive", warehouseTransferBarcode)
                 .then().log().all()
                 .statusCode(200);
 

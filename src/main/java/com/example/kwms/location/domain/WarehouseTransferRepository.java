@@ -15,4 +15,10 @@ public interface WarehouseTransferRepository extends JpaRepository<WarehouseTran
                 .orElseThrow(() -> new NotFoundException(
                         "존재하지 않는 창고간 재고 이동 번호입니다. 창고간 재고 이동 번호: %d".formatted(warehouseTransferNo)));
     }
+
+    default WarehouseTransfer getBy(final String warehouseTransferBarcode) {
+        return findBy(warehouseTransferBarcode)
+                .orElseThrow(() -> new NotFoundException(
+                        "존재하지 않는 창고간 재고 이동 바코드입니다. 창고간 재고 이동 바코드: %s".formatted(warehouseTransferBarcode)));
+    }
 }

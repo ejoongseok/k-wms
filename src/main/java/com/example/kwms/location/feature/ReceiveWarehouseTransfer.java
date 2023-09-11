@@ -10,16 +10,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-class ShipmentWarehouseTransfer {
+class ReceiveWarehouseTransfer {
     private final WarehouseTransferRepository warehouseTransferRepository;
 
     @Transactional
-    @PostMapping("/warehouse-transfers/{warehouseTransferBarcode}/shipment")
+    @PostMapping("/warehouse-transfers/{warehouseTransferBarcode}/receive")
     public void request(
             @PathVariable final String warehouseTransferBarcode) {
         final WarehouseTransfer warehouseTransfer = warehouseTransferRepository.getBy(warehouseTransferBarcode);
 
-        warehouseTransfer.shipment();
+        warehouseTransfer.receive();
     }
 
 }
