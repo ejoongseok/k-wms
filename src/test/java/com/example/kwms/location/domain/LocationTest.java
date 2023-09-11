@@ -231,4 +231,13 @@ class LocationTest {
 
     }
 
+    @Test
+    @DisplayName("로케이션의 용도를 변경한다.")
+    void updateUsagePurpose() {
+        final Location location = aLocation().usagePurpose(UsagePurpose.MOVE).build();
+
+        location.updateUsagePurpose("FILL");
+
+        assertThat(location.getUsagePurpose()).isEqualTo(UsagePurpose.FILL);
+    }
 }

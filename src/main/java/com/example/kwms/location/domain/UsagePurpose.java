@@ -15,4 +15,8 @@ public enum UsagePurpose {
     UsagePurpose(final String description) {
         this.description = description;
     }
+
+    public static UsagePurpose from(final String usagePurpose) {
+        return valueOf(usagePurpose);
+    }
 }
