@@ -1,5 +1,6 @@
 package com.example.kwms.inbound.domain;
 
+import com.google.common.annotations.VisibleForTesting;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -47,11 +48,22 @@ public class LPN {
         this.expiringAt = expiringAt;
     }
 
+    @VisibleForTesting
+    LPN(final String lpnBarcode, final LocalDateTime expiringAt, final InboundProduct inboundProduct) {
+        this.lpnBarcode = lpnBarcode;
+        this.expiringAt = expiringAt;
+        this.inboundProduct = inboundProduct;
+    }
+
     void assignInboundProduct(final InboundProduct inboundProduct) {
         this.inboundProduct = inboundProduct;
     }
 
     boolean equalsBarcode(final String lpnBarcode) {
         return this.lpnBarcode.equals(lpnBarcode);
+    }
+
+    public Long getProductNo() {
+        return inboundProduct.getProductNo();
     }
 }

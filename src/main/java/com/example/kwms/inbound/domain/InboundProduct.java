@@ -31,9 +31,9 @@ public class InboundProduct {
     @Column(name = "inbound_product_no")
     @Comment("입고 상품 번호")
     private Long inboundProductNo;
-    @Column(name = "product_no", nullable = false)
-    @Comment("상품 번호")
-    private Long productNo;
+    @Getter
+    @OneToMany(mappedBy = "inboundProduct", orphanRemoval = true, cascade = CascadeType.ALL)
+    private final List<LPN> lpns = new ArrayList<>();
     @Column(name = "request_quantity", nullable = false)
     @Comment("상품 입고 요청 수량")
     private Long requestQuantity;
@@ -70,8 +70,10 @@ public class InboundProduct {
     @Column(name = "rejected_quantity")
     @Comment("불량 수량")
     private Long rejectedQuantity;
-    @OneToMany(mappedBy = "inboundProduct", orphanRemoval = true, cascade = CascadeType.ALL)
-    private final List<LPN> lpns = new ArrayList<>();
+    @Getter
+    @Column(name = "product_no", nullable = false)
+    @Comment("상품 번호")
+    private Long productNo;
 
     public InboundProduct(
             final Long productNo,
@@ -228,7 +230,4 @@ public class InboundProduct {
                 });
     }
 
-    public List<LPN> getLpns() {
-        return lpns;
-    }
 }
