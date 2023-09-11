@@ -1,5 +1,6 @@
 package com.example.kwms.inbound.domain;
 
+import com.google.common.annotations.VisibleForTesting;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -45,6 +46,13 @@ public class LPN {
         Assert.notNull(expiringAt, "유통기한은 필수입니다.");
         this.lpnBarcode = lpnBarcode;
         this.expiringAt = expiringAt;
+    }
+
+    @VisibleForTesting
+    LPN(final String lpnBarcode, final LocalDateTime expiringAt, final InboundProduct inboundProduct) {
+        this.lpnBarcode = lpnBarcode;
+        this.expiringAt = expiringAt;
+        this.inboundProduct = inboundProduct;
     }
 
     void assignInboundProduct(final InboundProduct inboundProduct) {
