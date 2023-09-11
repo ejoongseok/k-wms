@@ -1,34 +1,60 @@
 package com.example.kwms.location.feature;
 
+import com.example.kwms.common.ApiTest;
+import com.example.kwms.common.Scenario;
+import com.example.kwms.location.domain.LocationRepository;
+import com.example.kwms.location.domain.UsagePurpose;
+import com.example.kwms.location.domain.WarehouseTransferRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
-public class AddWarehouseTransferLocationTest {
+import static org.assertj.core.api.Assertions.assertThat;
 
+public class AddWarehouseTransferLocationTest extends ApiTest {
+
+    @Autowired
     private AddWarehouseTransferLocation addWarehouseTransferLocation;
+    @Autowired
+    private WarehouseTransferRepository warehouseTransferRepository;
+    @Autowired
+    private LocationRepository locationRepository;
 
     @BeforeEach
-    void setUp() {
-        addWarehouseTransferLocation = new AddWarehouseTransferLocation();
+    void addWarehouseTransferLocationSetUp() {
+        Scenario.createWarehouse().request();
+        Scenario.createWarehouse().request();
+        final String locationBarcode = "TOTE-001";
+        final String lpnBarcode = "LPN-001";
+        final Long quantity = 10L;
+        Scenario.createLocation().locationBarcode(locationBarcode).request()
+                .createInbound().request()
+                .registerInboundProductInspectionResult().request()
+                .createLPN().lpnBarcode(lpnBarcode).request();
+        Scenario.addManualInventory()
+                .locationBarcode(locationBarcode)
+                .lpnBarcode(lpnBarcode)
+                .quantity(quantity)
+                .request();
+        Scenario.createWarehouseTransfer().request();
     }
 
     @Test
     @DisplayName("재고이동에 사용할 로케이션 할당")
+    @Transactional
     void allocateWarehouseTransferLocation() {
         final Long warehouseTransferNo = 1L;
         final String locationBarcode = "TOTE-001";
-        addWarehouseTransferLocation.request(warehouseTransferNo, locationBarcode);
+
+        Scenario.addWarehouseTransferLocation()
+                .warehouseTransferNo(warehouseTransferNo)
+                .locationBarcode(locationBarcode)
+                .request();
+
+        assertThat(warehouseTransferRepository.getBy(warehouseTransferNo).getWorkTransferLocations()).hasSize(1);
+        assertThat(locationRepository.getBy(locationBarcode).getUsagePurpose()).isEqualTo(UsagePurpose.WAREHOUSE_TRANSFER);
     }
 
-    private class AddWarehouseTransferLocation {
-        public void request(final Long warehouseTransferNo, final String locationBarcode) {
-            throw new UnsupportedOperationException("Unsupported request");
-            //해당 창고의 로케이션인지 확인.
-            // 로케이션이 집품중인게 있는지 확인.
-            // 상태변경
-            // 로케이션에 재고이동할 상품외에 상품이 존재하는지 확인
-            // 로케이션에 재고이동할 상품이 있는지 확인.
-        }
-    }
 }

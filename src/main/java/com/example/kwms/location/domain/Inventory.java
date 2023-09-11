@@ -1,6 +1,7 @@
 package com.example.kwms.location.domain;
 
 import com.example.kwms.inbound.domain.LPN;
+import com.google.common.annotations.VisibleForTesting;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -36,6 +37,7 @@ public class Inventory {
     @Column(name = "quantity", nullable = false)
     @Comment("재고 수량")
     private Long quantity;
+    @Getter
     @Column(name = "product_no", nullable = false)
     @Comment("상품 번호")
     private Long productNo;
@@ -66,6 +68,15 @@ public class Inventory {
         this.quantity = quantity;
         productNo = lpn.getProductNo();
         warehouseNo = location.getWarehouseNo();
+    }
+
+    @VisibleForTesting
+    Inventory(final Long inventoryNo, final Long quantity, final Long productNo, final Long warehouseNo, final LPN lpn) {
+        this.inventoryNo = inventoryNo;
+        this.quantity = quantity;
+        this.productNo = productNo;
+        this.warehouseNo = warehouseNo;
+        this.lpn = lpn;
     }
 
     public boolean equalsLPN(final LPN lpn) {
@@ -101,4 +112,5 @@ public class Inventory {
         }
         this.quantity -= quantity;
     }
+
 }

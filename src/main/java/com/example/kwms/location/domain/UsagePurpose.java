@@ -7,7 +7,7 @@ public enum UsagePurpose {
     DISPLAY("진열"),
     DEFECTIVE("불량"),
 
-    WAREHOUSE_MOVE("창고간 이동");
+    WAREHOUSE_TRANSFER("창고간 이동");
 
 
     private final String description;
