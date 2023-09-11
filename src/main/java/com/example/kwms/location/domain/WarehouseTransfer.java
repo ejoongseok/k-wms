@@ -56,6 +56,10 @@ public class WarehouseTransfer {
     @Column(name = "shipped_at")
     @Comment("출하 일시")
     private LocalDateTime shippedAt;
+    @Getter
+    @Column(name = "received_at")
+    @Comment("입고 일시")
+    private LocalDateTime receivedAt;
 
     public WarehouseTransfer(
             final Long fromWarehouseNo,
@@ -181,4 +185,17 @@ public class WarehouseTransfer {
         }
     }
 
+    public void receive() {
+        validateReceive();
+        receivedAt = LocalDateTime.now();
+    }
+
+    private void validateReceive() {
+        if (null != receivedAt) {
+            throw new IllegalStateException("이미 입고된 재고이동입니다.");
+        }
+        if (null == shippedAt) {
+            throw new IllegalStateException("출하되지 않은 재고이동입니다.");
+        }
+    }
 }

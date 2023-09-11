@@ -10,15 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ShipmentWarehouseTransferTest extends ApiTest {
+public class ReceiveWarehouseTransferTest extends ApiTest {
 
-    @Autowired
-    private ShipmentWarehouseTransfer shipmentWarehouseTransfer;
     @Autowired
     private WarehouseTransferRepository warehouseTransferRepository;
 
     @BeforeEach
-    void shipmentWarehouseTransferSetUp() {
+    void receiveWarehouseTransferSetUp() {
         Scenario.createWarehouse().request();
         Scenario.createWarehouse().request();
         final String locationBarcode = "TOTE-001";
@@ -40,19 +38,23 @@ public class ShipmentWarehouseTransferTest extends ApiTest {
                 .warehouseTransferNo(warehouseTransferNo)
                 .locationBarcode(locationBarcode)
                 .request();
-    }
 
-    @Test
-    @DisplayName("창고간 재고 이동을 출고한다.")
-    void shipmentWarehouseTransfer() {
         final String warehouseTransferBarcode = "WT-001";
 
         Scenario
                 .shipmentWarehouseTransfer()
                 .warehouseTransferBarcode(warehouseTransferBarcode)
                 .request();
+    }
 
-        assertThat(warehouseTransferRepository.getBy(warehouseTransferBarcode).getShippedAt()).isNotNull();
+    @Test
+    @DisplayName("창고간 재고 이동을 입고한다.")
+    void receiveWarehouseTransfer() {
+        final String warehouseTransferBarcode = "WT-001";
+
+        Scenario.receiveWarehouseTransfer().warehouseTransferBarcode(warehouseTransferBarcode).request();
+
+        assertThat(warehouseTransferRepository.getBy(warehouseTransferBarcode).getReceivedAt()).isNotNull();
     }
 
 }
