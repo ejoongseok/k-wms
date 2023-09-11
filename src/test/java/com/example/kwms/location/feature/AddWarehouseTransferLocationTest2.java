@@ -8,7 +8,6 @@ import com.example.kwms.location.domain.WarehouseTransferProduct;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static com.example.kwms.location.domain.InventoryFixture.anInventory;
@@ -30,7 +29,7 @@ class AddWarehouseTransferLocationTest2 {
         sut.addLocation(warehouseTransfer, location);
 
         assertThat(location.getUsagePurpose()).isEqualTo(UsagePurpose.WAREHOUSE_TRANSFER);
-        assertThat(warehouseTransfer.getWorkTransferLocations()).hasSize(1);
+        assertThat(warehouseTransfer.getWarehouseTransferLocations()).hasSize(1);
     }
 
     @Test

@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -50,7 +51,11 @@ public class WarehouseTransfer {
     private List<WarehouseTransferProduct> products;
     @OneToMany(mappedBy = "warehouseTransfer", orphanRemoval = true, cascade = CascadeType.ALL)
     @Getter
-    private final List<WorkTransferLocation> workTransferLocations = new ArrayList<>();
+    private final List<WarehouseTransferLocation> warehouseTransferLocations = new ArrayList<>();
+    @Getter
+    @Column(name = "shipped_at")
+    @Comment("출하 일시")
+    private LocalDateTime shippedAt;
 
     public WarehouseTransfer(
             final Long fromWarehouseNo,
@@ -116,7 +121,7 @@ public class WarehouseTransfer {
 
     public void addLocation(final Location location) {
         validateAddLocation(location);
-        workTransferLocations.add(new WorkTransferLocation(this, location));
+        warehouseTransferLocations.add(new WarehouseTransferLocation(this, location));
     }
 
     private void validateAddLocation(final Location location) {
@@ -146,15 +151,34 @@ public class WarehouseTransfer {
                             "로케이션 바코드: %s, 상품 번호: %d")
                             .formatted(location.getLocationBarcode(), allProductsInLocation.iterator().next()));
         }
+    }
+
+    public void shipment() {
+        validateShipment();
+        shippedAt = LocalDateTime.now();
+    }
+
+    private void validateShipment() {
+        if (null != shippedAt) {
+            throw new IllegalStateException("이미 출하된 재고이동입니다.");
+        }
+        if (warehouseTransferLocations.isEmpty()) {
+            throw new IllegalStateException("출하할 로케이션이 존재하지 않습니다.");
+        }
+
+        final Set<Long> productNos = warehouseTransferLocations.stream()
+                .map(WarehouseTransferLocation::getLocation)
+                .flatMap(location -> location.getAllProductNos().stream())
+                .collect(Collectors.toSet());
 
         //TODO 이거는 출하 확정할때 하면 될듯하다.
-//        for (WarehouseTransferProduct product : products) {
-//            if(!location.containsProduct(location, product.getProductNo())) {
-//                throw new IllegalArgumentException(
-//                        ("로케이션에 상품이 존재하지 않습니다. " +
-//                                "로케이션 바코드: %s, 상품 번호: %d").formatted(location.getLocationBarcode(), product.getProductNo()));
-//            }
-//        }
-
+        for (final WarehouseTransferProduct product : products) {
+            if (!productNos.contains(product.getProductNo())) {
+                throw new IllegalArgumentException(
+                        ("출하할 상품이 로케이션에 존재하지 않습니다. " +
+                                "상품 번호: %d").formatted(product.getProductNo()));
+            }
+        }
     }
+
 }
