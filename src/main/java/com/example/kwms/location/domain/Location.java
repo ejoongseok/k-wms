@@ -294,6 +294,7 @@ public class Location {
     }
 
     public void updateUsagePurpose(final String usagePurpose) {
+        Assert.hasText(usagePurpose, "로케이션 용도는 필수입니다.");
         recursivelyChangeUsagePurpose(this, UsagePurpose.from(usagePurpose));
     }
 }
