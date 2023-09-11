@@ -2,6 +2,7 @@ package com.example.kwms.location.domain;
 
 import com.example.kwms.common.NotFoundException;
 import com.example.kwms.inbound.domain.LPN;
+import com.google.common.annotations.VisibleForTesting;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,8 +23,10 @@ import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Entity
 @Table(name = "location")
@@ -42,6 +45,7 @@ public class Location {
     @Enumerated(EnumType.STRING)
     @Column(name = "storage_type", nullable = false)
     @Comment("로케이션 유형")
+    @Getter
     private StorageType storageType;
     @Enumerated(EnumType.STRING)
     @Column(name = "usage_purpose", nullable = false)
@@ -76,6 +80,20 @@ public class Location {
         this.storageType = storageType;
         this.usagePurpose = usagePurpose;
 
+    }
+
+    @VisibleForTesting
+    Location(
+            final Long warehouseNo,
+            final String locationBarcode,
+            final StorageType storageType,
+            final UsagePurpose usagePurpose,
+            final List<Inventory> inventories) {
+        this.warehouseNo = warehouseNo;
+        this.locationBarcode = locationBarcode;
+        this.storageType = storageType;
+        this.usagePurpose = usagePurpose;
+        this.inventories.addAll(inventories);
     }
 
     public void appendLocation(final Location current) {
@@ -239,4 +257,39 @@ public class Location {
 
     }
 
+    boolean containsProduct(final Location thisLocation, final Long productNo) {
+        Assert.notNull(productNo, "상품 번호는 필수입니다.");
+        for (final Inventory inventory : thisLocation.inventories) {
+            if (inventory.getProductNo().equals(productNo)) {
+                return true;
+            }
+        }
+        for (final Location child : thisLocation.children) {
+            if (containsProduct(child, productNo)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Set<Long> getAllProductNos() {
+        return getAllRecursiveProductNos(this, new HashSet<>());
+    }
+
+    private Set<Long> getAllRecursiveProductNos(final Location location, final Set<Long> allProductNos) {
+        for (final Inventory inventory : location.inventories) {
+            allProductNos.add(inventory.getProductNo());
+        }
+
+        for (final Location child : location.children) {
+            getAllRecursiveProductNos(child, allProductNos);
+        }
+        return allProductNos;
+
+    }
+
+
+    public void warehouseTransferred() {
+        recursivelyChangeUsagePurpose(this, UsagePurpose.WAREHOUSE_TRANSFER);
+    }
 }

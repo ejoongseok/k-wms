@@ -8,6 +8,7 @@ import com.example.kwms.inbound.feature.api.UpdateInboundApi;
 import com.example.kwms.inbound.feature.api.UpdateInboundProductApi;
 import com.example.kwms.location.feature.api.AddInventoryApi;
 import com.example.kwms.location.feature.api.AddManualInventoryApi;
+import com.example.kwms.location.feature.api.AddWarehouseTransferLocationApi;
 import com.example.kwms.location.feature.api.AdjustInventoryApi;
 import com.example.kwms.location.feature.api.AppendLocationApi;
 import com.example.kwms.location.feature.api.CreateLocationApi;
@@ -90,5 +91,9 @@ public class Scenario {
 
     public static UpdateWarehouseTransferProductApi updateWarehouseTransferProduct() {
         return new UpdateWarehouseTransferProductApi();
+    }
+
+    public static AddWarehouseTransferLocationApi addWarehouseTransferLocation() {
+        return new AddWarehouseTransferLocationApi();
     }
 }

@@ -14,7 +14,13 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.example.kwms.location.domain.StorageType.PALLET;
+import static com.example.kwms.location.domain.StorageType.TOTE;
 
 /**
  * 창고간 재고이동
@@ -30,6 +36,7 @@ public class WarehouseTransfer {
     private Long warehouseTransferNo;
     @Column(name = "from_warehouse_no", nullable = false)
     @Comment("출발 창고 번호")
+    @Getter
     private Long fromWarehouseNo;
     @Column(name = "to_warehouse_no", nullable = false)
     @Comment("도착 창고 번호")
@@ -41,6 +48,9 @@ public class WarehouseTransfer {
     @OneToMany(mappedBy = "warehouseTransfer", orphanRemoval = true, cascade = CascadeType.ALL)
     @Getter
     private List<WarehouseTransferProduct> products;
+    @OneToMany(mappedBy = "warehouseTransfer", orphanRemoval = true, cascade = CascadeType.ALL)
+    @Getter
+    private final List<WorkTransferLocation> workTransferLocations = new ArrayList<>();
 
     public WarehouseTransfer(
             final Long fromWarehouseNo,
@@ -51,6 +61,12 @@ public class WarehouseTransfer {
         Assert.notNull(toWarehouseNo, "도착 창고 번호는 필수입니다.");
         Assert.notNull(barcode, "바코드는 필수입니다.");
         Assert.notEmpty(products, "상품은 필수입니다.");
+        final Set<Long> productNos = products.stream()
+                .map(WarehouseTransferProduct::getProductNo)
+                .collect(Collectors.toSet());
+        if (productNos.size() != products.size()) {
+            throw new IllegalArgumentException("상품 번호는 중복될 수 없습니다.");
+        }
         this.fromWarehouseNo = fromWarehouseNo;
         this.toWarehouseNo = toWarehouseNo;
         this.barcode = barcode;
@@ -96,5 +112,49 @@ public class WarehouseTransfer {
                 .filter(product -> warehouseTransferProductNo.equals(product.getWarehouseTransferProductNo()))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("창고간 재고이동 상품이 존재하지 않습니다. 상품 번호: %d".formatted(warehouseTransferProductNo)));
+    }
+
+    public void addLocation(final Location location) {
+        validateAddLocation(location);
+        workTransferLocations.add(new WorkTransferLocation(this, location));
+    }
+
+    private void validateAddLocation(final Location location) {
+        Assert.notNull(location, "로케이션은 필수입니다.");
+        if (TOTE != location.getStorageType() && PALLET != location.getStorageType()) {
+            throw new IllegalArgumentException(
+                    ("재고이동가능한 로케이션은 로케이션의 용도는 토트 또는 팔렛이어야 합니다. " +
+                            "로케이션 용도: %s").formatted(location.getStorageType()));
+        }
+        if (!fromWarehouseNo.equals(location.getWarehouseNo())) {
+            throw new IllegalArgumentException(
+                    ("출발 창고 번호와 로케이션의 창고 번호가 일치하지 않습니다. " +
+                            "출발 창고 번호: %d, 로케이션의 창고 번호: %d").formatted(fromWarehouseNo, location.getWarehouseNo()));
+        }
+
+        // 로케이션의 모든 상품 번호를 가져온다.
+        final Set<Long> allProductsInLocation = location.getAllProductNos();
+        // 2. 재고이동할 상품 리스트에서 로케이션의 모든 상품 리스트를 제거합니다.
+        for (final WarehouseTransferProduct product : products) {
+            allProductsInLocation.remove(product.getProductNo());
+        }
+
+        // 3. allProductsInLocation에는 재고이동 대상이 아닌 로케이션에 남아있는 상품들이 있는지 확인.
+        if (!allProductsInLocation.isEmpty()) {
+            throw new IllegalArgumentException(
+                    ("재고이동 대상이 아닌 상품이 로케이션에 존재합니다. " +
+                            "로케이션 바코드: %s, 상품 번호: %d")
+                            .formatted(location.getLocationBarcode(), allProductsInLocation.iterator().next()));
+        }
+
+        //TODO 이거는 출하 확정할때 하면 될듯하다.
+//        for (WarehouseTransferProduct product : products) {
+//            if(!location.containsProduct(location, product.getProductNo())) {
+//                throw new IllegalArgumentException(
+//                        ("로케이션에 상품이 존재하지 않습니다. " +
+//                                "로케이션 바코드: %s, 상품 번호: %d").formatted(location.getLocationBarcode(), product.getProductNo()));
+//            }
+//        }
+
     }
 }
