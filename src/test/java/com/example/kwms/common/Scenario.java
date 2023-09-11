@@ -22,6 +22,7 @@ import com.example.kwms.location.feature.api.UpdateLocationUsagePurposeApi;
 import com.example.kwms.location.feature.api.UpdateWarehouseApi;
 import com.example.kwms.location.feature.api.UpdateWarehouseTransferApi;
 import com.example.kwms.location.feature.api.UpdateWarehouseTransferProductApi;
+import com.example.kwms.outbound.feature.api.CreatePackagingMaterialApi;
 
 public class Scenario {
     public static CreateInboundApi createInbound() {
@@ -110,5 +111,9 @@ public class Scenario {
 
     public static UpdateLocationUsagePurposeApi updateLocationUsagePurpose() {
         return new UpdateLocationUsagePurposeApi();
+    }
+
+    public static CreatePackagingMaterialApi createPackagingMaterial() {
+        return new CreatePackagingMaterialApi();
     }
 }
