@@ -24,6 +24,11 @@ public class AddWarehouseTransferLocationTest {
     private class AddWarehouseTransferLocation {
         public void request(final Long warehouseTransferNo, final String locationBarcode) {
             throw new UnsupportedOperationException("Unsupported request");
+            //해당 창고의 로케이션인지 확인.
+            // 로케이션이 집품중인게 있는지 확인.
+            // 상태변경
+            // 로케이션에 재고이동할 상품외에 상품이 존재하는지 확인
+            // 로케이션에 재고이동할 상품이 있는지 확인.
         }
     }
 }
