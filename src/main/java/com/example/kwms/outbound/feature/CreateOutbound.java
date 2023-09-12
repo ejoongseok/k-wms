@@ -26,7 +26,7 @@ import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
-class CreateOutbound {
+public class CreateOutbound {
     private final OrderClient orderClient;
     private final ProductClient productClient;
     private final OutboundRepository outboundRepository;

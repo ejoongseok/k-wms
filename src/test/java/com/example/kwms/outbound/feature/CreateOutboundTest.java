@@ -8,8 +8,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.LocalDate;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CreateOutboundTest extends ApiTest {
@@ -41,18 +39,7 @@ public class CreateOutboundTest extends ApiTest {
     @Test
     @DisplayName("출고를 생성한다.")
     void createOutbound() {
-        final Long orderNo = 1L;
-        final Long warehouseNo = 1L;
-        final boolean isPriorityDelivery = false;
-        final LocalDate desiredDeliveryAt = LocalDate.now();
-        final CreateOutbound.Request request = new CreateOutbound.Request(
-                warehouseNo,
-                orderNo,
-                isPriorityDelivery,
-                desiredDeliveryAt
-        );
-
-        createOutbound.request(request);
+        Scenario.createOutbound().request();
 
         assertThat(outboundRepository.findAll()).hasSize(1);
     }
