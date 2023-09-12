@@ -23,10 +23,7 @@ public class ConstructOutbound {
                 desiredDeliveryAt);
     }
 
-    private PackagingMaterial findOptimalPackaging(
-            final List<PackagingMaterial> packagingMaterials,
-            final Long totalWeight,
-            final Long totalVolume) {
+    private PackagingMaterial findOptimalPackaging(final List<PackagingMaterial> packagingMaterials, final Long totalWeight, final Long totalVolume) {
         return packagingMaterials.stream()
                 .filter(pm -> pm.isAvailable(totalWeight, totalVolume))
                 .min(Comparator.comparingLong(PackagingMaterial::outerVolume))
@@ -53,10 +50,24 @@ public class ConstructOutbound {
             final LocalDate desiredDeliveryAt) {
         return new Outbound(
                 order.getOrderNo(),
+                mapToOutboundProducts(order.getOrderProducts()),
                 isPriorityDelivery,
                 desiredDeliveryAt,
                 packagingMaterial
         );
     }
 
+    private List<OutboundProduct> mapToOutboundProducts(
+            final List<OrderProduct> orderProducts) {
+        return orderProducts.stream()
+                .map(this::newOutboundProduct)
+                .toList();
+    }
+
+    private OutboundProduct newOutboundProduct(final OrderProduct orderProduct) {
+        return new OutboundProduct(
+                orderProduct.getProductNo(),
+                orderProduct.getOrderQuantity(),
+                orderProduct.getUnitPrice());
+    }
 }
