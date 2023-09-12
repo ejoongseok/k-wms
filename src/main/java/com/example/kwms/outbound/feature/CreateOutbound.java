@@ -4,10 +4,12 @@ import com.example.kwms.location.domain.Inventory;
 import com.example.kwms.location.domain.InventoryRepository;
 import com.example.kwms.outbound.domain.ConstructOutbound;
 import com.example.kwms.outbound.domain.Order;
+import com.example.kwms.outbound.domain.OrderProduct;
 import com.example.kwms.outbound.domain.Outbound;
 import com.example.kwms.outbound.domain.OutboundRepository;
 import com.example.kwms.outbound.domain.PackagingMaterial;
 import com.example.kwms.outbound.domain.PackagingMaterialRepository;
+import com.example.kwms.outbound.domain.Product;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 class CreateOutbound {
     private final OrderClient orderClient;
+    private final ProductClient productClient;
     private final OutboundRepository outboundRepository;
     private final InventoryRepository inventoryRepository;
     private final PackagingMaterialRepository packagingMaterialRepository;
@@ -35,14 +38,9 @@ class CreateOutbound {
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
     public void request(@RequestBody @Valid final Request request) {
-        //주문 정보를 가져오고.
         final Order order = orderClient.getBy(request.orderNo);
-        final Set<Long> productNos = order.getProductNos();
-        final List<Inventory> inventories = getInventories(request.warehouseNo, productNos);
+        final List<Inventory> inventories = getInventories(request, order.getProductNos());
         final List<PackagingMaterial> packagingMaterials = packagingMaterialRepository.findAll();
-        // ProductClient에서 가져온 정보를 사용하도록 수정
-        final Long totalWeight = 100L;
-        final Long totalVolume = 100L;
 
         final Outbound outbound = constructOutbound.create(
                 inventories,
@@ -50,10 +48,32 @@ class CreateOutbound {
                 order,
                 request.isPriorityDelivery,
                 request.desiredDeliveryAt,
-                totalWeight,
-                totalVolume);
+                calculateTotalWeight(order.getOrderProducts()),
+                calculateTotalVolume(order.getOrderProducts()));
 
         outboundRepository.save(outbound);
+    }
+
+    private List<Inventory> getInventories(final Request request, final Set<Long> productNos) {
+        return getInventories(request.warehouseNo, productNos);
+    }
+
+    private Long calculateTotalWeight(final List<OrderProduct> orderProducts) {
+        Long totalWeight = 0L;
+        for (final OrderProduct orderProduct : orderProducts) {
+            final Product product = productClient.getBy(orderProduct.getProductNo());
+            totalWeight += product.getWeightInGrams() * orderProduct.getOrderQuantity();
+        }
+        return totalWeight;
+    }
+
+    private Long calculateTotalVolume(final List<OrderProduct> orderProducts) {
+        Long totalVolume = 0L;
+        for (final OrderProduct orderProduct : orderProducts) {
+            final Product product = productClient.getBy(orderProduct.getProductNo());
+            totalVolume += product.volume() * orderProduct.getOrderQuantity();
+        }
+        return totalVolume;
     }
 
     private List<Inventory> getInventories(

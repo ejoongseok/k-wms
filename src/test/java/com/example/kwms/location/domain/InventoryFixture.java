@@ -7,7 +7,7 @@ public class InventoryFixture {
     private Long quantity = 1L;
     private Long productNo = 1L;
     private Long warehouseNo = 1L;
-    private final LPNFixture lpn = LPNFixture.aLPN();
+    private LPNFixture lpn = LPNFixture.aLPN();
 
     public static InventoryFixture anInventory() {
         return new InventoryFixture();
@@ -30,6 +30,11 @@ public class InventoryFixture {
 
     public InventoryFixture warehouseNo(final Long warehouseNo) {
         this.warehouseNo = warehouseNo;
+        return this;
+    }
+
+    public InventoryFixture lpn(final LPNFixture lpnFixture) {
+        lpn = lpn;
         return this;
     }
 
