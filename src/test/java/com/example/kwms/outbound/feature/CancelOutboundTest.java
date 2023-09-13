@@ -3,7 +3,6 @@ package com.example.kwms.outbound.feature;
 import com.example.kwms.common.ApiTest;
 import com.example.kwms.common.Scenario;
 import com.example.kwms.outbound.domain.OutboundRepository;
-import com.example.kwms.outbound.domain.OutboundStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,7 +45,7 @@ public class CancelOutboundTest extends ApiTest {
 
         Scenario.cancelOutbound().outboundNo(outboundNo).request();
 
-        assertThat(outboundRepository.getBy(outboundNo).getOutboundStatus()).isEqualTo(OutboundStatus.CANCELLED);
+        assertThat(outboundRepository.getBy(outboundNo).isCanceled()).isTrue();
     }
 
 }

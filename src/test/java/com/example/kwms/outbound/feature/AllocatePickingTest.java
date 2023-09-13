@@ -13,9 +13,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AllocatePickingTest extends ApiTest {
 
     @Autowired
-    private AllocatePicking allocatePicking;
-
-    @Autowired
     private PickingRepository pickingRepository;
 
     @BeforeEach
@@ -41,11 +38,7 @@ public class AllocatePickingTest extends ApiTest {
     @Test
     @DisplayName("출고 피킹을 할당한다.")
     void allocatePicking() {
-        final Long outboundNo = 1L;
-
         Scenario.allocatePicking().request();
-
-//        allocatePicking.request(outboundNo);
 
         assertThat(pickingRepository.findAll()).hasSize(1);
     }

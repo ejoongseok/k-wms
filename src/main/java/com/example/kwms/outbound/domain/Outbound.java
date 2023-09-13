@@ -24,6 +24,7 @@ import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -66,6 +67,12 @@ public class Outbound {
     @Column(name = "warehouse_no", nullable = false)
     @Comment("출고할 창고")
     private Long warehouseNo;
+    @Column(name = "cancel_reason")
+    @Comment("출고 취소 사유")
+    private String cancelReason;
+    @Column(name = "cancelled_at")
+    @Comment("출고 취소 일시")
+    private LocalDateTime cancelledAt;
 
     public Outbound(
             final Long warehouseNo,
@@ -196,7 +203,7 @@ public class Outbound {
     }
 
     public void removeEmptyQuantityProducts() {
-        if (OutboundStatus.CANCELLED == outboundStatus) {
+        if (isCanceled()) {
             throw new IllegalStateException("출고 취소된 출고는 변경할 수 없습니다.");
         }
         outboundProducts.removeIf(OutboundProduct::isZeroQuantity);
@@ -204,7 +211,7 @@ public class Outbound {
 
     public void assignRecommendedPackaging(final PackagingMaterial optimalPackaging) {
         Assert.notNull(optimalPackaging, "추천 포장재는 필수입니다.");
-        if (OutboundStatus.CANCELLED == outboundStatus) {
+        if (isCanceled()) {
             throw new IllegalStateException("출고 취소된 출고는 변경할 수 없습니다.");
         }
         recommendedPackagingMaterial = optimalPackaging;
@@ -217,7 +224,7 @@ public class Outbound {
 
     private void validateToteAllocation(final Location tote) {
         Assert.notNull(tote, "출고에 할당할 토트는 필수 입니다.");
-        if (OutboundStatus.CANCELLED == outboundStatus) {
+        if (isCanceled()) {
             throw new IllegalStateException("출고 취소된 출고는 변경할 수 없습니다.");
         }
         if (!tote.isTote()) {
@@ -234,13 +241,14 @@ public class Outbound {
         }
     }
 
-    public void cancelled() {
-        outboundStatus = OutboundStatus.CANCELLED;
+    public void cancelled(final String cancelReason) {
+        cancelledAt = LocalDateTime.now();
+        this.cancelReason = cancelReason;
     }
 
     public void transferWarehouse(final Long toWarehouseNo) {
         Assert.notNull(toWarehouseNo, "출고할 창고는 필수입니다.");
-        if (OutboundStatus.CANCELLED == outboundStatus) {
+        if (isCanceled()) {
             throw new IllegalStateException("출고 취소된 출고는 변경할 수 없습니다.");
         }
         if (!isReady()) {
@@ -271,5 +279,9 @@ public class Outbound {
     public boolean hasPickings() {
         return outboundProducts.stream()
                 .anyMatch(OutboundProduct::hasPickings);
+    }
+
+    public boolean isCanceled() {
+        return null != cancelledAt && null != cancelReason;
     }
 }
