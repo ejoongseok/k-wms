@@ -15,7 +15,7 @@ public class ConstructOutbound {
             final LocalDate desiredDeliveryAt,
             final Long orderTotalWeight,
             final Long orderTotalVolume) {
-        validateInventory(inventories, order.getOrderProducts());
+//        validateInventory(inventories, order.getOrderProducts());
         return newOutbound(
                 order,
                 findOptimalPackaging(packagingMaterials, orderTotalWeight, orderTotalVolume),
