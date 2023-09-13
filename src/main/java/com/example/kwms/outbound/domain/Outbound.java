@@ -2,6 +2,7 @@ package com.example.kwms.outbound.domain;
 
 import com.example.kwms.common.NotFoundException;
 import com.example.kwms.location.domain.Location;
+import com.google.common.annotations.VisibleForTesting;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,6 +53,7 @@ public class Outbound {
     @JoinColumn(name = "picking_tote_no")
     @Comment("집품할 토트 바구니")
     private Location pickingTote;
+    private OutboundStatus outboundStatus;
 
     public Outbound(
             final Long orderNo,
@@ -70,6 +72,24 @@ public class Outbound {
         this.desiredDeliveryAt = desiredDeliveryAt;
         this.outboundProducts = outboundProducts;
         outboundProducts.forEach(outboundProduct -> outboundProduct.assignOutbound(this));
+        outboundStatus = OutboundStatus.READY;
+    }
+
+    @VisibleForTesting
+    Outbound(
+            final Long orderNo,
+            final List<OutboundProduct> outboundProducts,
+            final Boolean isPriorityDelivery,
+            final LocalDate desiredDeliveryAt,
+            final PackagingMaterial packagingMaterial,
+            final Location pickingTote) {
+        recommendedPackagingMaterial = packagingMaterial;
+        this.orderNo = orderNo;
+        this.isPriorityDelivery = isPriorityDelivery;
+        this.desiredDeliveryAt = desiredDeliveryAt;
+        this.outboundProducts = outboundProducts;
+        outboundProducts.forEach(outboundProduct -> outboundProduct.assignOutbound(this));
+        this.pickingTote = pickingTote;
     }
 
     private void validateConstructor(
@@ -150,5 +170,27 @@ public class Outbound {
     public void assignRecommendedPackaging(final PackagingMaterial optimalPackaging) {
         Assert.notNull(optimalPackaging, "추천 포장재는 필수입니다.");
         recommendedPackagingMaterial = optimalPackaging;
+    }
+
+    public void allocatePickingTote(final Location tote) {
+        validateToteAllocation(tote);
+        pickingTote = tote;
+        outboundStatus = OutboundStatus.ALLOCATED_PICKING_TOTE;
+    }
+
+    private void validateToteAllocation(final Location tote) {
+        Assert.notNull(tote, "출고에 할당할 토트는 필수 입니다.");
+        if (!tote.isTote()) {
+            throw new IllegalArgumentException("할당하려는 로케이션이 토트가 아닙니다.");
+        }
+        if (tote.hasAvailableInventory()) {
+            throw new IllegalArgumentException("할당하려는 토트에 상품이 존재합니다.");
+        }
+        if (null != pickingTote) {
+            throw new IllegalStateException("이미 출고에 토트가 할당되어 있습니다.");
+        }
+        if (null == recommendedPackagingMaterial) {
+            throw new IllegalStateException("포장재가 할당되어 있지 않습니다.");
+        }
     }
 }

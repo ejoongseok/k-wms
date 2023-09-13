@@ -22,6 +22,7 @@ import com.example.kwms.location.feature.api.UpdateLocationUsagePurposeApi;
 import com.example.kwms.location.feature.api.UpdateWarehouseApi;
 import com.example.kwms.location.feature.api.UpdateWarehouseTransferApi;
 import com.example.kwms.location.feature.api.UpdateWarehouseTransferProductApi;
+import com.example.kwms.outbound.feature.api.AllocatePickingToteApi;
 import com.example.kwms.outbound.feature.api.CreateOutboundApi;
 import com.example.kwms.outbound.feature.api.CreatePackagingMaterialApi;
 import com.example.kwms.outbound.feature.api.SplitOutboundApi;
@@ -130,5 +131,9 @@ public class Scenario {
 
     public static SplitOutboundApi splitOutbound() {
         return new SplitOutboundApi();
+    }
+
+    public static AllocatePickingToteApi allocatePickingTote() {
+        return new AllocatePickingToteApi();
     }
 }
