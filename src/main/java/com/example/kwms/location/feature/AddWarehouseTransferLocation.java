@@ -37,12 +37,6 @@ public class AddWarehouseTransferLocation {
         validate(location.getAllInventories());
 
         addLocation(warehouseTransfer, location);
-
-        // OK 해당 창고의 로케이션인지 확인.
-        // TODO 로케이션이 집품중인게 있는지 확인.
-        // OK 상태변경
-        // OK 로케이션에 재고이동할 상품외에 상품이 존재하는지 확인
-        // 로케이션에 재고이동할 상품이 있는지 확인.
     }
 
     private void validate(final List<Inventory> allInventories) {
