@@ -3,26 +3,27 @@ package com.example.kwms.outbound.feature;
 import com.example.kwms.common.ApiTest;
 import com.example.kwms.common.Scenario;
 import com.example.kwms.outbound.domain.OutboundRepository;
+import com.example.kwms.outbound.domain.OutboundStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AllocatePickingToteTest extends ApiTest {
+public class CancelOutboundTest extends ApiTest {
+
+    @Autowired
+    private CancelOutbound cancelOutbound;
 
     @Autowired
     private OutboundRepository outboundRepository;
 
     @BeforeEach
-    void allocatePickingToteSetUp() {
+    void cancelOutboundSetup() {
         final String locationBarcode = "TOTE-001";
-        final String pickingTote = "TOTE-002";
         final String lpnBarcode = "LPN-001";
         final Long quantity = 10L;
-        Scenario.createLocation().locationBarcode(pickingTote).request();
         Scenario.createLocation().locationBarcode(locationBarcode).request()
                 .createInbound().request()
                 .registerInboundProductInspectionResult().request()
@@ -38,18 +39,13 @@ public class AllocatePickingToteTest extends ApiTest {
     }
 
     @Test
-    @DisplayName("피킹 토트를 할당한다.")
-    @Transactional
-    void allocatePickingTote() {
+    @DisplayName("출고를 취소한다.")
+    void cancelOutbound() {
         final Long outboundNo = 1L;
-        final String toteBarcode = "TOTE-002";
 
-        Scenario.allocatePickingTote()
-                .outboundNo(outboundNo)
-                .toteBarcode(toteBarcode).request();
+        Scenario.cancelOutbound().outboundNo(outboundNo).request();
 
-        assertThat(outboundRepository.getBy(outboundNo).getPickingTote()).isNotNull();
-        assertThat(outboundRepository.getBy(outboundNo).getPickingTote().getLocationBarcode()).isEqualTo(toteBarcode);
+        assertThat(outboundRepository.getBy(outboundNo).getOutboundStatus()).isEqualTo(OutboundStatus.CANCELLED);
     }
 
 }
