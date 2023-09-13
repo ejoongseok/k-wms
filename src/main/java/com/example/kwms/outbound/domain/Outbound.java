@@ -53,6 +53,7 @@ public class Outbound {
     @JoinColumn(name = "picking_tote_no")
     @Comment("집품할 토트 바구니")
     private Location pickingTote;
+    private OutboundStatus outboundStatus;
 
     public Outbound(
             final Long orderNo,
@@ -71,6 +72,7 @@ public class Outbound {
         this.desiredDeliveryAt = desiredDeliveryAt;
         this.outboundProducts = outboundProducts;
         outboundProducts.forEach(outboundProduct -> outboundProduct.assignOutbound(this));
+        outboundStatus = OutboundStatus.READY;
     }
 
     @VisibleForTesting
@@ -173,6 +175,7 @@ public class Outbound {
     public void allocatePickingTote(final Location tote) {
         validateToteAllocation(tote);
         pickingTote = tote;
+        outboundStatus = OutboundStatus.ALLOCATED_PICKING_TOTE;
     }
 
     private void validateToteAllocation(final Location tote) {
