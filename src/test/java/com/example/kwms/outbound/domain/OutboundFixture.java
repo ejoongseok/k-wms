@@ -12,6 +12,7 @@ import static com.example.kwms.outbound.domain.OutboundProductFixture.anOutbound
 
 public class OutboundFixture {
     private Long orderNo = 1L;
+    private Long warehouseNo = 1L;
     private boolean isPriorityDelivery;
     private LocalDate desiredDeliveryAt = LocalDate.now();
     private List<OutboundProductFixture> outboundProducts = List.of(anOutboundProduct());
@@ -24,6 +25,11 @@ public class OutboundFixture {
 
     public OutboundFixture orderNo(final Long orderNo) {
         this.orderNo = orderNo;
+        return this;
+    }
+
+    public OutboundFixture warehouseNo(final Long warehouseNo) {
+        this.warehouseNo = warehouseNo;
         return this;
     }
 
@@ -56,6 +62,7 @@ public class OutboundFixture {
 
     public Outbound build() {
         return new Outbound(
+                warehouseNo,
                 orderNo,
                 buildOutboundProducts(),
                 isPriorityDelivery,

@@ -27,6 +27,7 @@ import com.example.kwms.outbound.feature.api.CancelOutboundApi;
 import com.example.kwms.outbound.feature.api.CreateOutboundApi;
 import com.example.kwms.outbound.feature.api.CreatePackagingMaterialApi;
 import com.example.kwms.outbound.feature.api.SplitOutboundApi;
+import com.example.kwms.outbound.feature.api.TransferOutboundApi;
 import com.example.kwms.outbound.feature.api.UpdatePackagingMaterialApi;
 
 public class Scenario {
@@ -140,5 +141,9 @@ public class Scenario {
 
     public static CancelOutboundApi cancelOutbound() {
         return new CancelOutboundApi();
+    }
+
+    public static TransferOutboundApi transferOutbound() {
+        return new TransferOutboundApi();
     }
 }

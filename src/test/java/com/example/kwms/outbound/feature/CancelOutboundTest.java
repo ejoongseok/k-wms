@@ -21,6 +21,7 @@ public class CancelOutboundTest extends ApiTest {
 
     @BeforeEach
     void cancelOutboundSetup() {
+        Scenario.createWarehouse().request();
         final String locationBarcode = "TOTE-001";
         final String lpnBarcode = "LPN-001";
         final Long quantity = 10L;
