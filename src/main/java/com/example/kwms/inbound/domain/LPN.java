@@ -33,6 +33,7 @@ public class LPN {
     @Column(name = "lpn_barcode", nullable = false, unique = true)
     @Comment("LPN 바코드")
     private String lpnBarcode;
+    @Getter
     @Column(name = "expiring_at", nullable = false)
     @Comment("유통기한")
     private LocalDateTime expiringAt;
@@ -66,4 +67,9 @@ public class LPN {
     public Long getProductNo() {
         return inboundProduct.getProductNo();
     }
+
+    public boolean isFresh() {
+        return expiringAt.isAfter(LocalDateTime.now());
+    }
+
 }

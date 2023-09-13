@@ -5,6 +5,7 @@ import com.example.kwms.location.domain.StorageType;
 import com.example.kwms.location.domain.UsagePurpose;
 import com.example.kwms.location.domain.WarehouseTransfer;
 import com.example.kwms.location.domain.WarehouseTransferProduct;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,10 +19,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class AddWarehouseTransferLocationTest2 {
 
 
+    private AddWarehouseTransferLocation sut;
+
+    @BeforeEach
+    void setUp() {
+        sut = new AddWarehouseTransferLocation(null, null, null);
+    }
+
     @Test
     @DisplayName("재고이동에 사용할 로케이션 할당")
     void addLocation() {
-        final AddWarehouseTransferLocation sut = new AddWarehouseTransferLocation(null, null);
         final WarehouseTransferProduct warehouseTransferProduct = new WarehouseTransferProduct(1L, 1L);
         final WarehouseTransfer warehouseTransfer = new WarehouseTransfer(1L, 2L, "WT-001", List.of(warehouseTransferProduct));
         final Location location = aLocation().inventories(anInventory()).build();
@@ -35,7 +42,6 @@ class AddWarehouseTransferLocationTest2 {
     @Test
     @DisplayName("재고이동에 사용할 로케이션 할당")
     void addLocation2() {
-        final AddWarehouseTransferLocation sut = new AddWarehouseTransferLocation(null, null);
         final WarehouseTransferProduct warehouseTransferProduct = new WarehouseTransferProduct(2L, 1L);
         final WarehouseTransfer warehouseTransfer = new WarehouseTransfer(1L, 2L, "WT-001", List.of(warehouseTransferProduct));
         final Location location = aLocation().inventories(anInventory()).build();
@@ -49,7 +55,6 @@ class AddWarehouseTransferLocationTest2 {
     @Test
     @DisplayName("재고이동에 사용할 로케이션 할당")
     void addLocation3() {
-        final AddWarehouseTransferLocation sut = new AddWarehouseTransferLocation(null, null);
         final WarehouseTransferProduct warehouseTransferProduct = new WarehouseTransferProduct(2L, 1L);
         final WarehouseTransfer warehouseTransfer = new WarehouseTransfer(1L, 2L, "WT-001", List.of(warehouseTransferProduct));
         final Location location = aLocation().inventories(anInventory()).storageType(StorageType.RACK).build();
@@ -63,7 +68,6 @@ class AddWarehouseTransferLocationTest2 {
     @Test
     @DisplayName("재고이동에 사용할 로케이션 할당")
     void addLocation4() {
-        final AddWarehouseTransferLocation sut = new AddWarehouseTransferLocation(null, null);
         final WarehouseTransferProduct warehouseTransferProduct = new WarehouseTransferProduct(2L, 1L);
         final WarehouseTransfer warehouseTransfer = new WarehouseTransfer(1L, 2L, "WT-001", List.of(warehouseTransferProduct));
         final Location location = aLocation().inventories(anInventory()).warehouseNo(2L).build();

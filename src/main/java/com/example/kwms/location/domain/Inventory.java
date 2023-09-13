@@ -11,15 +11,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "inventory")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+@EqualsAndHashCode(of = "inventoryNo", callSuper = false)
 public class Inventory {
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "inventory_no")
@@ -71,12 +76,19 @@ public class Inventory {
     }
 
     @VisibleForTesting
-    Inventory(final Long inventoryNo, final Long quantity, final Long productNo, final Long warehouseNo, final LPN lpn) {
+    Inventory(
+            final Long inventoryNo,
+            final Long quantity,
+            final Long productNo,
+            final Long warehouseNo,
+            final LPN lpn,
+            final Location location) {
         this.inventoryNo = inventoryNo;
         this.quantity = quantity;
         this.productNo = productNo;
         this.warehouseNo = warehouseNo;
         this.lpn = lpn;
+        this.location = location;
     }
 
     public boolean equalsLPN(final LPN lpn) {
@@ -116,4 +128,30 @@ public class Inventory {
     public boolean hasAvailableQuantity() {
         return 0L < quantity;
     }
+
+    public boolean hasInventory() {
+        return 0L < quantity;
+    }
+
+    public boolean isFresh() {
+        return lpn.isFresh();
+    }
+
+    public LocalDateTime getExpiringAt() {
+        return lpn.getExpiringAt();
+    }
+
+    public String getLocationBarcode() {
+        return location.getLocationBarcode();
+    }
+
+    public void decreaseInventory(final Long quantityRequiredForPick) {
+        if (quantity < quantityRequiredForPick) {
+            throw new IllegalArgumentException(
+                    "차감하려는 재고 수량이 충분하지 않습니다. 재고 수량:%d, 차감 수량:%d"
+                            .formatted(quantity, quantityRequiredForPick));
+        }
+        quantity -= quantityRequiredForPick;
+    }
+
 }
