@@ -6,6 +6,7 @@ import com.google.common.annotations.VisibleForTesting;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -54,7 +55,7 @@ public class Outbound {
     @JoinColumn(name = "picking_tote_no")
     @Comment("집품할 토트 바구니")
     private Location pickingTote;
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(name = "outbound_status", nullable = false)
     @Comment("출고 상태")
     private OutboundStatus outboundStatus;
@@ -94,6 +95,7 @@ public class Outbound {
         this.outboundProducts = outboundProducts;
         outboundProducts.forEach(outboundProduct -> outboundProduct.assignOutbound(this));
         this.pickingTote = pickingTote;
+        outboundStatus = OutboundStatus.READY;
     }
 
     private void validateConstructor(
@@ -117,6 +119,9 @@ public class Outbound {
     }
 
     private void validateCreateOutboundProductForSplit(final Long productNo, final Long quantity) {
+        if (OutboundStatus.READY != outboundStatus) {
+            throw new IllegalStateException("출고 분할은 출고 대기 상태에서만 가능합니다.");
+        }
         Assert.notNull(productNo, "상품번호는 필수입니다.");
         Assert.notNull(quantity, "수량은 필수입니다.");
         if (1 > quantity) throw new IllegalArgumentException("수량은 1개 이상이어야 합니다.");
@@ -145,6 +150,9 @@ public class Outbound {
     }
 
     private void validateSplit(final List<OutboundProduct> targets) {
+        if (OutboundStatus.READY != outboundStatus) {
+            throw new IllegalStateException("출고 분할은 출고 대기 상태에서만 가능합니다.");
+        }
         Assert.notEmpty(targets, "분할할 출고상품은 필수입니다.");
         final long totalQuantity = outboundProducts.stream()
                 .mapToLong(OutboundProduct::getQuantity)
@@ -162,17 +170,26 @@ public class Outbound {
     }
 
     private void validateDecreaseQuantityForSplit(final Long productNo, final Long quantity) {
+        if (OutboundStatus.READY != outboundStatus) {
+            throw new IllegalStateException("출고 분할은 출고 대기 상태에서만 가능합니다.");
+        }
         Assert.notNull(productNo, "상품번호는 필수입니다.");
         Assert.notNull(quantity, "수량은 필수입니다.");
         if (1 > quantity) throw new IllegalArgumentException("수량은 1개 이상이어야 합니다.");
     }
 
     public void removeEmptyQuantityProducts() {
+        if (OutboundStatus.CANCELLED == outboundStatus) {
+            throw new IllegalStateException("출고 취소된 출고는 변경할 수 없습니다.");
+        }
         outboundProducts.removeIf(OutboundProduct::isZeroQuantity);
     }
 
     public void assignRecommendedPackaging(final PackagingMaterial optimalPackaging) {
         Assert.notNull(optimalPackaging, "추천 포장재는 필수입니다.");
+        if (OutboundStatus.CANCELLED == outboundStatus) {
+            throw new IllegalStateException("출고 취소된 출고는 변경할 수 없습니다.");
+        }
         recommendedPackagingMaterial = optimalPackaging;
     }
 
@@ -184,6 +201,9 @@ public class Outbound {
 
     private void validateToteAllocation(final Location tote) {
         Assert.notNull(tote, "출고에 할당할 토트는 필수 입니다.");
+        if (OutboundStatus.CANCELLED == outboundStatus) {
+            throw new IllegalStateException("출고 취소된 출고는 변경할 수 없습니다.");
+        }
         if (!tote.isTote()) {
             throw new IllegalArgumentException("할당하려는 로케이션이 토트가 아닙니다.");
         }
@@ -196,5 +216,9 @@ public class Outbound {
         if (null == recommendedPackagingMaterial) {
             throw new IllegalStateException("포장재가 할당되어 있지 않습니다.");
         }
+    }
+
+    public void cancelled() {
+        outboundStatus = OutboundStatus.CANCELLED;
     }
 }
