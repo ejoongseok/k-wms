@@ -11,18 +11,26 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-class SplitOutbound {
+@RestController
+@RequiredArgsConstructor
+public class SplitOutbound {
     private final OutboundSplitter outboundSplitter = new OutboundSplitter();
-    private OutboundRepository outboundRepository;
-    private ProductClient productClient;
-    private PackagingMaterialRepository packagingMaterialRepository;
+    private final OutboundRepository outboundRepository;
+    private final ProductClient productClient;
+    private final PackagingMaterialRepository packagingMaterialRepository;
 
+    @PostMapping("/outbounds/{outboundNo}/split")
+    @Transactional
     public void request(
             @PathVariable final Long outboundNo,
             @RequestBody @Valid final Request request) {
