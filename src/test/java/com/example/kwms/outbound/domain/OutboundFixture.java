@@ -1,10 +1,13 @@
 package com.example.kwms.outbound.domain;
 
+import com.example.kwms.location.domain.LocationFixture;
+
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.kwms.location.domain.LocationFixture.aLocation;
 import static com.example.kwms.outbound.domain.OutboundProductFixture.anOutboundProduct;
 
 public class OutboundFixture {
@@ -13,6 +16,7 @@ public class OutboundFixture {
     private LocalDate desiredDeliveryAt = LocalDate.now();
     private List<OutboundProductFixture> outboundProducts = List.of(anOutboundProduct());
     private PackagingMaterialFixture packagingMaterial;
+    private LocationFixture pickingTote = aLocation();
 
     public static OutboundFixture anOutbound() {
         return new OutboundFixture();
@@ -44,6 +48,11 @@ public class OutboundFixture {
         return this;
     }
 
+    public OutboundFixture pickingTote(final LocationFixture pickingTote) {
+        this.pickingTote = pickingTote;
+        return this;
+    }
+
 
     public Outbound build() {
         return new Outbound(
@@ -51,7 +60,8 @@ public class OutboundFixture {
                 buildOutboundProducts(),
                 isPriorityDelivery,
                 desiredDeliveryAt,
-                buildPackagingMaterial()
+                buildPackagingMaterial(),
+                null == pickingTote ? null : pickingTote.build()
         );
     }
 

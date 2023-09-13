@@ -297,4 +297,14 @@ public class Location {
         Assert.hasText(usagePurpose, "로케이션 용도는 필수입니다.");
         recursivelyChangeUsagePurpose(this, UsagePurpose.from(usagePurpose));
     }
+
+    public boolean isTote() {
+        return StorageType.TOTE == storageType;
+    }
+
+    public boolean hasAvailableInventory() {
+        return !inventories.isEmpty() &&
+                inventories.stream()
+                        .anyMatch(Inventory::hasAvailableQuantity);
+    }
 }

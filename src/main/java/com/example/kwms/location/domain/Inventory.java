@@ -113,4 +113,7 @@ public class Inventory {
         this.quantity -= quantity;
     }
 
+    public boolean hasAvailableQuantity() {
+        return 0L < quantity;
+    }
 }
