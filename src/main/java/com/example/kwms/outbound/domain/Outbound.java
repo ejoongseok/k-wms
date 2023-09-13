@@ -6,6 +6,7 @@ import com.google.common.annotations.VisibleForTesting;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -53,6 +54,9 @@ public class Outbound {
     @JoinColumn(name = "picking_tote_no")
     @Comment("집품할 토트 바구니")
     private Location pickingTote;
+    @Enumerated
+    @Column(name = "outbound_status", nullable = false)
+    @Comment("출고 상태")
     private OutboundStatus outboundStatus;
 
     public Outbound(
