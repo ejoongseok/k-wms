@@ -8,6 +8,7 @@ import java.util.List;
 
 public class ConstructOutbound {
     public Outbound create(
+            final Long warehouseNo,
             final List<Inventory> inventories,
             final List<PackagingMaterial> packagingMaterials,
             final Order order,
@@ -17,6 +18,7 @@ public class ConstructOutbound {
             final Long orderTotalVolume) {
 //        validateInventory(inventories, order.getOrderProducts());
         return newOutbound(
+                warehouseNo,
                 order,
                 findOptimalPackaging(packagingMaterials, orderTotalWeight, orderTotalVolume),
                 isPriorityDelivery,
@@ -44,11 +46,13 @@ public class ConstructOutbound {
     }
 
     private Outbound newOutbound(
+            final Long warehouseNo,
             final Order order,
             final PackagingMaterial packagingMaterial,
             final Boolean isPriorityDelivery,
             final LocalDate desiredDeliveryAt) {
         return new Outbound(
+                warehouseNo,
                 order.getOrderNo(),
                 mapToOutboundProducts(order.getOrderProducts()),
                 isPriorityDelivery,

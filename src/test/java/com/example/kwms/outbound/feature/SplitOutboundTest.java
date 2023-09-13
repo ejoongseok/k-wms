@@ -32,6 +32,7 @@ public class SplitOutboundTest extends ApiTest {
 
     @BeforeEach
     void splitOutboundSetUp() {
+        Scenario.createWarehouse().request();
         Mockito.when(orderClient.getBy(ArgumentMatchers.anyLong()))
                 .thenReturn(
                         new Order(

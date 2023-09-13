@@ -7,23 +7,24 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AllocatePickingToteTest extends ApiTest {
+public class TransferOutboundTest extends ApiTest {
+
+    @Autowired
+    private TransferOutbound transferOutbound;
 
     @Autowired
     private OutboundRepository outboundRepository;
 
     @BeforeEach
-    void allocatePickingToteSetUp() {
+    void transferOutboundSetup() {
+        Scenario.createWarehouse().request();
+        Scenario.createWarehouse().request();
         final String locationBarcode = "TOTE-001";
-        final String pickingTote = "TOTE-002";
         final String lpnBarcode = "LPN-001";
         final Long quantity = 10L;
-        Scenario.createWarehouse().request();
-        Scenario.createLocation().locationBarcode(pickingTote).request();
         Scenario.createLocation().locationBarcode(locationBarcode).request()
                 .createInbound().request()
                 .registerInboundProductInspectionResult().request()
@@ -39,18 +40,17 @@ public class AllocatePickingToteTest extends ApiTest {
     }
 
     @Test
-    @DisplayName("피킹 토트를 할당한다.")
-    @Transactional
-    void allocatePickingTote() {
+    @DisplayName("출고를 다른 창고로 이관한다.")
+    void transferOutbound() {
         final Long outboundNo = 1L;
-        final String toteBarcode = "TOTE-002";
+        final Long toWarehouseNo = 2L;
 
-        Scenario.allocatePickingTote()
+        Scenario.transferOutbound()
                 .outboundNo(outboundNo)
-                .toteBarcode(toteBarcode).request();
+                .toWarehouseNo(toWarehouseNo)
+                .request();
 
-        assertThat(outboundRepository.getBy(outboundNo).getPickingTote()).isNotNull();
-        assertThat(outboundRepository.getBy(outboundNo).getPickingTote().getLocationBarcode()).isEqualTo(toteBarcode);
+        assertThat(outboundRepository.getBy(outboundNo).getWarehouseNo()).isEqualTo(toWarehouseNo);
     }
 
 }

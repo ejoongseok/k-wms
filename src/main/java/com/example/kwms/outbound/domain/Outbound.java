@@ -60,13 +60,19 @@ public class Outbound {
     @Comment("출고 상태")
     private OutboundStatus outboundStatus;
 
+    @Column(name = "warehouse_no", nullable = false)
+    @Comment("출고할 창고")
+    private Long warehouseNo;
+
     public Outbound(
+            final Long warehouseNo,
             final Long orderNo,
             final List<OutboundProduct> outboundProducts,
             final Boolean isPriorityDelivery,
             final LocalDate desiredDeliveryAt,
             final PackagingMaterial packagingMaterial) {
         validateConstructor(
+                warehouseNo,
                 orderNo,
                 outboundProducts,
                 isPriorityDelivery,
@@ -78,16 +84,19 @@ public class Outbound {
         this.outboundProducts = outboundProducts;
         outboundProducts.forEach(outboundProduct -> outboundProduct.assignOutbound(this));
         outboundStatus = OutboundStatus.READY;
+        this.warehouseNo = warehouseNo;
     }
 
     @VisibleForTesting
     Outbound(
+            final Long warehouseNo,
             final Long orderNo,
             final List<OutboundProduct> outboundProducts,
             final Boolean isPriorityDelivery,
             final LocalDate desiredDeliveryAt,
             final PackagingMaterial packagingMaterial,
             final Location pickingTote) {
+        this.warehouseNo = warehouseNo;
         recommendedPackagingMaterial = packagingMaterial;
         this.orderNo = orderNo;
         this.isPriorityDelivery = isPriorityDelivery;
@@ -99,10 +108,12 @@ public class Outbound {
     }
 
     private void validateConstructor(
+            final Long warehouseNo,
             final Long orderNo,
             final List<OutboundProduct> outboundProducts,
             final Boolean isPriorityDelivery,
             final LocalDate desiredDeliveryAt) {
+        Assert.notNull(warehouseNo, "창고번호는 필수입니다.");
         Assert.notNull(orderNo, "주문번호는 필수입니다.");
         Assert.notEmpty(outboundProducts, "출고상품은 필수입니다.");
         Assert.notNull(isPriorityDelivery, "우선출고여부는 필수입니다.");
@@ -142,6 +153,7 @@ public class Outbound {
     public Outbound copyFrom(final List<OutboundProduct> targets) {
         validateSplit(targets);
         return new Outbound(
+                warehouseNo,
                 orderNo,
                 targets,
                 isPriorityDelivery,
@@ -220,5 +232,16 @@ public class Outbound {
 
     public void cancelled() {
         outboundStatus = OutboundStatus.CANCELLED;
+    }
+
+    public void transferWarehouse(final Long toWarehouseNo) {
+        Assert.notNull(toWarehouseNo, "출고할 창고는 필수입니다.");
+        if (OutboundStatus.CANCELLED == outboundStatus) {
+            throw new IllegalStateException("출고 취소된 출고는 변경할 수 없습니다.");
+        }
+        if (OutboundStatus.READY != outboundStatus) {
+            throw new IllegalStateException("출고 대기 상태에서만 출고할 창고를 변경할 수 있습니다.");
+        }
+        warehouseNo = toWarehouseNo;
     }
 }

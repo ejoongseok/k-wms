@@ -2,6 +2,7 @@ package com.example.kwms.outbound.feature;
 
 import com.example.kwms.location.domain.Inventory;
 import com.example.kwms.location.domain.InventoryRepository;
+import com.example.kwms.location.domain.WarehouseRepository;
 import com.example.kwms.outbound.domain.ConstructOutbound;
 import com.example.kwms.outbound.domain.Order;
 import com.example.kwms.outbound.domain.OrderProduct;
@@ -32,6 +33,7 @@ public class CreateOutbound {
     private final OutboundRepository outboundRepository;
     private final InventoryRepository inventoryRepository;
     private final PackagingMaterialRepository packagingMaterialRepository;
+    private final WarehouseRepository warehouseRepository;
     private final ConstructOutbound constructOutbound = new ConstructOutbound();
 
     @PostMapping("/outbounds")
@@ -41,8 +43,11 @@ public class CreateOutbound {
         final Order order = orderClient.getBy(request.orderNo);
         final List<Inventory> inventories = getInventories(request, order.getProductNos());
         final List<PackagingMaterial> packagingMaterials = packagingMaterialRepository.findAll();
+        warehouseRepository.findById(request.warehouseNo)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 창고입니다. 창고 번호: %d".formatted(request.warehouseNo)));
 
         final Outbound outbound = constructOutbound.create(
+                request.warehouseNo,
                 inventories,
                 packagingMaterials,
                 order,

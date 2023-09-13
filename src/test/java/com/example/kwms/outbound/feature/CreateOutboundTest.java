@@ -23,6 +23,7 @@ public class CreateOutboundTest extends ApiTest {
         final String locationBarcode = "TOTE-001";
         final String lpnBarcode = "LPN-001";
         final Long quantity = 10L;
+        Scenario.createWarehouse().request();
         Scenario.createLocation().locationBarcode(locationBarcode).request()
                 .createInbound().request()
                 .registerInboundProductInspectionResult().request()

@@ -1,5 +1,6 @@
 package com.example.kwms.outbound.domain;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -19,11 +20,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ConstructOutboundTest {
 
     ConstructOutbound sut = new ConstructOutbound();
+    private final Long warehouseNo = 1L;
 
     @Test
     @DisplayName("출고를 생성한다.")
     void createOutbound() {
         final Outbound outbound = sut.create(
+                warehouseNo,
                 List.of(anInventory().build()),
                 List.of(aPackagingMaterial().build()),
                 anOrder().build(),
@@ -37,11 +40,12 @@ class ConstructOutboundTest {
 
     @Test
     @DisplayName("출고를 생성한다. - 출고 수량이 재고 수량보다 많을 경우 예외가 발생한다.")
+    @Disabled("재고 수량을 확인 하는 로직 제거")
     void fail_over_quantity_createOutbound() {
 
         assertThatThrownBy(() -> {
             sut.create(
-                    List.of(anInventory().build()),
+                    warehouseNo, List.of(anInventory().build()),
                     List.of(aPackagingMaterial().build()),
                     anOrder().orderProduct(
                             anOrderProduct().orderQuantity(2L)
@@ -56,11 +60,12 @@ class ConstructOutboundTest {
 
     @Test
     @DisplayName("출고를 생성한다. - (유통기한이 지나서 재고가 부족)출고 수량이 재고 수량보다 많을 경우 예외가 발생한다.")
+    @Disabled("재고 수량을 확인 하는 로직 제거")
     void expire_createOutbound() {
 
         assertThatThrownBy(() -> {
             sut.create(
-                    List.of(anInventory()
+                    warehouseNo, List.of(anInventory()
                             .lpn(aLPN().expiringAt(LocalDateTime.now().minusDays(1))).build())
                     ,
                     List.of(aPackagingMaterial().build()),
@@ -77,7 +82,7 @@ class ConstructOutboundTest {
     @DisplayName("출고를 생선한다. - 주문을 포장할 포장재를 찾을 수 없다. - 제한 무게를 초과")
     void over_max_weight_createOutbound() {
         final Outbound outbound = sut.create(
-                List.of(anInventory().build()),
+                warehouseNo, List.of(anInventory().build()),
                 List.of(aPackagingMaterial().maxWeightInGrams(1L).build()),
                 anOrder().build(),
                 false,
@@ -92,7 +97,7 @@ class ConstructOutboundTest {
     @DisplayName("출고를 생선한다. - 주문을 포장할 포장재를 찾을 수 없다. - 허용 가능한 부피 초과")
     void over_volume_createOutbound() {
         final Outbound outbound = sut.create(
-                List.of(anInventory().build()),
+                warehouseNo, List.of(anInventory().build()),
                 List.of(aPackagingMaterial().dimension(
                         aPackagingMaterialDimension()
                                 .innerHeightInMillimeters(1L)
