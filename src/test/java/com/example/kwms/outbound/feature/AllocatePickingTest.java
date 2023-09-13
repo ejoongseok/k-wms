@@ -2,7 +2,7 @@ package com.example.kwms.outbound.feature;
 
 import com.example.kwms.common.ApiTest;
 import com.example.kwms.common.Scenario;
-import com.example.kwms.outbound.domain.OutboundRepository;
+import com.example.kwms.outbound.domain.PickingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,16 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CancelOutboundTest extends ApiTest {
+public class AllocatePickingTest extends ApiTest {
 
     @Autowired
-    private CancelOutbound cancelOutbound;
-
-    @Autowired
-    private OutboundRepository outboundRepository;
+    private PickingRepository pickingRepository;
 
     @BeforeEach
-    void cancelOutboundSetup() {
+    void allocatePickingSetup() {
         Scenario.createWarehouse().request();
         final String locationBarcode = "TOTE-001";
         final String lpnBarcode = "LPN-001";
@@ -39,13 +36,11 @@ public class CancelOutboundTest extends ApiTest {
     }
 
     @Test
-    @DisplayName("출고를 취소한다.")
-    void cancelOutbound() {
-        final Long outboundNo = 1L;
+    @DisplayName("출고 피킹을 할당한다.")
+    void allocatePicking() {
+        Scenario.allocatePicking().request();
 
-        Scenario.cancelOutbound().outboundNo(outboundNo).request();
-
-        assertThat(outboundRepository.getBy(outboundNo).isCanceled()).isTrue();
+        assertThat(pickingRepository.findAll()).hasSize(1);
     }
 
 }

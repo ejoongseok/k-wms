@@ -2,12 +2,16 @@ package com.example.kwms.location.domain;
 
 import com.example.kwms.inbound.domain.LPNFixture;
 
+import static com.example.kwms.inbound.domain.LPNFixture.aLPN;
+import static com.example.kwms.location.domain.LocationFixture.aLocation;
+
 public class InventoryFixture {
     private Long inventoryNo = 1L;
     private Long quantity = 1L;
     private Long productNo = 1L;
     private Long warehouseNo = 1L;
-    private LPNFixture lpn = LPNFixture.aLPN();
+    private LPNFixture lpn = aLPN();
+    private LocationFixture location = aLocation();
 
     public static InventoryFixture anInventory() {
         return new InventoryFixture();
@@ -33,8 +37,13 @@ public class InventoryFixture {
         return this;
     }
 
-    public InventoryFixture lpn(final LPNFixture lpnFixture) {
-        lpn = lpn;
+    public InventoryFixture lpn(final LPNFixture lpn) {
+        this.lpn = lpn;
+        return this;
+    }
+
+    public InventoryFixture location(final LocationFixture location) {
+        this.location = location;
         return this;
     }
 
@@ -44,7 +53,8 @@ public class InventoryFixture {
                 quantity,
                 productNo,
                 warehouseNo,
-                lpn.build()
+                lpn.build(),
+                location.build()
         );
     }
 }

@@ -307,4 +307,17 @@ public class Location {
                 inventories.stream()
                         .anyMatch(Inventory::hasAvailableQuantity);
     }
+
+    public List<Inventory> getAllInventories() {
+        final List<Inventory> allInventories = new ArrayList<>();
+        recursivelyGetAllInventories(this, allInventories);
+        return allInventories;
+    }
+
+    private void recursivelyGetAllInventories(final Location location, final List<Inventory> allInventories) {
+        allInventories.addAll(location.inventories);
+        for (final Location child : location.children) {
+            recursivelyGetAllInventories(child, allInventories);
+        }
+    }
 }

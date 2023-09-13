@@ -1,6 +1,7 @@
 package com.example.kwms.outbound.domain;
 
 import com.example.kwms.common.NotFoundException;
+import com.example.kwms.location.domain.Inventory;
 import com.example.kwms.location.domain.Location;
 import com.google.common.annotations.VisibleForTesting;
 import jakarta.persistence.CascadeType;
@@ -23,8 +24,11 @@ import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Entity
@@ -56,13 +60,19 @@ public class Outbound {
     @Comment("집품할 토트 바구니")
     private Location pickingTote;
     @Enumerated(EnumType.STRING)
-    @Column(name = "outbound_status", nullable = false)
+    @Column(name = "outbound_status")
     @Comment("출고 상태")
     private OutboundStatus outboundStatus;
 
     @Column(name = "warehouse_no", nullable = false)
     @Comment("출고할 창고")
     private Long warehouseNo;
+    @Column(name = "cancel_reason")
+    @Comment("출고 취소 사유")
+    private String cancelReason;
+    @Column(name = "cancelled_at")
+    @Comment("출고 취소 일시")
+    private LocalDateTime cancelledAt;
 
     public Outbound(
             final Long warehouseNo,
@@ -83,7 +93,6 @@ public class Outbound {
         this.desiredDeliveryAt = desiredDeliveryAt;
         this.outboundProducts = outboundProducts;
         outboundProducts.forEach(outboundProduct -> outboundProduct.assignOutbound(this));
-        outboundStatus = OutboundStatus.READY;
         this.warehouseNo = warehouseNo;
     }
 
@@ -104,7 +113,6 @@ public class Outbound {
         this.outboundProducts = outboundProducts;
         outboundProducts.forEach(outboundProduct -> outboundProduct.assignOutbound(this));
         this.pickingTote = pickingTote;
-        outboundStatus = OutboundStatus.READY;
     }
 
     private void validateConstructor(
@@ -130,16 +138,20 @@ public class Outbound {
     }
 
     private void validateCreateOutboundProductForSplit(final Long productNo, final Long quantity) {
-        if (OutboundStatus.READY != outboundStatus) {
+        if (!isReady()) {
             throw new IllegalStateException("출고 분할은 출고 대기 상태에서만 가능합니다.");
         }
         Assert.notNull(productNo, "상품번호는 필수입니다.");
         Assert.notNull(quantity, "수량은 필수입니다.");
         if (1 > quantity) throw new IllegalArgumentException("수량은 1개 이상이어야 합니다.");
-//        final OutboundProduct outboundProduct = getOutboundProduct(productNo);
-//        if(outboundProduct.getPickings() != null) {
-//            throw new IllegalArgumentException("이미 집품된 상품은 분할할 수 없습니다.");
-//        }
+        final OutboundProduct outboundProduct = getOutboundProduct(productNo);
+        if (outboundProduct.hasPickings()) {
+            throw new IllegalArgumentException("이미 집품된 상품은 분할할 수 없습니다.");
+        }
+    }
+
+    private boolean isReady() {
+        return !hasPickings() || null == pickingTote;
     }
 
     private OutboundProduct getOutboundProduct(final Long productNo) {
@@ -162,7 +174,7 @@ public class Outbound {
     }
 
     private void validateSplit(final List<OutboundProduct> targets) {
-        if (OutboundStatus.READY != outboundStatus) {
+        if (!isReady()) {
             throw new IllegalStateException("출고 분할은 출고 대기 상태에서만 가능합니다.");
         }
         Assert.notEmpty(targets, "분할할 출고상품은 필수입니다.");
@@ -182,7 +194,7 @@ public class Outbound {
     }
 
     private void validateDecreaseQuantityForSplit(final Long productNo, final Long quantity) {
-        if (OutboundStatus.READY != outboundStatus) {
+        if (!isReady()) {
             throw new IllegalStateException("출고 분할은 출고 대기 상태에서만 가능합니다.");
         }
         Assert.notNull(productNo, "상품번호는 필수입니다.");
@@ -191,7 +203,7 @@ public class Outbound {
     }
 
     public void removeEmptyQuantityProducts() {
-        if (OutboundStatus.CANCELLED == outboundStatus) {
+        if (isCanceled()) {
             throw new IllegalStateException("출고 취소된 출고는 변경할 수 없습니다.");
         }
         outboundProducts.removeIf(OutboundProduct::isZeroQuantity);
@@ -199,7 +211,7 @@ public class Outbound {
 
     public void assignRecommendedPackaging(final PackagingMaterial optimalPackaging) {
         Assert.notNull(optimalPackaging, "추천 포장재는 필수입니다.");
-        if (OutboundStatus.CANCELLED == outboundStatus) {
+        if (isCanceled()) {
             throw new IllegalStateException("출고 취소된 출고는 변경할 수 없습니다.");
         }
         recommendedPackagingMaterial = optimalPackaging;
@@ -208,12 +220,11 @@ public class Outbound {
     public void allocatePickingTote(final Location tote) {
         validateToteAllocation(tote);
         pickingTote = tote;
-        outboundStatus = OutboundStatus.ALLOCATED_PICKING_TOTE;
     }
 
     private void validateToteAllocation(final Location tote) {
         Assert.notNull(tote, "출고에 할당할 토트는 필수 입니다.");
-        if (OutboundStatus.CANCELLED == outboundStatus) {
+        if (isCanceled()) {
             throw new IllegalStateException("출고 취소된 출고는 변경할 수 없습니다.");
         }
         if (!tote.isTote()) {
@@ -230,18 +241,47 @@ public class Outbound {
         }
     }
 
-    public void cancelled() {
-        outboundStatus = OutboundStatus.CANCELLED;
+    public void cancelled(final String cancelReason) {
+        cancelledAt = LocalDateTime.now();
+        this.cancelReason = cancelReason;
     }
 
     public void transferWarehouse(final Long toWarehouseNo) {
         Assert.notNull(toWarehouseNo, "출고할 창고는 필수입니다.");
-        if (OutboundStatus.CANCELLED == outboundStatus) {
+        if (isCanceled()) {
             throw new IllegalStateException("출고 취소된 출고는 변경할 수 없습니다.");
         }
-        if (OutboundStatus.READY != outboundStatus) {
+        if (!isReady()) {
             throw new IllegalStateException("출고 대기 상태에서만 출고할 창고를 변경할 수 있습니다.");
         }
         warehouseNo = toWarehouseNo;
+    }
+
+    public Set<Long> getProductNos() {
+        return outboundProducts.stream()
+                .map(OutboundProduct::getProductNo)
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
+    public void allocatePicking(final List<Inventory> inventories) {
+        Assert.notEmpty(inventories, "집품을 할당하려는 재고 정보가 없습니다.");
+        for (final OutboundProduct outboundProduct : outboundProducts) {
+            outboundProduct.allocatePicking(inventories);
+        }
+    }
+
+    public List<Picking> getPickings() {
+        return outboundProducts.stream()
+                .flatMap(outboundProduct -> outboundProduct.getPickings().stream())
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    public boolean hasPickings() {
+        return outboundProducts.stream()
+                .anyMatch(OutboundProduct::hasPickings);
+    }
+
+    public boolean isCanceled() {
+        return null != cancelledAt && null != cancelReason;
     }
 }
