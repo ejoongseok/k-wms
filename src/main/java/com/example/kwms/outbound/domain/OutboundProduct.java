@@ -28,6 +28,7 @@ public class OutboundProduct {
     private Long outboundProductNo;
     @Column(name = "product_no", nullable = false)
     @Comment("상품 번호")
+    @Getter
     private Long productNo;
     @Column(name = "quantity", nullable = false)
     @Comment("출고 수량")
@@ -35,6 +36,7 @@ public class OutboundProduct {
     private Long quantity;
     @Column(name = "unit_price", nullable = false)
     @Comment("단가")
+    @Getter
     private Long unitPrice;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "outbound_no", nullable = false)
@@ -61,5 +63,23 @@ public class OutboundProduct {
 
     public void assignOutbound(final Outbound outbound) {
         this.outbound = outbound;
+    }
+
+    public void decreaseQuantity(final Long quantity) {
+        validateDecreaseQuantity(quantity);
+        this.quantity -= quantity;
+    }
+
+    private void validateDecreaseQuantity(final Long quantity) {
+        Assert.notNull(quantity, "감소할 수량은 필수입니다.");
+        if (1 > quantity) throw new IllegalArgumentException("감소할 수량은 1개 이상이어야 합니다.");
+        if (quantity > this.quantity) throw new IllegalArgumentException("감소할 수량은 출고 수량보다 클 수 없습니다.");
+//        if(outboundProduct.getPickings() != null) {
+//            throw new IllegalArgumentException("집품이 할당된 상품의 수량을 변경할 수 없습니다.");
+//        }
+    }
+
+    public boolean isZeroQuantity() {
+        return 0 == quantity;
     }
 }
