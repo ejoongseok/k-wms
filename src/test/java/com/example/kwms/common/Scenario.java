@@ -27,6 +27,7 @@ import com.example.kwms.outbound.feature.api.AllocatePickingToteApi;
 import com.example.kwms.outbound.feature.api.CancelOutboundApi;
 import com.example.kwms.outbound.feature.api.CreateOutboundApi;
 import com.example.kwms.outbound.feature.api.CreatePackagingMaterialApi;
+import com.example.kwms.outbound.feature.api.ScanToPickApi;
 import com.example.kwms.outbound.feature.api.SplitOutboundApi;
 import com.example.kwms.outbound.feature.api.TransferOutboundApi;
 import com.example.kwms.outbound.feature.api.UpdatePackagingMaterialApi;
@@ -150,5 +151,9 @@ public class Scenario {
 
     public static AllocatePickingApi allocatePicking() {
         return new AllocatePickingApi();
+    }
+
+    public static ScanToPickApi scanToPick() {
+        return new ScanToPickApi();
     }
 }

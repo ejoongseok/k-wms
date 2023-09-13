@@ -1,5 +1,6 @@
 package com.example.kwms.outbound.domain;
 
+import com.example.kwms.common.NotFoundException;
 import com.example.kwms.location.domain.Inventory;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -52,6 +54,9 @@ public class OutboundProduct {
     @Getter
     @OneToMany(mappedBy = "outboundProduct", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Picking> pickings = new ArrayList<>();
+    @Column(name = "picked_at")
+    @Comment("피킹 완료 일시")
+    private LocalDateTime pickedAt;
 
     public OutboundProduct(
             final Long productNo,
@@ -182,5 +187,37 @@ public class OutboundProduct {
 
     boolean hasPickings() {
         return !pickings.isEmpty();
+    }
+
+    public void scanToPick(final Inventory inventory) {
+        validateScanToPick(inventory);
+        final Picking picking = getPicking(inventory);
+        picking.scanToPick();
+        if (isPicked()) {
+            pickedAt = LocalDateTime.now();
+        }
+    }
+
+    private void validateScanToPick(final Inventory inventory) {
+        Assert.notNull(inventory, "스캔할 로케이션 정보가 없습니다.");
+        if (!hasPickings()) {
+            throw new IllegalArgumentException("할당된 집품이 없습니다.");
+        }
+        if (null != pickedAt) {
+            throw new IllegalArgumentException("이미 피킹이 완료된 집품입니다.");
+        }
+
+    }
+
+    private Picking getPicking(final Inventory inventory) {
+        return pickings.stream()
+                .filter(picking -> picking.getInventory().equals(inventory))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("스캔한 재고는 집품목록에 할당되어 있지 않습니다."));
+    }
+
+    public boolean isPicked() {
+        return pickings.stream()
+                .allMatch(Picking::isPicked);
     }
 }
