@@ -17,8 +17,7 @@ public class PickingAllocator {
     private void validate(final Outbound outbound, final List<Inventory> inventories) {
         Assert.notNull(outbound, "출고 정보가 없습니다.");
         Assert.notEmpty(inventories, "재고 정보가 없습니다.");
-        final OutboundStatus outboundStatus = outbound.getOutboundStatus();
-        if (OutboundStatus.CANCELLED == outboundStatus) {
+        if (outbound.isCanceled()) {
             throw new IllegalArgumentException("취소된 출고에는 집품을 할당할 수 없습니다.");
         }
         if (outbound.hasPickings()) {
