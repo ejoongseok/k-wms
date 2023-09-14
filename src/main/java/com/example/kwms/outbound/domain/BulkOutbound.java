@@ -148,4 +148,34 @@ public class BulkOutbound {
             throw new IllegalStateException("피킹이 완료되지 않은 출고건이 존재합니다.");
         }
     }
+
+    public void pop(final Long quantity) {
+        validatePop(quantity);
+        final List<Outbound> sortedForPopOptimalOutbounds = sortForPopOptimalOutbounds();
+        for (int i = 0; i < quantity; i++) {
+            final Outbound outbound = sortedForPopOptimalOutbounds.get(i);
+            outbound.cancelled("대량 출고 제외");
+            outbound.unassignBulkOutbound();
+            outbounds.remove(outbound);
+        }
+    }
+
+    private void validatePop(final Long quantity) {
+        Assert.notNull(quantity, "수량은 필수입니다.");
+        if (1 > quantity) {
+            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다.");
+        }
+        if (outbounds.size() < quantity) {
+            throw new IllegalArgumentException("출고건 수보다 많은 수량을 제외할 수 없습니다.");
+        }
+    }
+
+    private List<Outbound> sortForPopOptimalOutbounds() {
+        return outbounds.stream()
+                .filter(o -> !o.isPicked())
+                .sorted(Comparator.comparing(Outbound::getIsPriorityDelivery).reversed()
+                        .thenComparing(Outbound::getDesiredDeliveryAt).reversed()
+                        .thenComparing(Outbound::getOutboundNo).reversed())
+                .collect(Collectors.toList());
+    }
 }

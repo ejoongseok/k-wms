@@ -497,4 +497,8 @@ public class Outbound {
         pickedAt = LocalDateTime.now();
         outboundProducts.forEach(OutboundProduct::bulkPicked);
     }
+
+    public void unassignBulkOutbound() {
+        bulkOutbound = null;
+    }
 }
