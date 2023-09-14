@@ -256,4 +256,13 @@ public class OutboundProduct {
         }
 
     }
+
+    public void reset() {
+        if (!outbound.isCanceled()) {
+            throw new IllegalStateException("취소된 출고만 초기화할 수 있습니다.");
+        }
+        pickings.clear();
+        pickedAt = null;
+
+    }
 }
