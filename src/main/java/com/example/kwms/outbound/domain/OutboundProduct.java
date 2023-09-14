@@ -265,4 +265,8 @@ public class OutboundProduct {
         pickedAt = null;
 
     }
+
+    public void bulkPicked() {
+        pickedAt = LocalDateTime.now();
+    }
 }

@@ -480,7 +480,19 @@ public class Outbound {
         }
     }
 
-    public void assignBulkOutbound(final BulkOutbound bulkOutbound) {
+    void assignBulkOutbound(final BulkOutbound bulkOutbound) {
         this.bulkOutbound = bulkOutbound;
+    }
+
+    void bulkPicked() {
+        if (null != pickedAt) {
+            throw new IllegalStateException("이미 피킹이 완료된 출고입니다.");
+        }
+        if (isCanceled()) {
+            throw new IllegalStateException("취소된 출고는 피킹할 수 없습니다.");
+        }
+
+        pickedAt = LocalDateTime.now();
+        outboundProducts.forEach(OutboundProduct::bulkPicked);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.kwms.outbound.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,10 +8,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -26,11 +29,13 @@ public class BulkOutbound {
     @Column(name = "bulk_outbound_no")
     @Comment("일괄 출고 번호")
     private Long bulkOutboundNo;
-    @OneToMany(mappedBy = "bulkOutbound")
+    @Getter
+    @OneToMany(mappedBy = "bulkOutbound", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Outbound> outbounds = new ArrayList<>();
-    @Column(name = "picking_completed_quantity", nullable = false)
-    @Comment("집품 완료 수량")
-    private final Long pickingCompletedQuantity = 0L;
+    @Getter
+    @Column(name = "picked_at")
+    @Comment("피킹 완료 일시")
+    private LocalDateTime pickedAt;
 
     public BulkOutbound(final List<Outbound> outbounds) {
         Assert.notEmpty(outbounds, "출고가 존재하지 않습니다.");
@@ -64,6 +69,11 @@ public class BulkOutbound {
         if (!unreadyOutbounds.isEmpty()) {
             throw new IllegalStateException("출고 대기 중인 출고건이 아닙니다.");
         }
+        if (!outbounds.stream()
+                .allMatch(o -> null != o.getRecommendedPackagingMaterial())) {
+            throw new IllegalStateException("추천 포장재가 없는 출고건이 존재합니다.");
+        }
+
     }
 
     private String formatOutboundProducts(final Outbound outbound) {
@@ -74,5 +84,46 @@ public class BulkOutbound {
         return sortedOutboundProducts.stream()
                 .map(outboundProduct -> "%d:%d".formatted(outboundProduct.getProductNo(), outboundProduct.getQuantity()))
                 .collect(Collectors.joining("/"));
+    }
+
+    public void pickedOptimalFirstOutbound(final List<DecreaseTarget> targets) {
+        final Outbound outbound = getOptimalFirstOutbound();
+        validate(targets, outbound);
+
+        outbound.bulkPicked();
+
+        if (outbounds.stream().allMatch(Outbound::isPicked)) {
+            pickedAt = LocalDateTime.now();
+        }
+    }
+
+    private void validate(final List<DecreaseTarget> targets, final Outbound outbound) {
+        Assert.notNull(targets, "피킹 정보는 필수입니다.");
+        Assert.notNull(outbound, "출고 정보는 필수입니다.");
+        if (null != pickedAt) {
+            throw new IllegalStateException("이미 피킹이 완료된 출고건입니다.");
+        }
+        for (final OutboundProduct outboundProduct : outbound.getOutboundProducts()) {
+            final Long pickedQuantity = calculatePickedQuantity(targets, outboundProduct.getProductNo());
+            if (outboundProduct.getQuantity() != pickedQuantity) {
+                throw new IllegalArgumentException("집품수량과 출고 수량이 일치하지 않습니다.");
+            }
+        }
+    }
+
+    private Long calculatePickedQuantity(final List<DecreaseTarget> targets, final Long productNo) {
+        return targets.stream()
+                .filter(t -> t.getTarget().getProductNo().equals(productNo))
+                .mapToLong(DecreaseTarget::getQuantity)
+                .sum();
+    }
+
+    private Outbound getOptimalFirstOutbound() {
+        return outbounds.stream()
+                .filter(o -> !o.isPicked())
+                .min(Comparator.comparing(Outbound::getIsPriorityDelivery)
+                        .thenComparing(Outbound::getDesiredDeliveryAt)
+                        .thenComparing(Outbound::getOutboundNo))
+                .orElseThrow(() -> new IllegalStateException("출고 대기 중인 출고건이 없습니다."));
     }
 }
