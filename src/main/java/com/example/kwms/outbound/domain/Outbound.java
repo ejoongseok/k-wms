@@ -173,7 +173,7 @@ public class Outbound {
         }
     }
 
-    private boolean isReady() {
+    public boolean isReady() {
         return !hasPickings() || null == pickingTote;
     }
 
