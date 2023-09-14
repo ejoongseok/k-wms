@@ -36,6 +36,10 @@ public class BulkOutbound {
     @Column(name = "picked_at")
     @Comment("피킹 완료 일시")
     private LocalDateTime pickedAt;
+    @Column(name = "inspected_at")
+    @Comment("검수 완료 일시")
+    @Getter
+    private LocalDateTime inspectedAt;
 
     public BulkOutbound(final List<Outbound> outbounds) {
         Assert.notEmpty(outbounds, "출고가 존재하지 않습니다.");
@@ -125,5 +129,23 @@ public class BulkOutbound {
                         .thenComparing(Outbound::getDesiredDeliveryAt)
                         .thenComparing(Outbound::getOutboundNo))
                 .orElseThrow(() -> new IllegalStateException("출고 대기 중인 출고건이 없습니다."));
+    }
+
+    public void inspected() {
+        validateInspected();
+        outbounds.forEach(Outbound::inspected);
+        inspectedAt = LocalDateTime.now();
+    }
+
+    private void validateInspected() {
+        if (null != inspectedAt) {
+            throw new IllegalStateException("이미 검수가 완료된 출고건입니다.");
+        }
+        if (null == pickedAt) {
+            throw new IllegalStateException("피킹이 완료되지 않았습니다.");
+        }
+        if (outbounds.stream().anyMatch(o -> !o.isPicked())) {
+            throw new IllegalStateException("피킹이 완료되지 않은 출고건이 존재합니다.");
+        }
     }
 }
