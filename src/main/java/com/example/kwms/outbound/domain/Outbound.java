@@ -125,6 +125,7 @@ public class Outbound {
 
     @VisibleForTesting
     Outbound(
+            final Long outboundNo,
             final Long warehouseNo,
             final Long orderNo,
             final List<OutboundProduct> outboundProducts,
@@ -132,6 +133,7 @@ public class Outbound {
             final LocalDate desiredDeliveryAt,
             final PackagingMaterial packagingMaterial,
             final Location pickingTote) {
+        this.outboundNo = outboundNo;
         this.warehouseNo = warehouseNo;
         recommendedPackagingMaterial = packagingMaterial;
         this.orderNo = orderNo;

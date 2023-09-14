@@ -63,6 +63,7 @@ public class PickingBulkOutboundTest extends ApiTest {
 
         Scenario.pickingBulkOutbound().request();
 
+        // TODO BulkPicker 단위 테스트 만들기.
 
         final BulkOutbound bulkOutbound = bulkOutboundRepository.getBy(bulkOutboundNo);
         assertThat(bulkOutbound.getOutbounds().stream().anyMatch(Outbound::isPicked)).isEqualTo(true);

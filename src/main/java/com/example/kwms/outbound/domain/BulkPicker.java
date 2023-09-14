@@ -13,7 +13,7 @@ public class BulkPicker {
         decreaseInventory(targets);
     }
 
-    void decreaseInventory(final List<DecreaseTarget> targets) {
+    private void decreaseInventory(final List<DecreaseTarget> targets) {
         for (final DecreaseTarget target : targets) {
             final Inventory inventory = target.getTarget();
             final Long quantity = target.getQuantity();
