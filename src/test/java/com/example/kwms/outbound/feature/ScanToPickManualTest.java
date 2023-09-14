@@ -17,7 +17,7 @@ public class ScanToPickManualTest extends ApiTest {
     private OutboundRepository outboundRepository;
 
     @BeforeEach
-    void scanToPickSetup() {
+    void scanToPickManualSetup() {
         Scenario.createWarehouse().request();
         final String locationBarcode = "TOTE-001";
         final String lpnBarcode = "LPN-001";
@@ -42,9 +42,9 @@ public class ScanToPickManualTest extends ApiTest {
     }
 
     @Test
-    @DisplayName("피킹을 위해 스캔한다.")
+    @DisplayName("직접 수량을 입력해서 집품.")
     @Transactional
-    void scanToPick() {
+    void scanToPickManual() {
         final String pickingToteBarcode = "TOTE-002";
         final String lpnBarcode = "LPN-001";
         final String barcodeForPickingLocation = "TOTE-001";
