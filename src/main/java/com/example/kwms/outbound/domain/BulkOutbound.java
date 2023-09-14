@@ -40,6 +40,10 @@ public class BulkOutbound {
     @Comment("검수 완료 일시")
     @Getter
     private LocalDateTime inspectedAt;
+    @Column(name = "packed_at")
+    @Comment("포장 완료 일시")
+    @Getter
+    private LocalDateTime packedAt;
 
     public BulkOutbound(final List<Outbound> outbounds) {
         Assert.notEmpty(outbounds, "출고가 존재하지 않습니다.");
@@ -177,5 +181,47 @@ public class BulkOutbound {
                         .thenComparing(Outbound::getDesiredDeliveryAt).reversed()
                         .thenComparing(Outbound::getOutboundNo).reversed())
                 .collect(Collectors.toList());
+    }
+
+    public void packed(
+            final PackagingMaterial packagingMaterial,
+            final Long packagedWeightInGrams,
+            final Long boxWidthInMillimeters,
+            final Long boxLengthInMillimeters,
+            final Long boxHeightInMillimeters
+    ) {
+        validatePacked(
+                packagingMaterial,
+                packagedWeightInGrams,
+                boxWidthInMillimeters,
+                boxLengthInMillimeters,
+                boxHeightInMillimeters);
+        outbounds.forEach(outbound -> outbound.packed(
+                packagingMaterial,
+                packagedWeightInGrams,
+                boxWidthInMillimeters,
+                boxLengthInMillimeters,
+                boxHeightInMillimeters
+        ));
+        packedAt = LocalDateTime.now();
+    }
+
+    private void validatePacked(
+            final PackagingMaterial packagingMaterial,
+            final Long packagedWeightInGrams,
+            final Long boxWidthInMillimeters,
+            final Long boxLengthInMillimeters,
+            final Long boxHeightInMillimeters) {
+        Assert.notNull(packagingMaterial, "포장자재는 필수입니다.");
+        Assert.notNull(packagedWeightInGrams, "포장중량은 필수입니다.");
+        if (1 > packagedWeightInGrams) throw new IllegalArgumentException("포장중량은 1g 이상이어야 합니다.");
+        Assert.notNull(boxWidthInMillimeters, "포장 가로는 필수입니다.");
+        if (1 > boxWidthInMillimeters) throw new IllegalArgumentException("포장 가로는 1mm 이상이어야 합니다.");
+        Assert.notNull(boxLengthInMillimeters, "포장 세로는 필수입니다.");
+        if (1 > boxLengthInMillimeters) throw new IllegalArgumentException("포장 세로는 1mm 이상이어야 합니다.");
+        Assert.notNull(boxHeightInMillimeters, "포장 높이는 필수입니다.");
+        if (1 > boxHeightInMillimeters) throw new IllegalArgumentException("포장 높이는 1mm 이상이어야 합니다.");
+        if (null == inspectedAt) throw new IllegalStateException("검수가 완료되지 않았습니다.");
+        if (null != packedAt) throw new IllegalStateException("이미 포장이 완료된 출고건입니다.");
     }
 }
