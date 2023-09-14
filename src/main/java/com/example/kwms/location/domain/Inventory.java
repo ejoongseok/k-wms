@@ -115,7 +115,7 @@ public class Inventory {
         this.quantity = quantity;
     }
 
-    void decreaseQuantity(final Long quantity) {
+    public void decreaseQuantity(final Long quantity) {
         if (0 > quantity) {
             throw new IllegalArgumentException("수량은 0보다 커야 합니다.");
         }

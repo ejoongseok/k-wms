@@ -125,6 +125,7 @@ public class Outbound {
 
     @VisibleForTesting
     Outbound(
+            final Long outboundNo,
             final Long warehouseNo,
             final Long orderNo,
             final List<OutboundProduct> outboundProducts,
@@ -132,6 +133,7 @@ public class Outbound {
             final LocalDate desiredDeliveryAt,
             final PackagingMaterial packagingMaterial,
             final Location pickingTote) {
+        this.outboundNo = outboundNo;
         this.warehouseNo = warehouseNo;
         recommendedPackagingMaterial = packagingMaterial;
         this.orderNo = orderNo;
@@ -480,7 +482,19 @@ public class Outbound {
         }
     }
 
-    public void assignBulkOutbound(final BulkOutbound bulkOutbound) {
+    void assignBulkOutbound(final BulkOutbound bulkOutbound) {
         this.bulkOutbound = bulkOutbound;
+    }
+
+    void bulkPicked() {
+        if (null != pickedAt) {
+            throw new IllegalStateException("이미 피킹이 완료된 출고입니다.");
+        }
+        if (isCanceled()) {
+            throw new IllegalStateException("취소된 출고는 피킹할 수 없습니다.");
+        }
+
+        pickedAt = LocalDateTime.now();
+        outboundProducts.forEach(OutboundProduct::bulkPicked);
     }
 }
