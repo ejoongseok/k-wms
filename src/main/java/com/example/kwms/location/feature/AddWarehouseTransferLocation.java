@@ -45,7 +45,7 @@ public class AddWarehouseTransferLocation {
                 .collect(Collectors.toUnmodifiableSet());
         final List<Picking> pickings = pickingRepository.listByInventoryNos(inventoryNos);
         pickings.stream()
-                .filter(p -> p.getPickedQuantity() != p.getQuantityRequiredForPick())
+                .filter(p -> !p.isPicked())
                 .findFirst()
                 .ifPresent(p -> {
                     throw new IllegalStateException("집품중인 상품이 있습니다. 집품 번호: %d".formatted(p.getPickingNo()));

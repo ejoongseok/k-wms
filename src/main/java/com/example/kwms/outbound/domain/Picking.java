@@ -87,7 +87,7 @@ public class Picking {
         }
     }
 
-    boolean isPicked() {
+    public boolean isPicked() {
         return Objects.equals(quantityRequiredForPick, pickedQuantity);
     }
 
