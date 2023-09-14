@@ -69,7 +69,7 @@ public class OutboundProduct {
     }
 
     @VisibleForTesting
-    public OutboundProduct(
+    OutboundProduct(
             final Long productNo,
             final Long orderQuantity,
             final Long unitPrice,
