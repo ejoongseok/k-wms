@@ -59,7 +59,9 @@ public class BulkPackedOutboundTest extends ApiTest {
                 boxHeightInMillimeters
         );
 
-        bulkPackedOutbound.request(bulkOutboundNo, request);
+        Scenario.packedBulkOutbound().request();
+
+//        bulkPackedOutbound.request(bulkOutboundNo, request);
 
         assertThat(bulkOutboundRepository.getBy(bulkOutboundNo).getPackedAt()).isNotNull();
     }

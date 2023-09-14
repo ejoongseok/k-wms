@@ -30,6 +30,7 @@ import com.example.kwms.outbound.feature.api.CreateOutboundApi;
 import com.example.kwms.outbound.feature.api.CreatePackagingMaterialApi;
 import com.example.kwms.outbound.feature.api.InspectedBulkOutboundApi;
 import com.example.kwms.outbound.feature.api.InspectedOutboundApi;
+import com.example.kwms.outbound.feature.api.PackedBulkOutboundApi;
 import com.example.kwms.outbound.feature.api.PackedOutboundApi;
 import com.example.kwms.outbound.feature.api.PickingBulkOutboundApi;
 import com.example.kwms.outbound.feature.api.PopBulkOutboundApi;
@@ -195,5 +196,9 @@ public class Scenario {
 
     public static PopBulkOutboundApi popBulkOutbound() {
         return new PopBulkOutboundApi();
+    }
+
+    public static PackedBulkOutboundApi packedBulkOutbound() {
+        return new PackedBulkOutboundApi();
     }
 }

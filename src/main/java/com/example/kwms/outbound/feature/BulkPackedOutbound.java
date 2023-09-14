@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-class BulkPackedOutbound {
+public class BulkPackedOutbound {
     private final BulkOutboundRepository bulkOutboundRepository;
     private final PackagingMaterialRepository packagingMaterialRepository;
 
