@@ -314,4 +314,37 @@ public class Outbound {
     public boolean isPicked() {
         return null != pickedAt;
     }
+
+
+    public void scanToPickManual(final Inventory inventory, final Long quantity) {
+        validateScanToPickManual(inventory, quantity);
+        final OutboundProduct outboundProduct = getOutboundProduct(inventory.getProductNo());
+        outboundProduct.scanToPickManual(inventory, quantity);
+        pickingTote.addManualInventory(inventory.getLpn(), quantity);
+        final boolean allPicked = outboundProducts.stream()
+                .allMatch(OutboundProduct::isPicked);
+        if (allPicked) {
+            pickedAt = LocalDateTime.now();
+        }
+    }
+
+
+    private void validateScanToPickManual(final Inventory inventory, final Long quantity) {
+        Assert.notNull(inventory, "스캔할 재고 정보가 없습니다.");
+        Assert.notNull(quantity, "집품할 수량 정보가 없습니다.");
+        if (1 > quantity) throw new IllegalArgumentException("집품할 수량은 1개 이상이어야 합니다.");
+        if (isCanceled()) {
+            throw new IllegalStateException("취소된 출고는 집품을 할 수 없습니다.");
+        }
+        if (!hasPickings()) {
+            throw new IllegalStateException("집품 목록이 할당된 상태에서만 집품할 수 있습니다.");
+        }
+        if (null == pickingTote) {
+            throw new IllegalStateException("토트가 할당되지 않은 출고는 집품할 수 없습니다.");
+        }
+        if (!pickingTote.isTote()) {
+            throw new IllegalStateException("토트가 아닌 로케이션은 집품할 수 없습니다.");
+        }
+
+    }
 }
