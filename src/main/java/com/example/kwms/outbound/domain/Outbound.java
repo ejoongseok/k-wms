@@ -70,6 +70,9 @@ public class Outbound {
     @Column(name = "picked_at")
     @Comment("피킹 완료 일시")
     private LocalDateTime pickedAt;
+    @Column(name = "inspected_at")
+    @Comment("출고 검수 일시")
+    private LocalDateTime inspectedAt;
 
     public Outbound(
             final Long warehouseNo,
@@ -346,5 +349,26 @@ public class Outbound {
             throw new IllegalStateException("토트가 아닌 로케이션은 집품할 수 없습니다.");
         }
 
+    }
+
+    public void inspected() {
+        validateInspected();
+        inspectedAt = LocalDateTime.now();
+    }
+
+    private void validateInspected() {
+        if (isCanceled()) {
+            throw new IllegalStateException("취소된 출고는 출고 검수를 할 수 없습니다.");
+        }
+        if (!isPicked()) {
+            throw new IllegalStateException("출고 검수는 집품이 완료된 출고만 할 수 있습니다.");
+        }
+        if (isInspected()) {
+            throw new IllegalStateException("이미 출고 검수가 완료된 출고입니다.");
+        }
+    }
+
+    public boolean isInspected() {
+        return null != inspectedAt;
     }
 }
