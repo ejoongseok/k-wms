@@ -52,6 +52,7 @@ public class Outbound {
     private LocalDate desiredDeliveryAt;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "packaging_material_no")
+    @Comment("추천 포장재")
     private PackagingMaterial recommendedPackagingMaterial;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "picking_tote_no")
@@ -73,6 +74,25 @@ public class Outbound {
     @Column(name = "inspected_at")
     @Comment("출고 검수 일시")
     private LocalDateTime inspectedAt;
+    @Column(name = "packed_at")
+    @Comment("포장 완료 일시")
+    private LocalDateTime packedAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "real_packaging_material_no")
+    @Comment("실제 포장재")
+    private PackagingMaterial realPackagingMaterial;
+    @Column(name = "packaged_weight_in_grams")
+    @Comment("포장중량(g)")
+    private Long packagedWeightInGrams;
+    @Column(name = "box_width_in_millimeters")
+    @Comment("포장 가로(mm)")
+    private Long boxWidthInMillimeters;
+    @Column(name = "box_length_in_millimeters")
+    @Comment("포장 세로(mm)")
+    private Long boxLengthInMillimeters;
+    @Column(name = "box_height_in_millimeters")
+    @Comment("포장 높이(mm)")
+    private Long boxHeightInMillimeters;
 
     public Outbound(
             final Long warehouseNo,
@@ -370,5 +390,56 @@ public class Outbound {
 
     public boolean isInspected() {
         return null != inspectedAt;
+    }
+
+    public void packed(
+            final PackagingMaterial packagingMaterial,
+            final Long packagedWeightInGrams,
+            final Long boxWidthInMillimeters,
+            final Long boxLengthInMillimeters,
+            final Long boxHeightInMillimeters) {
+        validatePacked(
+                packagingMaterial,
+                packagedWeightInGrams,
+                boxWidthInMillimeters,
+                boxLengthInMillimeters,
+                boxHeightInMillimeters);
+        packedAt = LocalDateTime.now();
+        realPackagingMaterial = packagingMaterial;
+        this.packagedWeightInGrams = packagedWeightInGrams;
+        this.boxWidthInMillimeters = boxWidthInMillimeters;
+        this.boxLengthInMillimeters = boxLengthInMillimeters;
+        this.boxHeightInMillimeters = boxHeightInMillimeters;
+    }
+
+    private void validatePacked(
+            final PackagingMaterial packagingMaterial,
+            final Long packagedWeightInGrams,
+            final Long boxWidthInMillimeters,
+            final Long boxLengthInMillimeters,
+            final Long boxHeightInMillimeters) {
+        Assert.notNull(packagingMaterial, "포장자재는 필수입니다.");
+        Assert.notNull(packagedWeightInGrams, "포장중량은 필수입니다.");
+        if (1 > packagedWeightInGrams) throw new IllegalArgumentException("포장중량은 1g 이상이어야 합니다.");
+        Assert.notNull(boxWidthInMillimeters, "포장 가로는 필수입니다.");
+        if (1 > boxWidthInMillimeters) throw new IllegalArgumentException("포장 가로는 1mm 이상이어야 합니다.");
+        Assert.notNull(boxLengthInMillimeters, "포장 세로는 필수입니다.");
+        if (1 > boxLengthInMillimeters) throw new IllegalArgumentException("포장 세로는 1mm 이상이어야 합니다.");
+        Assert.notNull(boxHeightInMillimeters, "포장 높이는 필수입니다.");
+        if (1 > boxHeightInMillimeters) throw new IllegalArgumentException("포장 높이는 1mm 이상이어야 합니다.");
+        if (isCanceled()) {
+            throw new IllegalStateException("취소된 출고는 포장완료를 할 수 없습니다.");
+        }
+        if (!isInspected()) {
+            throw new IllegalStateException("출고 검수가 완료되지 않은 출고는 포장완료를 할 수 없습니다.");
+        }
+        if (isPacked()) {
+            throw new IllegalStateException("이미 포장완료된 출고입니다.");
+        }
+
+    }
+
+    private boolean isPacked() {
+        return null != packedAt;
     }
 }
