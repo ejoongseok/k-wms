@@ -25,6 +25,7 @@ import com.example.kwms.location.feature.api.UpdateWarehouseTransferProductApi;
 import com.example.kwms.outbound.feature.api.AllocatePickingApi;
 import com.example.kwms.outbound.feature.api.AllocatePickingToteApi;
 import com.example.kwms.outbound.feature.api.CancelOutboundApi;
+import com.example.kwms.outbound.feature.api.CreateBulkOutboundApi;
 import com.example.kwms.outbound.feature.api.CreateOutboundApi;
 import com.example.kwms.outbound.feature.api.CreatePackagingMaterialApi;
 import com.example.kwms.outbound.feature.api.InspectedOutboundApi;
@@ -175,5 +176,9 @@ public class Scenario {
 
     public static ResetOutboundApi resetOutbound() {
         return new ResetOutboundApi();
+    }
+
+    public static CreateBulkOutboundApi createBulkOutbound() {
+        return new CreateBulkOutboundApi();
     }
 }

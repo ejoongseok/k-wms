@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,6 +38,7 @@ class OutboundSplitterTest {
 
     private Outbound createSuccessOutbound() {
         return anOutbound()
+                .pickingTote(null)
                 .outboundProducts(
                         anOutboundProduct().productNo(1L),
                         anOutboundProduct().productNo(2L))
@@ -57,7 +57,7 @@ class OutboundSplitterTest {
     @Test
     @DisplayName("분할할 출고 상품의 수량이 원본 출고 상품의 수량보다 많으면 예외가 발생한다.")
     void fail_split2() {
-        final Outbound target = anOutbound().build();
+        final Outbound target = anOutbound().pickingTote(null).build();
 
         assertThatThrownBy(() -> {
             final List<OutboundProduct> splitOutboundProducts = List.of(anOutboundProduct().orderQuantity(2L).build());
