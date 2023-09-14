@@ -286,6 +286,7 @@ public class Outbound {
         validateScanToPick(inventory);
         final OutboundProduct outboundProduct = getOutboundProduct(inventory.getProductNo());
         outboundProduct.scanToPick(inventory);
+        pickingTote.addInventory(inventory.getLpn());
         final boolean allPicked = outboundProducts.stream()
                 .allMatch(OutboundProduct::isPicked);
         if (allPicked) {

@@ -37,6 +37,7 @@ public class Inventory {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lpn_no", nullable = false)
     @Comment("LPN 번호")
+    @Getter
     private LPN lpn;
     @Getter
     @Column(name = "quantity", nullable = false)
