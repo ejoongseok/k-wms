@@ -1,5 +1,6 @@
 package com.example.kwms.outbound.feature;
 
+import com.example.kwms.location.domain.LocationFixture;
 import com.example.kwms.outbound.domain.Outbound;
 import com.example.kwms.outbound.domain.OutboundProduct;
 import com.example.kwms.outbound.domain.OutboundRepository;
@@ -13,6 +14,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.example.kwms.outbound.domain.OutboundFixture.anOutbound;
 
 public class CreateBulkOutboundTest {
 
@@ -30,6 +33,12 @@ public class CreateBulkOutboundTest {
                 List.of(1L, 2L)
         );
         createBulkOutbound.request(request);
+    }
+
+    @Test
+    void name() {
+        final List<Outbound> build = List.of(anOutbound().build(), anOutbound().pickingTote(LocationFixture.aLocation()).build());
+        createBulkOutbound.validate(build);
     }
 
     private class CreateBulkOutbound {

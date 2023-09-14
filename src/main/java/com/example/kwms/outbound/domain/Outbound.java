@@ -174,7 +174,7 @@ public class Outbound {
     }
 
     public boolean isReady() {
-        return !hasPickings() || null == pickingTote;
+        return !hasPickings() && null == pickingTote;
     }
 
     private OutboundProduct getOutboundProduct(final Long productNo) {
