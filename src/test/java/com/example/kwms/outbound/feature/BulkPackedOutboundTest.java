@@ -46,22 +46,8 @@ public class BulkPackedOutboundTest extends ApiTest {
     @DisplayName("대량출고 포장 처리")
     void bulkPackedOutbound() {
         final Long bulkOutboundNo = 1L;
-        final String packagingMaterialCode = "code";
-        final Long weightInGrams = 100L;
-        final Long boxWidthInMillimeters = 10L;
-        final Long boxLengthInMillimeters = 10L;
-        final Long boxHeightInMillimeters = 10L;
-        final BulkPackedOutbound.Request request = new BulkPackedOutbound.Request(
-                packagingMaterialCode,
-                weightInGrams,
-                boxWidthInMillimeters,
-                boxLengthInMillimeters,
-                boxHeightInMillimeters
-        );
 
         Scenario.packedBulkOutbound().request();
-
-//        bulkPackedOutbound.request(bulkOutboundNo, request);
 
         assertThat(bulkOutboundRepository.getBy(bulkOutboundNo).getPackedAt()).isNotNull();
     }
