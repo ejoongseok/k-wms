@@ -91,4 +91,17 @@ public class Picking {
         return Objects.equals(quantityRequiredForPick, pickedQuantity);
     }
 
+    public void scanToPickManual(final Long quantity) {
+        validateScanToPickManual(quantity);
+        pickedQuantity = quantity;
+    }
+
+    private void validateScanToPickManual(final Long quantity) {
+        Assert.notNull(quantity, "집품할 수량은 필수입니다.");
+        if (1 > quantity) throw new IllegalArgumentException("집품할 수량은 1개 이상이어야 합니다.");
+        if (quantityRequiredForPick < quantity) throw new IllegalArgumentException("집품할 수량이 집품해야할 수량보다 클 수 없습니다.");
+        if (isPicked()) {
+            throw new IllegalArgumentException("이미 집품이 완료된 피킹입니다.");
+        }
+    }
 }

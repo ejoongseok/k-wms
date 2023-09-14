@@ -232,4 +232,28 @@ public class OutboundProduct {
         return pickings.stream()
                 .allMatch(Picking::isPicked);
     }
+
+    public void scanToPickManual(final Inventory inventory, final Long quantity) {
+        validateScanToPickManual(inventory, quantity);
+        final Picking picking = getPicking(inventory);
+        picking.scanToPickManual(quantity);
+        if (isPicked()) {
+            pickedAt = LocalDateTime.now();
+        }
+    }
+
+    private void validateScanToPickManual(final Inventory inventory, final Long quantity) {
+        Assert.notNull(inventory, "스캔할 로케이션 정보가 없습니다.");
+        Assert.notNull(quantity, "집품할 수량 정보가 없습니다.");
+        if (1 > quantity) throw new IllegalArgumentException("집품할 수량은 1개 이상이어야 합니다.");
+        if (this.quantity < quantity)
+            throw new IllegalArgumentException("집품할 수량은 출고 수량보다 클 수 없습니다. 집품할 수량 :%d, 출고 수량 :%d".formatted(quantity, this.quantity));
+        if (!hasPickings()) {
+            throw new IllegalArgumentException("할당된 집품이 없습니다.");
+        }
+        if (null != pickedAt) {
+            throw new IllegalArgumentException("이미 피킹이 완료된 집품입니다.");
+        }
+
+    }
 }
