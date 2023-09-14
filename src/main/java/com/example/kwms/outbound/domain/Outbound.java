@@ -101,6 +101,10 @@ public class Outbound {
     @Comment("대량 출고 번호")
     private BulkOutbound bulkOutbound;
 
+    @Column(name = "picker_no")
+    @Comment("집품 작업자 USER_NO")
+    private Long pickerNo;
+
     public Outbound(
             final Long warehouseNo,
             final Long orderNo,
@@ -180,7 +184,7 @@ public class Outbound {
     }
 
     public boolean isReady() {
-        return !hasPickings() && null == pickingTote;
+        return !hasPickings() && null == pickingTote && !isCanceled();
     }
 
     private OutboundProduct getOutboundProduct(final Long productNo) {
@@ -500,5 +504,16 @@ public class Outbound {
 
     public void unassignBulkOutbound() {
         bulkOutbound = null;
+    }
+
+    public void allocatePicker(final Long userNo) {
+        Assert.notNull(userNo, "작업자 USER_NO는 필수입니다.");
+        if (null != pickerNo) {
+            throw new IllegalStateException("이미 집품 작업자에게 할당된 출고가 있습니다.");
+        }
+        if (!isReady()) {
+            throw new IllegalStateException("출고 대기 상태에서만 집품 작업자를 할당할 수 있습니다.");
+        }
+        pickerNo = userNo;
     }
 }

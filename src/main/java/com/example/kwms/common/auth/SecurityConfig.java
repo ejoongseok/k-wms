@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final UserIdTokenProvider userIdTokenProvider;
+    private final UserNoTokenProvider userNoTokenProvider;
 
     @Bean
     SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .sessionManagement((sessionManagement) ->
                         sessionManagement
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new WmsAuthenticationFiler(userIdTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new WmsAuthenticationFiler(userNoTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .logout((logout) -> logout
                         .logoutUrl("/auth/logout")
                         .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()))
