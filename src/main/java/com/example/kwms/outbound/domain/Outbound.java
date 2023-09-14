@@ -96,6 +96,12 @@ public class Outbound {
     @Column(name = "tracking_number")
     @Comment("운송장 번호")
     private String trackingNumber;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bulk_outbound_no")
+    @Comment("대량 출고 번호")
+    private BulkOutbound bulkOutbound;
+
+    private boolean isBulk;
 
     public Outbound(
             final Long warehouseNo,
@@ -467,11 +473,20 @@ public class Outbound {
         cancelReason = null;
         cancelledAt = null;
         pickingTote = null;
+        bulkOutbound = null;
     }
 
     private void validateReset() {
         if (!isCanceled()) {
             throw new IllegalStateException("취소된 출고만 초기화할 수 있습니다.");
         }
+    }
+
+    public void bulk() {
+        isBulk = true;
+    }
+
+    public void assignBulkOutbound(final BulkOutbound bulkOutbound) {
+        this.bulkOutbound = bulkOutbound;
     }
 }

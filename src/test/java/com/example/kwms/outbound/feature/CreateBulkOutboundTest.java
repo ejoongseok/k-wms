@@ -1,79 +1,47 @@
 package com.example.kwms.outbound.feature;
 
-import com.example.kwms.outbound.domain.Outbound;
-import com.example.kwms.outbound.domain.OutboundProduct;
-import com.example.kwms.outbound.domain.OutboundRepository;
-import jakarta.validation.constraints.NotEmpty;
+import com.example.kwms.common.ApiTest;
+import com.example.kwms.common.Scenario;
+import com.example.kwms.outbound.domain.BulkOutboundRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.util.Assert;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class CreateBulkOutboundTest {
+public class CreateBulkOutboundTest extends ApiTest {
 
-    private CreateBulkOutbound createBulkOutbound;
+    @Autowired
+    private BulkOutboundRepository bulkOutboundRepository;
 
     @BeforeEach
-    void setUp() {
-        createBulkOutbound = new CreateBulkOutbound();
+    void createBulkOutboundSetUp() {
+        final String locationBarcode = "TOTE-001";
+        final String lpnBarcode = "LPN-001";
+        final Long quantity = 10L;
+        Scenario.createWarehouse().request();
+        Scenario.createLocation().locationBarcode(locationBarcode).request()
+                .createInbound().request()
+                .registerInboundProductInspectionResult().request()
+                .createLPN().lpnBarcode(lpnBarcode).request();
+        Scenario.addManualInventory()
+                .locationBarcode(locationBarcode)
+                .lpnBarcode(lpnBarcode)
+                .quantity(quantity)
+                .request();
+        Scenario.
+                createPackagingMaterial().request();
+        Scenario.createOutbound().request();
+        Scenario.createOutbound().request();
     }
 
     @Test
     @DisplayName("대량의 출고를 생성한다.")
     void createBulkOutbound() {
-        final CreateBulkOutbound.Request request = new CreateBulkOutbound.Request(
-                List.of(1L, 2L)
-        );
-        createBulkOutbound.request(request);
+        Scenario.createBulkOutbound().request();
+
+        assertThat(bulkOutboundRepository.findAll()).hasSize(1);
     }
 
-    private class CreateBulkOutbound {
-        private OutboundRepository outboundRepository;
-
-        public void request(final Request request) {
-            final List<Outbound> outbounds = outboundRepository.findAllById(request.outboundNos);
-            validate(outbounds);
-
-        }
-
-        public void validate(final List<Outbound> outbounds) {
-            Assert.notEmpty(outbounds, "출고가 존재하지 않습니다.");
-            final Set<String> uniqueOutboundProducts = outbounds.stream()
-                    .map(this::formatOutboundProducts)
-                    .collect(Collectors.toSet());
-
-            if (1 < uniqueOutboundProducts.size()) {
-                throw new IllegalStateException("동일한 출고건이 아닙니다.");
-            }
-
-            // 출고 목록이 전부 출고 대기 중인 목록인지 확인
-            final Set<Outbound> unreadyOutbounds = outbounds.stream()
-                    .filter(outbound -> !outbound.isReady())
-                    .collect(Collectors.toUnmodifiableSet());
-
-            if (!unreadyOutbounds.isEmpty()) {
-                throw new IllegalStateException("출고 대기 중인 출고건이 아닙니다.");
-            }
-        }
-
-        private String formatOutboundProducts(final Outbound outbound) {
-            final List<OutboundProduct> sortedOutboundProducts = outbound.getOutboundProducts()
-                    .stream()
-                    .sorted(Comparator.comparing(OutboundProduct::getProductNo))
-                    .toList();
-            return sortedOutboundProducts.stream()
-                    .map(outboundProduct -> "%d:%d".formatted(outboundProduct.getProductNo(), outboundProduct.getQuantity()))
-                    .collect(Collectors.joining("/"));
-        }
-
-        public record Request(
-                @NotEmpty(message = "출고 번호는 필수입니다.")
-                List<Long> outboundNos) {
-        }
-    }
 }
