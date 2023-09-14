@@ -1,6 +1,7 @@
 package com.example.kwms.outbound.domain;
 
 import com.example.kwms.location.domain.Inventory;
+import com.google.common.annotations.VisibleForTesting;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,15 +17,13 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "picking")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Picking {
 
-    @Getter
-    @Column(name = "picked_quantity", nullable = false)
-    @Comment("집품한 수량")
-    private final Long pickedQuantity = 0L;
     @Id
     @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +37,10 @@ public class Picking {
     @Column(name = "quantity_required_for_pick", nullable = false)
     @Comment("집품해야할 수량")
     private Long quantityRequiredForPick = 0L;
+    @Getter
+    @Column(name = "picked_quantity", nullable = false)
+    @Comment("집품한 수량")
+    private Long pickedQuantity = 0L;
     @ManyToOne(fetch = FetchType.LAZY)
     @Comment("출고 상품")
     @JoinColumn(name = "outbound_product_id")
@@ -47,6 +50,18 @@ public class Picking {
         validateConstructor(inventory, quantityRequiredForPick);
         this.inventory = inventory;
         this.quantityRequiredForPick = quantityRequiredForPick;
+    }
+
+    @VisibleForTesting
+    Picking(
+            final Long pickingNo,
+            final Long quantityRequiredForPick,
+            final Long pickedQuantity,
+            final Inventory inventory) {
+        this.pickingNo = pickingNo;
+        this.quantityRequiredForPick = quantityRequiredForPick;
+        this.pickedQuantity = pickedQuantity;
+        this.inventory = inventory;
     }
 
     private void validateConstructor(
@@ -60,4 +75,20 @@ public class Picking {
     void assignOutboundProduct(final OutboundProduct outboundProduct) {
         this.outboundProduct = outboundProduct;
     }
+
+    public void scanToPick() {
+        validateScanToPick();
+        pickedQuantity++;
+    }
+
+    private void validateScanToPick() {
+        if (isPicked()) {
+            throw new IllegalArgumentException("이미 집품이 완료된 피킹입니다.");
+        }
+    }
+
+    boolean isPicked() {
+        return Objects.equals(quantityRequiredForPick, pickedQuantity);
+    }
+
 }

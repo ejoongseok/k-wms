@@ -67,6 +67,9 @@ public class Outbound {
     @Column(name = "cancelled_at")
     @Comment("출고 취소 일시")
     private LocalDateTime cancelledAt;
+    @Column(name = "picked_at")
+    @Comment("피킹 완료 일시")
+    private LocalDateTime pickedAt;
 
     public Outbound(
             final Long warehouseNo,
@@ -277,5 +280,37 @@ public class Outbound {
 
     public boolean isCanceled() {
         return null != cancelledAt && null != cancelReason;
+    }
+
+    public void scanToPick(final Inventory inventory) {
+        validateScanToPick(inventory);
+        final OutboundProduct outboundProduct = getOutboundProduct(inventory.getProductNo());
+        outboundProduct.scanToPick(inventory);
+        final boolean allPicked = outboundProducts.stream()
+                .allMatch(OutboundProduct::isPicked);
+        if (allPicked) {
+            pickedAt = LocalDateTime.now();
+        }
+    }
+
+    private void validateScanToPick(final Inventory inventory) {
+        Assert.notNull(inventory, "스캔할 재고 정보가 없습니다.");
+        if (isCanceled()) {
+            throw new IllegalStateException("취소된 출고는 집품을 할 수 없습니다.");
+        }
+        if (!hasPickings()) {
+            throw new IllegalStateException("집품 목록이 할당된 상태에서만 집품할 수 있습니다.");
+        }
+        if (null == pickingTote) {
+            throw new IllegalStateException("토트가 할당되지 않은 출고는 집품할 수 없습니다.");
+        }
+        if (!pickingTote.isTote()) {
+            throw new IllegalStateException("토트가 아닌 로케이션은 집품할 수 없습니다.");
+        }
+
+    }
+
+    public boolean isPicked() {
+        return null != pickedAt;
     }
 }
