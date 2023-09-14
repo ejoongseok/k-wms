@@ -93,6 +93,9 @@ public class Outbound {
     @Column(name = "box_height_in_millimeters")
     @Comment("포장 높이(mm)")
     private Long boxHeightInMillimeters;
+    @Column(name = "tracking_number")
+    @Comment("운송장 번호")
+    private String trackingNumber;
 
     public Outbound(
             final Long warehouseNo,
@@ -439,7 +442,12 @@ public class Outbound {
 
     }
 
-    private boolean isPacked() {
+    public boolean isPacked() {
         return null != packedAt;
+    }
+
+    public void assignTrackingNumber(final String trackingNumber) {
+        Assert.hasText(trackingNumber, "운송장번호는 필수입니다.");
+        this.trackingNumber = trackingNumber;
     }
 }
