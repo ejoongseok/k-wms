@@ -101,8 +101,6 @@ public class Outbound {
     @Comment("대량 출고 번호")
     private BulkOutbound bulkOutbound;
 
-    private boolean isBulk;
-
     public Outbound(
             final Long warehouseNo,
             final Long orderNo,
@@ -480,10 +478,6 @@ public class Outbound {
         if (!isCanceled()) {
             throw new IllegalStateException("취소된 출고만 초기화할 수 있습니다.");
         }
-    }
-
-    public void bulk() {
-        isBulk = true;
     }
 
     public void assignBulkOutbound(final BulkOutbound bulkOutbound) {
