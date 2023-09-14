@@ -450,4 +450,28 @@ public class Outbound {
         Assert.hasText(trackingNumber, "운송장번호는 필수입니다.");
         this.trackingNumber = trackingNumber;
     }
+
+    public void reset() {
+        validateReset();
+        outboundProducts.forEach(OutboundProduct::reset);
+        pickedAt = null;
+        inspectedAt = null;
+        packedAt = null;
+        realPackagingMaterial = null;
+        recommendedPackagingMaterial = null;
+        packagedWeightInGrams = null;
+        boxWidthInMillimeters = null;
+        boxLengthInMillimeters = null;
+        boxHeightInMillimeters = null;
+        trackingNumber = null;
+        cancelReason = null;
+        cancelledAt = null;
+        pickingTote = null;
+    }
+
+    private void validateReset() {
+        if (!isCanceled()) {
+            throw new IllegalStateException("취소된 출고만 초기화할 수 있습니다.");
+        }
+    }
 }
