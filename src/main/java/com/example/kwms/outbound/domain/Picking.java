@@ -1,6 +1,7 @@
 package com.example.kwms.outbound.domain;
 
 import com.example.kwms.location.domain.Inventory;
+import com.google.common.annotations.VisibleForTesting;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -49,6 +50,18 @@ public class Picking {
         validateConstructor(inventory, quantityRequiredForPick);
         this.inventory = inventory;
         this.quantityRequiredForPick = quantityRequiredForPick;
+    }
+
+    @VisibleForTesting
+    Picking(
+            final Long pickingNo,
+            final Long quantityRequiredForPick,
+            final Long pickedQuantity,
+            final Inventory inventory) {
+        this.pickingNo = pickingNo;
+        this.quantityRequiredForPick = quantityRequiredForPick;
+        this.pickedQuantity = pickedQuantity;
+        this.inventory = inventory;
     }
 
     private void validateConstructor(

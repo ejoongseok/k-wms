@@ -1,7 +1,7 @@
 package com.example.kwms.outbound.domain;
 
-import com.example.kwms.common.NotFoundException;
 import com.example.kwms.location.domain.Inventory;
+import com.google.common.annotations.VisibleForTesting;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -66,6 +66,18 @@ public class OutboundProduct {
         this.productNo = productNo;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
+    }
+
+    @VisibleForTesting
+    public OutboundProduct(
+            final Long productNo,
+            final Long orderQuantity,
+            final Long unitPrice,
+            final List<Picking> pickings) {
+        this.productNo = productNo;
+        quantity = orderQuantity;
+        this.unitPrice = unitPrice;
+        this.pickings.addAll(pickings);
     }
 
     private void validateConstructor(final Long productNo, final Long orderQuantity, final Long unitPrice) {
@@ -213,7 +225,7 @@ public class OutboundProduct {
         return pickings.stream()
                 .filter(picking -> picking.getInventory().equals(inventory))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("스캔한 재고는 집품목록에 할당되어 있지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("스캔한 재고는 집품목록에 할당되어 있지 않습니다."));
     }
 
     public boolean isPicked() {
