@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>LPN 생성</title>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet">
+    <script crossorigin="anonymous"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" src="https://code.jquery.com/jquery-3.7.1.js"></script>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="mb-4">LPN 생성</h1>
+
+    <form id="createOrderForm">
+        <input id="purchaseOrderNo" th:value="${purchaseOrderNo}" type="hidden">
+        <input id="purchaseOrderProductNo" th:value="${purchaseOrderProductNo}" type="hidden">
+        <input id="warehouseNo" required type="hidden" value="1">
+        <div class="form-group">
+            <label for="lpnBarcode">LPN 바코드</label>
+            <input class="form-control" id="lpnBarcode" required type="text">
+        </div>
+
+        <div class="form-group mb-4">
+            <label for="expiringAt">유통기한</label>
+            <input class="form-control" id="expiringAt" required type="datetime-local">
+        </div>
+
+        <div class="d-flex justify-content-end mb-4">
+            <a class="btn btn-outline-secondary mr-4"
+               id="backToList" style="margin-right: 20px;" th:href="@{'/web/purchase-orders/' + ${purchaseOrderNo} + '/purchase-order-products' + ${purchaseOrderProductNo} + '/lpns'}">취소</a>
+            <button class="btn btn-primary" type="submit">LPN 생성</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+        let purchaseOrderNo = $("#purchaseOrderNo").val();
+        let purchaseOrderProductNo = $("#purchaseOrderProductNo").val();
+        // 발주서 생성 로직
+        $("#createOrderForm").submit(function (e) {
+            e.preventDefault();
+
+            // 발주서 정보 수집
+            let orderData = {
+                lpnBarcode: $("#lpnBarcode").val(),
+                expiringAt: $("#expiringAt").val()
+            };
+
+            // AJAX를 사용하여 서버에 발주서 정보 전송
+            $.ajax({
+                url: `/purchase-orders/${purchaseOrderNo}/purchase-order-products/${purchaseOrderProductNo}/lpns`, // 여기에 API URL을 지정하세요.
+                type: 'POST',
+                data: JSON.stringify(orderData),
+                contentType: 'application/json; charset=utf-8',
+                success: function (response) {
+                    alert('LPN이 성공적으로 생성되었습니다.');
+                    // list.html로 이동
+                    window.location.href = `/web/purchase-orders/${purchaseOrderNo}/purchase-order-products/${purchaseOrderProductNo}/lpns`;
+
+                },
+                error: function (error) {
+                    alert('LPN 생성 중 오류가 발생했습니다.');
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -27,6 +27,7 @@ public class LPN {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "lpn_no")
     @Comment("LPN 번호")
+    @Getter
     private Long lpnNo;
 
     @Getter
@@ -38,9 +39,9 @@ public class LPN {
     @Comment("유통기한")
     private LocalDateTime expiringAt;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "inbound_product_no", nullable = false)
+    @JoinColumn(name = "purchase_order_product_no", nullable = false)
     @Comment("입고 상품 번호")
-    private InboundProduct inboundProduct;
+    private PurchaseOrderProduct purchaseOrderProduct;
 
     LPN(final String lpnBarcode, final LocalDateTime expiringAt) {
         Assert.hasText(lpnBarcode, "LPN 바코드는 필수입니다.");
@@ -50,14 +51,14 @@ public class LPN {
     }
 
     @VisibleForTesting
-    LPN(final String lpnBarcode, final LocalDateTime expiringAt, final InboundProduct inboundProduct) {
+    LPN(final String lpnBarcode, final LocalDateTime expiringAt, final PurchaseOrderProduct purchaseOrderProduct) {
         this.lpnBarcode = lpnBarcode;
         this.expiringAt = expiringAt;
-        this.inboundProduct = inboundProduct;
+        this.purchaseOrderProduct = purchaseOrderProduct;
     }
 
-    void assignInboundProduct(final InboundProduct inboundProduct) {
-        this.inboundProduct = inboundProduct;
+    void assignInboundProduct(final PurchaseOrderProduct purchaseOrderProduct) {
+        this.purchaseOrderProduct = purchaseOrderProduct;
     }
 
     boolean equalsBarcode(final String lpnBarcode) {
@@ -65,7 +66,7 @@ public class LPN {
     }
 
     public Long getProductNo() {
-        return inboundProduct.getProductNo();
+        return purchaseOrderProduct.getProductNo();
     }
 
     public boolean isFresh() {

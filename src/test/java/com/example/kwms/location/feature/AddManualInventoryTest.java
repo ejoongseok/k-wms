@@ -23,8 +23,8 @@ public class AddManualInventoryTest extends ApiTest {
     @BeforeEach
     void addManualInventorySetup() {
         Scenario.createLocation().locationBarcode("TOTE-001").request()
-                .createInbound().request()
-                .registerInboundProductInspectionResult().request()
+                .createPurchaseOrder().request()
+                .addReceive().request()
                 .createLPN().lpnBarcode("LPN-001").request();
     }
 

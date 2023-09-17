@@ -25,8 +25,8 @@ public class TransferInventoryTest extends ApiTest {
         Scenario
                 .createLocation().locationBarcode(locationBarcode).request()
                 .createLocation().locationBarcode("TOTE-002").request()
-                .createInbound().request()
-                .registerInboundProductInspectionResult().request()
+                .createPurchaseOrder().request()
+                .addReceive().request()
                 .createLPN().lpnBarcode(lpnBarcode).request();
         Scenario.addManualInventory()
                 .locationBarcode(locationBarcode)

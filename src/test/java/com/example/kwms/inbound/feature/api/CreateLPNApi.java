@@ -1,7 +1,7 @@
 package com.example.kwms.inbound.feature.api;
 
 import com.example.kwms.common.Scenario;
-import com.example.kwms.inbound.feature.CreateLPN;
+import com.example.kwms.inbound.feature.command.CreateLPN;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.springframework.http.HttpStatus;
@@ -9,18 +9,18 @@ import org.springframework.http.HttpStatus;
 import java.time.LocalDateTime;
 
 public class CreateLPNApi {
-    private Long inboundNo = 1L;
-    private Long inboundProductNo = 1L;
+    private Long purchaseOrderNo = 1L;
+    private Long purchaseOrderProductNo = 1L;
     private String lpnBarcode = "1234567890";
     private LocalDateTime expiringAt = LocalDateTime.now().plusDays(30);
 
-    public CreateLPNApi inboundNo(final Long inboundNo) {
-        this.inboundNo = inboundNo;
+    public CreateLPNApi purchaseOrderNo(final Long purchaseOrderNo) {
+        this.purchaseOrderNo = purchaseOrderNo;
         return this;
     }
 
-    public CreateLPNApi inboundProductNo(final Long inboundProductNo) {
-        this.inboundProductNo = inboundProductNo;
+    public CreateLPNApi purchaseOrderProductNo(final Long purchaseOrderProductNo) {
+        this.purchaseOrderProductNo = purchaseOrderProductNo;
         return this;
     }
 
@@ -45,7 +45,7 @@ public class CreateLPNApi {
                 .given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
-                .when().post("/inbounds/{inboundNo}/products/{inboundProductNo}/lpns", inboundNo, inboundProductNo)
+                .when().post("/purchase-orders/{purchaseOrderNo}/purchase-order-products/{purchaseOrderProductNo}/lpns", purchaseOrderNo, purchaseOrderProductNo)
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value());
 
