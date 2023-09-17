@@ -1,11 +1,9 @@
 package com.example.kwms.common;
 
-import com.example.kwms.inbound.feature.api.AddInboundProductApi;
-import com.example.kwms.inbound.feature.api.CreateInboundApi;
+import com.example.kwms.inbound.feature.api.AddReceiveApi;
 import com.example.kwms.inbound.feature.api.CreateLPNApi;
-import com.example.kwms.inbound.feature.api.RegisterInboundProductInspectionResultApi;
-import com.example.kwms.inbound.feature.api.UpdateInboundApi;
-import com.example.kwms.inbound.feature.api.UpdateInboundProductApi;
+import com.example.kwms.inbound.feature.api.CreatePurchaseOrderApi;
+import com.example.kwms.inbound.feature.api.UpdatePurchaseOrderApi;
 import com.example.kwms.location.feature.api.AddInventoryApi;
 import com.example.kwms.location.feature.api.AddManualInventoryApi;
 import com.example.kwms.location.feature.api.AddWarehouseTransferLocationApi;
@@ -43,24 +41,16 @@ import com.example.kwms.outbound.feature.api.TransferOutboundApi;
 import com.example.kwms.outbound.feature.api.UpdatePackagingMaterialApi;
 
 public class Scenario {
-    public static CreateInboundApi createInbound() {
-        return new CreateInboundApi();
+    public static CreatePurchaseOrderApi createPurchaseOrder() {
+        return new CreatePurchaseOrderApi();
     }
 
-    public static AddInboundProductApi addInboundProduct() {
-        return new AddInboundProductApi();
+    public static UpdatePurchaseOrderApi updatePurchaseOrder() {
+        return new UpdatePurchaseOrderApi();
     }
 
-    public static UpdateInboundApi updateInbound() {
-        return new UpdateInboundApi();
-    }
-
-    public static UpdateInboundProductApi updateInboundProduct() {
-        return new UpdateInboundProductApi();
-    }
-
-    public static RegisterInboundProductInspectionResultApi registerInboundProductInspectionResult() {
-        return new RegisterInboundProductInspectionResultApi();
+    public static AddReceiveApi addReceive() {
+        return new AddReceiveApi();
     }
 
     public static CreateLPNApi createLPN() {

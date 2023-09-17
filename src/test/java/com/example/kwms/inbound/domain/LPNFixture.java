@@ -6,7 +6,7 @@ public class LPNFixture {
 
     private String lpnBarcode = "1234567890";
     private LocalDateTime expiringAt = LocalDateTime.now().plusDays(30);
-    private InboundProductFixture inboundProduct = new InboundProductFixture();
+    private PurchaseOrderProductFixture inboundProduct = new PurchaseOrderProductFixture();
 
     public static LPNFixture aLPN() {
         return new LPNFixture();
@@ -22,7 +22,7 @@ public class LPNFixture {
         return this;
     }
 
-    public LPNFixture inboundProduct(final InboundProductFixture inboundProduct) {
+    public LPNFixture inboundProduct(final PurchaseOrderProductFixture inboundProduct) {
         this.inboundProduct = inboundProduct;
         return this;
     }

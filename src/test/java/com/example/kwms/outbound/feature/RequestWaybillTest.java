@@ -24,8 +24,8 @@ public class RequestWaybillTest extends ApiTest {
         final String lpnBarcode = "LPN-001";
         final Long quantity = 10L;
         Scenario.createLocation().locationBarcode(locationBarcode).request()
-                .createInbound().request()
-                .registerInboundProductInspectionResult().request()
+                .createPurchaseOrder().request()
+                .addReceive().request()
                 .createLPN().lpnBarcode(lpnBarcode).request();
         Scenario.addManualInventory()
                 .locationBarcode(locationBarcode)

@@ -25,8 +25,8 @@ public class PopBulkOutboundTest extends ApiTest {
         final Long quantity = 10L;
         Scenario.createWarehouse().request();
         Scenario.createLocation().locationBarcode(locationBarcode).request()
-                .createInbound().request()
-                .registerInboundProductInspectionResult().request()
+                .createPurchaseOrder().request()
+                .addReceive().request()
                 .createLPN().lpnBarcode(lpnBarcode).request();
         Scenario.addManualInventory()
                 .locationBarcode(locationBarcode)

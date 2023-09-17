@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>입고 상세 정보</title>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet">
+    <script crossorigin="anonymous"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" src="https://code.jquery.com/jquery-3.7.1.js"></script>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="mb-4">입고 상세 정보</h1>
+
+    <h4>입고 정보</h4>
+    <div id="receiveInfo">
+    </div>
+
+    <h4 class="mt-4">입고 상품</h4>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>상품 번호</th>
+            <th>상품 명</th>
+            <th>정상 수량</th>
+            <th>불량 수량</th>
+            <th>입고 결과</th>
+        </tr>
+        </thead>
+        <tbody id="receiveProductInfo">
+        <!-- 동적으로 행 추가 예정 -->
+        </tbody>
+    </table>
+
+    <!-- 발주 상품 정보 -->
+    <div class="d-flex justify-content-end mb-4">
+        <a class="btn btn-secondary" th:href="@{'/web/purchase-orders/' + ${purchaseOrderNo}}">뒤로가기</a>
+    </div>
+    <input id="purchaseOrderNo" th:value="${purchaseOrderNo}" type="hidden">
+    <input id="receiveNo" th:value="${receiveNo}" type="hidden">
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        let purchaseOrderNo = $("#purchaseOrderNo").val();
+        let receiveNo = $("#receiveNo").val();
+        if (purchaseOrderNo && receiveNo) {
+            // inboundNo 값을 사용하여 상세 정보를 서버에서 가져오는 AJAX 호출을 여기에 수행합니다.
+            $.ajax({
+                url: '/purchase-orders/' + purchaseOrderNo + '/receives/' + receiveNo,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    // 발주서 정보 표시
+                    $("#receiveInfo").html(`
+                        <p><strong>입고 번호:</strong> ${data.receiveNo}</p>
+                        <p><strong>입고 명:</strong> ${data.name}</p>
+                        <p><strong>입고 일시:</strong> ${data.createdAt}</p>
+                    `);
+
+                    // 발주 상품 정보 표시 (예제)
+                    data.receiveProducts.forEach(product => {
+                        let productRow = `
+                            <tr>
+                                <td>${product.productNo}</td>
+                                <td>${product.productName}</td>
+                                <td>${product.acceptableQuantity}</td>
+                                <td>${product.rejectedQuantity}</td>
+                                <td>${product.inspectionComment}</td>
+                            </tr>
+                        `;
+                        $("#receiveProductInfo").append(productRow);
+                    });
+                    // 입고 상품 정보 표시 (예제)
+                },
+                error: function (error) {
+                    alert("데이터를 불러오는 데 실패했습니다.");
+                    location.href = '/web/purchase-orders/' + purchaseOrderNo;
+                }
+            });
+
+        } else {
+            alert('발주서 번호가 제공되지 않았습니다.');
+        }
+    });
+</script>
+</body>
+</html>
