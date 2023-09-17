@@ -27,7 +27,7 @@ public class CreateLPNTest extends ApiTest {
     }
 
     @Test
-    @DisplayName("검수한 상품의 LPN을 생성한다.")
+    @DisplayName("발주 상품 LPN을 생성한다.")
     @Transactional
     void createLPN() {
         Scenario.createLPN().request();
