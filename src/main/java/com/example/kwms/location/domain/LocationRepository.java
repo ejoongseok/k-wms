@@ -16,4 +16,11 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
                         "존재하지 않는 로케이션입니다. 로케이션 바코드: %s".formatted(
                                 locationBarcode)));
     }
+
+    default Location getBy(final Long locationNo) {
+        return findById(locationNo)
+                .orElseThrow(() -> new NotFoundException(
+                        "로케이션 번호에 해당하는 로케이션이 없습니다. 로케이션번호:%d".formatted(locationNo)
+                ));
+    }
 }

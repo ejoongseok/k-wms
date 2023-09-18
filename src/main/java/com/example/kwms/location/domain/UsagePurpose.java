@@ -1,5 +1,8 @@
 package com.example.kwms.location.domain;
 
+import lombok.Getter;
+
+@Getter
 public enum UsagePurpose {
     MOVE("이동"),
     STACK("적치"),

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+@Getter
 @Entity
 @Table(name = "location")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
@@ -318,6 +319,19 @@ public class Location {
         allInventories.addAll(location.inventories);
         for (final Location child : location.children) {
             recursivelyGetAllInventories(child, allInventories);
+        }
+    }
+
+    public List<Location> getAllChildren() {
+        final List<Location> allChildren = new ArrayList<>();
+        recursivelyGetAllChildren(this, allChildren);
+        return allChildren;
+    }
+
+    private void recursivelyGetAllChildren(final Location location, final List<Location> allChildren) {
+        allChildren.addAll(location.children);
+        for (final Location child : location.children) {
+            recursivelyGetAllChildren(child, allChildren);
         }
     }
 }
