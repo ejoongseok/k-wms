@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>로케이션 생성</title>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet">
+    <script crossorigin="anonymous"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+            src="https://code.jquery.com/jquery-3.7.1.js"></script>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="mb-4">새 로케이션 생성</h1>
+
+    <form id="createOrderForm">
+        <input id="warehouseNo" required type="hidden" value="1">
+        <div class="form-group">
+            <label for="locationBarcode">로케이션 바코드</label>
+            <input class="form-control" id="locationBarcode" required type="text">
+        </div>
+
+        <div class="form-group">
+            <label for="storageType">로케이션 유형</label>
+            <select class="form-control" id="storageType" required>
+                <option value="BIN">바구니(셀)</option>
+                <option value="TOTE">토트 바구니</option>
+                <option value="PALLET">파레트</option>
+                <option value="SMALL_RACK">소규모 랙</option>
+                <option value="SHELF">선반</option>
+                <option value="RACK">랙</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="storageType">로케이션 용도</label>
+            <select class="form-control" id="usagePurpose" required>
+                <option value="MOVE">이동</option>
+                <option value="STACK">적치</option>
+                <option value="FILL">보충</option>
+                <option value="DISPLAY">진열</option>
+                <option value="DEFECTIVE">불량</option>
+            </select>
+        </div>
+
+        <div class="d-flex justify-content-end mb-4">
+            <a class="btn btn-outline-secondary mr-4" href="/web/locations" id="backToList"
+               style="margin-right: 20px;">취소</a>
+            <button class="btn btn-primary" type="submit">로케이션 생성</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        // 발주서 생성 로직
+        $("#createOrderForm").submit(function (e) {
+            e.preventDefault();
+
+            // 발주서 정보 수집
+            let orderData = {
+                warehouseNo: $("#warehouseNo").val(),
+                locationBarcode: $("#locationBarcode").val(),
+                storageType: $("#storageType").val(),
+                usagePurpose: $("#usagePurpose").val(),
+            };
+
+            // AJAX를 사용하여 서버에 발주서 정보 전송
+            $.ajax({
+                url: '/locations', // 여기에 API URL을 지정하세요.
+                type: 'POST',
+                data: JSON.stringify(orderData),
+                contentType: 'application/json; charset=utf-8',
+                success: function (response) {
+                    alert('로케이션이 성공적으로 생성되었습니다.');
+                    // list.html로 이동
+                    window.location.href = '/web/locations';
+
+                },
+                error: function (error) {
+                    alert('로케이션 생성 중 오류가 발생했습니다.');
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

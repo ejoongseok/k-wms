@@ -1,5 +1,8 @@
 package com.example.kwms.location.domain;
 
+import lombok.Getter;
+
+@Getter
 public enum StorageType {
     BIN("바구니(셀)", 1),
     TOTE("토트 바구니", 1),

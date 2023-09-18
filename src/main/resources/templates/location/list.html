@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>로케이션 목록</title>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet">
+    <script crossorigin="anonymous"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" src="https://code.jquery.com/jquery-3.7.1.js"></script>
+</head>
+<body>
+
+<div class="container mt-5">
+    <a class="btn btn-primary mb-4" href="/">메인으로</a>
+    <h1 class="mb-4">로케이션 관리</h1>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>로케이션 번호</th>
+            <th>로케이션 바코드</th>
+            <th>유형</th>
+            <th>용도</th>
+        </tr>
+        </thead>
+        <tbody id="orderList">
+        <!-- 동적으로 행 추가 예정 -->
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-end mb-4">
+        <a class="btn btn-success" href="/web/locations/new">로케이션 생성</a>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // 서버에서 데이터를 가져오는 예제. 실제 URL은 서버 상황에 따라 변경되어야 합니다.
+        $.ajax({
+            url: '/locations',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // 데이터를 순회하며 행을 동적으로 생성
+                data.forEach(order => {
+                    let row = `
+                        <tr>
+                            <td>${order.locationNo}</td>
+                            <td>${order.locationBarcode}</td>
+                            <td>${order.storageType}</td>
+                            <td>${order.usagePurpose}</td>
+                            <td><a href="/web/locations/${order.locationNo}" class="btn btn-info">상세보기</a></td>
+                        </tr>
+                    `;
+                    $("#orderList").append(row);
+                });
+            },
+            error: function (error) {
+                console.log(error);
+                alert("데이터를 불러오는 데 실패했습니다.");
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
