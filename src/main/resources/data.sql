@@ -41,22 +41,24 @@ insert into location (location_barcode,parent_location_no,storage_type,usage_pur
 insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-B4',NULL,'RACK','FILL',1,29);
 insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-B5',NULL,'RACK','FILL',1,30);
 
-insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A1-1',NULL,'SHELF','FILL',1,31);
-insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A2-2',NULL,'SHELF','FILL',1,32);
-insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A3-3',NULL,'SHELF','FILL',1,33);
-insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A4-4',NULL,'SHELF','FILL',1,34);
-insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A5-5',NULL,'SHELF','FILL',1,35);
-insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-B1-1',NULL,'SHELF','FILL',1,36);
-insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-B2-2',NULL,'SHELF','FILL',1,37);
-insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-B3-3',NULL,'SHELF','FILL',1,38);
-insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-B4-4',NULL,'SHELF','FILL',1,39);
-insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-B5-5',NULL,'SHELF','FILL',1,40);
+insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A1-1',21,'SHELF','FILL',1,31);
+insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A2-2',21,'SHELF','FILL',1,32);
+insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A3-3',21,'SHELF','FILL',1,33);
+insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A4-4',21,'SHELF','FILL',1,34);
+insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A5-5',21,'SHELF','FILL',1,35);
+insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-B1-1',26,'SHELF','FILL',1,36);
+insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-B2-2',26,'SHELF','FILL',1,37);
+insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-B3-3',26,'SHELF','FILL',1,38);
+insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-B4-4',26,'SHELF','FILL',1,39);
+insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-B5-5',26,'SHELF','FILL',1,40);
 
-insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A1-1-1',NULL,'BIN','FILL',1,41);
-insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A1-1-2',NULL,'BIN','FILL',1,42);
-insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A1-1-3',NULL,'BIN','FILL',1,43);
-insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A1-1-4',NULL,'BIN','FILL',1,44);
-insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A1-1-5',NULL,'BIN','FILL',1,45);
-insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A1-1-6',NULL,'BIN','FILL',1,46);
-insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A1-1-7',NULL,'BIN','FILL',1,47);
-insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A1-1-8',NULL,'BIN','FILL',1,48);
+insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A1-1-1',31,'BIN','FILL',1,41);
+insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A1-1-2',31,'BIN','FILL',1,42);
+insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A1-1-3',31,'BIN','FILL',1,43);
+insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A1-1-4',31,'BIN','FILL',1,44);
+insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A1-1-5',31,'BIN','FILL',1,45);
+insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A1-1-6',31,'BIN','FILL',1,46);
+insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A1-1-7',31,'BIN','FILL',1,47);
+insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A1-1-8',31,'BIN','FILL',1,48);
+
+ALTER TABLE location ALTER COLUMN location_no RESTART WITH 50;
