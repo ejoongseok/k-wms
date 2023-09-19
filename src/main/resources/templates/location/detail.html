@@ -32,7 +32,6 @@
         <table class="table table-bordered">
             <thead>
             <tr>
-                <th>부모 로케이션 바코드</th>
                 <th>로케이션 번호</th>
                 <th>로케이션 바코드</th>
                 <th>유형</th>
@@ -51,6 +50,8 @@
                th:href="@{'/web/locations/' + ${locationNo} + '/update-usage-purpose'}">용도 변경</a>
             <a class="btn btn-primary" id="updateBarcodeButton"
                th:href="@{'/web/locations/' + ${locationNo} + '/update-barcode'}">바코드 변경</a>
+            <a class="btn btn-primary" id="moveLocationButton"
+               th:href="@{'/web/locations/' + ${locationNo} + '/move-location'}">로케이션 이동</a>
         </div>
         <a class="btn btn-secondary" href="/web/locations" id="backToList" style="margin-right: 20px;">목록</a>
     </div>
@@ -115,7 +116,6 @@
             if (parentBarcode) {
                 let prefix = 'ㅤ'.repeat(depth);
                 let row = `<tr>
-                            <td>${prefix} ${parentBarcode}</td>
                             <td>${data.locationNo}</td>
                             <td>${prefix} ${data.locationBarcode}</td>
                             <td>${data.storageTypeDescription}</td>
