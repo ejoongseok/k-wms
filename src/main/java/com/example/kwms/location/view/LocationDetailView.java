@@ -21,6 +21,7 @@ public class LocationDetailView {
             final Model model) {
         final Location location = locationRepository.getBy(locationNo);
         model.addAttribute("locationNo", location.getLocationNo());
+        model.addAttribute("locationBarcode", location.getLocationBarcode());
         model.addAttribute("parentLocationNo", null == location.getParent() ? null : location.getParent().getLocationNo());
         model.addAttribute("hasChildren", !location.getChildren().isEmpty());
         // TODO 나중에는 해당로케이션 혹은 하위로케이션에 집품하는 재고가 없는지 확인해야됌.
