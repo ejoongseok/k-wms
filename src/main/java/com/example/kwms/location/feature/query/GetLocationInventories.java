@@ -28,12 +28,13 @@ public class GetLocationInventories {
         final List<Inventory> inventories = location.getInventories();
         final List<InventoryResponse> inventoryResponses = new ArrayList<>();
         for (final Inventory inventory : inventories) {
+            final Long inventoryNo = inventory.getInventoryNo();
             final Long productNo = inventory.getProductNo();
             final Product product = productClient.getBy(productNo);
             final String productName = product.getProductName();
             final String lpnBarcode = inventory.getLpn().getLpnBarcode();
             final Long quantity = inventory.getQuantity();
-            final InventoryResponse inventoryResponse = new InventoryResponse(productNo, productName, lpnBarcode, quantity);
+            final InventoryResponse inventoryResponse = new InventoryResponse(inventoryNo, productNo, productName, lpnBarcode, quantity);
             inventoryResponses.add(inventoryResponse);
         }
 
@@ -41,6 +42,7 @@ public class GetLocationInventories {
     }
 
     public record InventoryResponse(
+            Long inventoryNo,
             Long productNo,
             String productName,
             String lpnBarcode,
