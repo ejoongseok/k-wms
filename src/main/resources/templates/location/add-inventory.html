@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>재고 진열</title>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet">
+    <script crossorigin="anonymous"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+            src="https://code.jquery.com/jquery-3.7.1.js"></script>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="mb-4">재고 진열</h1>
+
+    <div class="form-group">
+        <label for="locationBarcode">로케이션 바코드</label>
+        <input class="form-control" id="locationBarcode" required type="text">
+        <button class="btn btn-primary getLocationButton" type="button">로케이션 조회</button>
+    </div>
+    <div id="locationInfo">
+        <h4>로케이션 정보</h4>
+        <div id="orderInfo">
+        </div>
+    </div>
+
+    <table class="table table-bordered" id="inventoryListTable">
+        <thead>
+        <tr>
+            <th>상품 번호</th>
+            <th>상품 명</th>
+            <th>LPN 바코드</th>
+            <th>수량</th>
+        </tr>
+        </thead>
+        <tbody id="inventoryList">
+        <!-- 기존의 발주서 상품 정보를 로드할 때 여기에 채워 넣을 수 있습니다. -->
+        </tbody>
+    </table>
+
+    <div class="form-group">
+        <label for="lpnBarcode">LPN 바코드(바코드 스캔을 엔터로 대체)</label>
+        <input class="form-control" id="lpnBarcode" required type="text">
+    </div>
+    <div class="form-group">
+        <label for="quantity">수량 직접 입력</label>
+        <input class="form-control" id="quantity" min="0" required type="number">
+        <button class="btn btn-primary addManualQuantityButton" type="button">추가</button>
+    </div>
+    <div class="d-flex justify-content-end mb-4">
+        <a class="btn btn-outline-secondary mr-4" id="backToList"
+           style="margin-right: 20px;" th:href="@{'/web/locations'}">종료</a>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#locationInfo").hide();
+        $("#inventoryListTable").hide();
+
+
+        //lpnBarcode 엔터 이벤트
+        $("#lpnBarcode").keyup(function (e) {
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                let locationBarcode = $("#locationBarcode").val();
+                if (locationBarcode == "") {
+                    alert("로케이션 바코드를 입력해주세요.");
+                    return;
+                }
+                let lpnBarcode = $("#lpnBarcode").val();
+                $.ajax({
+                    url: `/locations/${locationBarcode}/inventories/${lpnBarcode}`,
+                    type: 'POST',
+                    success: function (data) {
+                        getInventoryList();
+                    },
+                    error: function (error) {
+                        alert("재고를 진열하는데 실패했습니다.");
+                    }
+                });
+            }
+        });
+        // addManualQuantityButton
+        $(document).on('click', '.addManualQuantityButton', function () {
+            let locationBarcode = $("#locationBarcode").val();
+            if (locationBarcode == "") {
+                alert("로케이션 바코드를 입력해주세요.");
+                return;
+            }
+            let lpnBarcode = $("#lpnBarcode").val();
+            let quantity = $("#quantity").val();
+            if (quantity == "") {
+                alert("수량을 입력해주세요.");
+                return;
+            }
+
+            let data = {
+                "quantity": quantity
+            };
+
+            $.ajax({
+                url: `/locations/${locationBarcode}/manual-inventories/${lpnBarcode}`,
+                type: 'POST',
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                success: function (data) {
+                    getInventoryList();
+                },
+                error: function (error) {
+                    alert("재고를 진열하는데 실패했습니다.");
+                }
+            });
+        });
+        $(document).on('click', '.getLocationButton', function () {
+            let locationBarcode = $("#locationBarcode").val();
+            $.ajax({
+                url: '/locations/barcode/' + locationBarcode,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    $("#locationInfo").show();
+                    $("#orderInfo").html(`
+                        <p><strong>로케이션 번호:</strong> ${data.locationNo}</p>
+                        <p><strong>로케이션 바코드:</strong> ${data.locationBarcode}</p>
+                        <p><strong>유형:</strong> ${data.storageTypeDescription}</p>
+                        <p><strong>용도:</strong> ${data.usagePurposeDescription}</p>
+                    `);
+                    getInventoryList();
+                },
+                error: function (error) {
+                    alert("로케이션 정보를 불러오는 데 실패했습니다.");
+                }
+            });
+        });
+
+        function getInventoryList() {
+            let locationBarcode = $("#locationBarcode").val();
+            $.ajax({
+                url: '/locations/' + locationBarcode + '/inventories',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.length == 0) {
+                        return;
+                    }
+                    $("#inventoryListTable").show();
+                    $("#inventoryList").empty();
+                    data.forEach(inventory => {
+                        let row = `
+                        <tr>
+                            <td>${inventory.productNo}</td>
+                            <td>${inventory.productName}</td>
+                            <td>${inventory.lpnBarcode}</td>
+                            <td>${inventory.quantity}</td>
+                        </tr>
+                    `;
+                        $("#inventoryList").append(row);
+                    });
+                },
+                error: function (error) {
+                    alert("데이터를 불러오는 데 실패했습니다.");
+                }
+            });
+        }
+    });
+</script>
+
+</body>
+</html>
