@@ -62,3 +62,6 @@ insert into location (location_barcode,parent_location_no,storage_type,usage_pur
 insert into location (location_barcode,parent_location_no,storage_type,usage_purpose,warehouse_no,location_no) values ('GDC-A1-1-8',31,'BIN','FILL',1,48);
 
 ALTER TABLE location ALTER COLUMN location_no RESTART WITH 50;
+
+insert into inventory (location_no, lpn_no, product_no, quantity, warehouse_no, inventory_no)
+values (48, 1, 1, 1, 1, default);
