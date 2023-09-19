@@ -8,27 +8,27 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class UpdateLocationUsagePurposeTest extends ApiTest {
+public class UpdateLocationBarcodeTest extends ApiTest {
 
     @Autowired
     private LocationRepository locationRepository;
 
     @BeforeEach
-    void updateLocationUsagePurposeSetUp() {
+    void updateLocationBarcodeSetUp() {
         Scenario.createLocation().request();
     }
 
     @Test
-    @DisplayName("로케이션의 용도를 변경한다.")
-    void updateLocationUsagePurpose() {
-        final String usagePurpose = "FILL";
+    @DisplayName("로케이션의 바코드를 변경한다.")
+    void updateLocationBarcode() {
+        final String locationBarcode = "TOTE-002";
 
         Scenario
-                .updateLocationUsagePurpose()
-                .usagePurpose(usagePurpose)
+                .updateLocationBarcode()
+                .locationBarcode(locationBarcode)
                 .request();
 
-        locationRepository.getBy(1L).getUsagePurpose().equals(usagePurpose);
+        locationRepository.getBy(1L).getLocationBarcode().equals(locationBarcode);
     }
 
 }

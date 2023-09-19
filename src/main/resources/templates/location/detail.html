@@ -20,6 +20,13 @@
     <div id="orderInfo">
     </div>
 
+
+    <div th:if="${parentLocationNo != null}">
+        <h4>부모 로케이션 정보</h4>
+        <div id="parentInfo">
+        </div>
+    </div>
+
     <div th:if="${hasChildren}">
         <h4 class="mt-4">하위 로케이션</h4>
         <table class="table table-bordered">
@@ -39,15 +46,23 @@
     </div>
 
     <div class="d-flex justify-content-end mb-4">
+        <div th:if="${isUpdatable}">
+            <a class="btn btn-primary" id="updatePurposeUsageButton"
+               th:href="@{'/web/locations/' + ${locationNo} + '/update-usage-purpose'}">용도 변경</a>
+            <a class="btn btn-primary" id="updateBarcodeButton"
+               th:href="@{'/web/locations/' + ${locationNo} + '/update-barcode'}">바코드 변경</a>
+        </div>
         <a class="btn btn-secondary" href="/web/locations" id="backToList" style="margin-right: 20px;">목록</a>
     </div>
     <input id="locationNo" th:value="${locationNo}" type="hidden">
+    <input id="parentLocationNo" th:value="${parentLocationNo}" type="hidden">
 </div>
 
 <script>
     $(document).ready(function () {
 
         let locationNo = $("#locationNo").val();
+        let parentLocationNo = $("#parentLocationNo").val();
         if (locationNo) {
             // inboundNo 값을 사용하여 상세 정보를 서버에서 가져오는 AJAX 호출을 여기에 수행합니다.
             $.ajax({
@@ -59,8 +74,8 @@
                     $("#orderInfo").html(`
                         <p><strong>로케이션 번호:</strong> ${data.locationNo}</p>
                         <p><strong>로케이션 바코드:</strong> ${data.locationBarcode}</p>
-                        <p><strong>유형:</strong> ${data.storageType}</p>
-                        <p><strong>용도:</strong> ${data.usagePurpose}</p>
+                        <p><strong>유형:</strong> ${data.storageTypeDescription}</p>
+                        <p><strong>용도:</strong> ${data.usagePurposeDescription}</p>
                     `);
                     if (data.children && data.children.length > 0) {
                         displayChildren(data);
@@ -75,6 +90,26 @@
         } else {
             alert('발주서 번호가 제공되지 않았습니다.');
         }
+        if (parentLocationNo) {
+            $.ajax({
+                url: '/locations/' + parentLocationNo,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    // 발주서 정보 표시
+                    $("#parentInfo").html(`
+                    <p><strong>로케이션 번호:</strong> ${data.locationNo}</p>
+                    <p><strong>로케이션 바코드:</strong> ${data.locationBarcode}</p>
+                    <p><strong>유형:</strong> ${data.storageTypeDescription}</p>
+                    <p><strong>용도:</strong> ${data.usagePurposeDescription}</p>
+                    <td><a href="/web/locations/${data.locationNo}" class="btn btn-info">상세보기</a></td>
+                `);
+                },
+                error: function (error) {
+                    alert("부모 로케이션 데이터를 불러오는 데 실패했습니다.");
+                }
+            });
+        }
 
         function displayChildren(data, parentBarcode = null, depth = -1) {
             if (parentBarcode) {
@@ -83,8 +118,9 @@
                             <td>${prefix} ${parentBarcode}</td>
                             <td>${data.locationNo}</td>
                             <td>${prefix} ${data.locationBarcode}</td>
-                            <td>${data.storageType}</td>
-                            <td>${data.usagePurpose}</td>
+                            <td>${data.storageTypeDescription}</td>
+                            <td>${data.usagePurposeDescription}</td>
+                            <td><a href="/web/locations/${data.locationNo}" class="btn btn-info">상세보기</a></td>
                         </tr>`;
                 $("#productInfo").append(row);
             }

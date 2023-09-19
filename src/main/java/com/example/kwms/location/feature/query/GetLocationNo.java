@@ -28,7 +28,10 @@ public class GetLocationNo {
                 location.getLocationBarcode(),
                 location.getStorageType().name(),
                 location.getUsagePurpose().name(),
-                new ArrayList<>()
+                location.getStorageType().getDescription(),
+                location.getUsagePurpose().getDescription(),
+                new ArrayList<>(),
+                null == location.getParent() ? null : location.getParent().getLocationNo()
         );
         if (!location.getChildren().isEmpty()) {
             locationResponse.children.addAll(recursive(location.getChildren()));
@@ -45,7 +48,10 @@ public class GetLocationNo {
                     child.getLocationBarcode(),
                     child.getStorageType().name(),
                     child.getUsagePurpose().name(),
-                    new ArrayList<>()
+                    child.getStorageType().getDescription(),
+                    child.getUsagePurpose().getDescription(),
+                    new ArrayList<>(),
+                    null == child.getParent() ? null : child.getParent().getLocationNo()
             );
             if (!child.getChildren().isEmpty()) {
                 locationResponse.children.addAll(recursive(child.getChildren()));
@@ -62,7 +68,10 @@ public class GetLocationNo {
         private final String locationBarcode;
         private final String storageType;
         private final String usagePurpose;
+        private final String storageTypeDescription;
+        private final String usagePurposeDescription;
         private final List<LocationResponse> children = new ArrayList<>();
+        private final Long parentLocationNo;
 
         LocationResponse(
                 final String parentBarcode,
@@ -70,13 +79,19 @@ public class GetLocationNo {
                 final String locationBarcode,
                 final String storageType,
                 final String usagePurpose,
-                final List<LocationResponse> children) {
+                final String storageTypeDescription,
+                final String usagePurposeDescription,
+                final List<LocationResponse> children,
+                final Long parentLocationNo) {
             this.parentBarcode = parentBarcode;
             this.locationNo = locationNo;
             this.locationBarcode = locationBarcode;
             this.storageType = storageType;
             this.usagePurpose = usagePurpose;
+            this.storageTypeDescription = storageTypeDescription;
+            this.usagePurposeDescription = usagePurposeDescription;
             this.children.addAll(children);
+            this.parentLocationNo = parentLocationNo;
         }
 
 
