@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>재고 변경</title>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet">
+    <script crossorigin="anonymous"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+            src="https://code.jquery.com/jquery-3.7.1.js"></script>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="mb-4">재고 변경</h1>
+
+    <form id="updateOrderForm">
+        <!-- 발주서 번호를 숨긴 필드로 포함하였습니다. 데이터를 로드할 때 이 값을 채워 넣을 수 있습니다. -->
+        <input id="locationNo" th:value="${locationNo}" type="hidden">
+        <input id="locationBarcode" th:value="${locationBarcode}" type="hidden">
+        <input id="lpnBarcode" th:value="${lpnBarcode}" type="hidden">
+        <input id="inventoryNo" th:value="${inventoryNo}" type="hidden">
+
+
+        <div class="form-group">
+            <label for="quantity">수량</label>
+            <input class="form-control" id="quantity" min="0" required type="number">
+        </div>
+        <div class="form-group">
+            <label for="reason">재고 변경 사유</label>
+            <input class="form-control" id="reason" required type="text">
+        </div>
+
+
+        <div class="d-flex justify-content-end mb-4">
+            <a class="btn btn-outline-secondary mr-4" id="backToList"
+               style="margin-right: 20px;" th:href="@{'/web/locations/' + ${locationNo}}">취소</a>
+            <button class="btn btn-primary" type="submit">저장</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+        let inventoryNo = $("#inventoryNo").val();
+
+        function loadOrderData() {
+            $.ajax({
+                url: '/inventories/' + inventoryNo, // 예시 URL
+                type: 'GET',
+                success: function (data) {
+                    $("#quantity").val(data.quantity);
+                },
+                error: function () {
+                    alert('데이터 로드 중 오류 발생');
+                }
+            });
+        }
+
+        loadOrderData();
+
+        // 발주서 수정 로직
+        $("#updateOrderForm").submit(function (e) {
+            e.preventDefault();
+
+            let locationBarcode = $("#locationBarcode").val();
+            let locationNo = $("#locationNo").val();
+            let lpnBarcode = $("#lpnBarcode").val();
+            let reason = $("#reason").val().trim();
+            if (reason == "") {
+                alert("재고 변경 사유를 입력해주세요.");
+                return;
+            }
+
+            let inventoryData = {
+                quantity: $("#quantity").val(),
+                reason: $("#reason").val()
+            };
+
+            // AJAX를 사용하여 서버에 발주서 정보 전송
+            $.ajax({
+                url: `/locations/${locationBarcode}/adjust-inventories/${lpnBarcode}`,
+                type: 'POST',
+                data: JSON.stringify(inventoryData),
+                contentType: 'application/json; charset=utf-8',
+                success: function (response) {
+                    alert('재고가 성공적으로 수정되었습니다.');
+                    // list.html로 이동
+                    window.location.href = '/web/locations/' + locationNo;
+                },
+                error: function (error) {
+                    alert('발주서 수정 중 오류가 발생했습니다.');
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -31,6 +31,7 @@ public class AdjustInventory {
         final LPN lpn = lpnRepository.getBy(lpnBarcode);
 
         location.adjustInventory(lpn, request.quantity());
+        // TODO : 재고 조정 사유를 저장해야 합니다.
     }
 
     public record Request(

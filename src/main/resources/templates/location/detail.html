@@ -52,6 +52,7 @@
                 <th>로케이션 바코드</th>
                 <th>유형</th>
                 <th>용도</th>
+                <th></th>
             </tr>
             </thead>
             <tbody id="productInfo">
@@ -149,6 +150,7 @@
 
         function getInventoryList() {
             let locationBarcode = $("#locationBarcode").val();
+            let locationNo = $("#locationNo").val();
             $.ajax({
                 url: '/locations/' + locationBarcode + '/inventories',
                 type: 'GET',
@@ -166,6 +168,7 @@
                             <td>${inventory.productName}</td>
                             <td>${inventory.lpnBarcode}</td>
                             <td>${inventory.quantity}</td>
+                            <td><a href="/web/locations/${locationNo}/adjust-inventories/${inventory.inventoryNo}" class="btn btn-info">재고 변경</a></td>
                         </tr>
                     `;
                         $("#inventoryList").append(row);

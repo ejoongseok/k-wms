@@ -19,4 +19,10 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
                 .orElseThrow(() -> new NotFoundException("재고 정보가 없습니다. 로케이션 바코드:%s , lpnBarcode: %s"
                         .formatted(locationBarcode, lpnBarcode)));
     }
+
+    default Inventory getBy(final Long inventoryNo) {
+        return findById(inventoryNo)
+                .orElseThrow(() -> new NotFoundException(
+                        "재고가 존재하지 않습니다. 재고번호: %d".formatted(inventoryNo)));
+    }
 }
