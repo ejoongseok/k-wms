@@ -63,5 +63,4 @@ insert into location (location_barcode,parent_location_no,storage_type,usage_pur
 
 ALTER TABLE location ALTER COLUMN location_no RESTART WITH 50;
 
-insert into inventory (location_no, lpn_no, product_no, quantity, warehouse_no, inventory_no)
-values (48, 1, 1, 1, 1, default);
+insert into inventory (location_no, lpn_no, product_no, quantity, warehouse_no, inventory_no) values (48, 1, 1, 1, 1, default);
