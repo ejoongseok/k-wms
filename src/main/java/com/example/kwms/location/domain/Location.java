@@ -245,6 +245,12 @@ public class Location {
         recursivelyChangeUsagePurpose(this, usagePurpose);
     }
 
+    public void updateBarcode(
+            final String locationBarcode) {
+        Assert.hasText(locationBarcode, "로케이션 바코드는 필수입니다.");
+        this.locationBarcode = locationBarcode;
+    }
+
     private void validateUpdate(
             final String locationBarcode,
             final UsagePurpose usagePurpose) {
@@ -256,21 +262,6 @@ public class Location {
         Assert.notNull(usagePurpose, "로케이션 용도는 필수입니다.");
         this.usagePurpose = usagePurpose;
 
-    }
-
-    boolean containsProduct(final Location thisLocation, final Long productNo) {
-        Assert.notNull(productNo, "상품 번호는 필수입니다.");
-        for (final Inventory inventory : thisLocation.inventories) {
-            if (inventory.getProductNo().equals(productNo)) {
-                return true;
-            }
-        }
-        for (final Location child : thisLocation.children) {
-            if (containsProduct(child, productNo)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public Set<Long> getAllProductNos() {
@@ -322,16 +313,4 @@ public class Location {
         }
     }
 
-    public List<Location> getAllChildren() {
-        final List<Location> allChildren = new ArrayList<>();
-        recursivelyGetAllChildren(this, allChildren);
-        return allChildren;
-    }
-
-    private void recursivelyGetAllChildren(final Location location, final List<Location> allChildren) {
-        allChildren.addAll(location.children);
-        for (final Location child : location.children) {
-            recursivelyGetAllChildren(child, allChildren);
-        }
-    }
 }

@@ -13,22 +13,30 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class UpdateLocationUsagePurpose {
+public class UpdateLocationBarcode {
     private final LocationRepository locationRepository;
 
+    @PatchMapping("/locations/{locationNo}/barcode")
     @Transactional
-    @PatchMapping("/locations/{locationNo}/usage-purpose")
     public void request(
             @PathVariable final Long locationNo,
             @RequestBody @Valid final Request request) {
+        validate(request.locationBarcode);
 
         final Location location = locationRepository.getBy(locationNo);
 
-        location.updateUsagePurpose(request.usagePurpose);
+        location.updateBarcode(request.locationBarcode);
+    }
+
+    private void validate(final String locationBarcode) {
+        locationRepository.findByBarcode(locationBarcode)
+                .ifPresent(location -> {
+                    throw new IllegalArgumentException("이미 존재하는 로케이션 바코드입니다.");
+                });
     }
 
     public record Request(
-            @NotBlank(message = "사용 용도는 필수입니다.")
-            String usagePurpose) {
+            @NotBlank(message = "로케이션 바코드는 필수입니다.")
+            String locationBarcode) {
     }
 }

@@ -11,21 +11,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 @RequiredArgsConstructor
-public class LocationDetailView {
+public class LocationUpdateBarcodeView {
     private final LocationRepository locationRepository;
 
-    @GetMapping("/web/locations/{locationNo}")
+    @GetMapping("/web/locations/{locationNo}/update-barcode")
     @Transactional(readOnly = true)
-    public String locationsList(
+    public String updateBarcode(
             @PathVariable final Long locationNo,
             final Model model) {
         final Location location = locationRepository.getBy(locationNo);
         model.addAttribute("locationNo", location.getLocationNo());
-        model.addAttribute("parentLocationNo", null == location.getParent() ? null : location.getParent().getLocationNo());
-        model.addAttribute("hasChildren", !location.getChildren().isEmpty());
-        // TODO 나중에는 해당로케이션 혹은 하위로케이션에 집품하는 재고가 없는지 확인해야됌.
-        model.addAttribute("isUpdatable", true);
-        return "location/detail";
+        return "location/update-barcode";
     }
 
 }
