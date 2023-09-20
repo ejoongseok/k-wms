@@ -39,11 +39,10 @@ public class ReceiveWarehouseTransferTest extends ApiTest {
                 .locationBarcode(locationBarcode)
                 .request();
 
-        final String warehouseTransferBarcode = "WT-001";
 
         Scenario
                 .shipmentWarehouseTransfer()
-                .warehouseTransferBarcode(warehouseTransferBarcode)
+                .warehouseTransferNo(1L)
                 .request();
     }
 
@@ -52,9 +51,9 @@ public class ReceiveWarehouseTransferTest extends ApiTest {
     void receiveWarehouseTransfer() {
         final String warehouseTransferBarcode = "WT-001";
 
-        Scenario.receiveWarehouseTransfer().warehouseTransferBarcode(warehouseTransferBarcode).request();
+        Scenario.receiveWarehouseTransfer().warehouseTransferNo(1L).request();
 
-        assertThat(warehouseTransferRepository.getBy(warehouseTransferBarcode).getReceivedAt()).isNotNull();
+        assertThat(warehouseTransferRepository.getBy(1L).getReceivedAt()).isNotNull();
     }
 
 }

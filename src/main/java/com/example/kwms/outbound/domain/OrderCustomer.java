@@ -1,8 +1,10 @@
 package com.example.kwms.outbound.domain;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderCustomer {
     private String name;

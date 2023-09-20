@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>창고간 재고이동 상세 정보</title>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet">
+    <script crossorigin="anonymous"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+            src="https://code.jquery.com/jquery-3.7.1.js"></script>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="mb-4">창고간 재고이동 상세 정보</h1>
+
+    <!-- 발주서 기본 정보 -->
+    <h4>창고간 재고이동 정보</h4>
+    <div id="orderInfo">
+        <!-- 발주서 번호, 발주서명, 설명 등의 기본 정보 동적 표시 예정 -->
+    </div>
+
+    <!-- 발주 상품 정보 -->
+    <h4 class="mt-4">재고이동 상품</h4>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>상품 번호</th>
+            <th>상품 명</th>
+            <th>수량</th>
+        </tr>
+        </thead>
+        <tbody id="productInfo">
+        <!-- 동적으로 행 추가 예정 -->
+        </tbody>
+    </table>
+
+    <!-- 발주 상품 정보 -->
+    <div th:if="${hasLocations}">
+        <h4 class="mt-4">재고이동에 사용할 로케이션</h4>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>로케이션 번호</th>
+                <th>로케이션 바코드</th>
+                <th>유형</th>
+            </tr>
+            </thead>
+            <tbody id="locationInfo">
+            <!-- 동적으로 행 추가 예정 -->
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex justify-content-end mb-4">
+        <a class="btn btn-secondary" href="/web/warehouse-transfers" id="backToList" style="margin-right: 20px;">목록</a>
+        <div th:if="${isUpdatable}">
+            <a class="btn btn-primary" id="updateButton"
+               th:href="@{'/web/warehouse-transfers/' + ${warehouseTransferNo} + '/update'}">수정</a>
+        </div>
+        <div th:if="${!isShipped && !isReceived}">
+            <a class="btn btn-primary" id="assignReceiveButton"
+               th:href="@{'/web/warehouse-transfers/' + ${warehouseTransferNo} + '/add-location'}">로케이션 등록</a>
+        </div>
+        <div th:if="${hasLocations && !isShipped}">
+            <button class="btn btn-primary" id="shipmentButton">출고 처리</button>
+        </div>
+        <div th:if="${isShipped && !isReceived}">
+            <button class="btn btn-primary" id="receiveButton">입고 처리</button>
+        </div>
+    </div>
+    <input id="warehouseTransferNo" th:value="${warehouseTransferNo}" type="hidden">
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        let warehouseTransferNo = $("#warehouseTransferNo").val();
+        if (warehouseTransferNo) {
+            // inboundNo 값을 사용하여 상세 정보를 서버에서 가져오는 AJAX 호출을 여기에 수행합니다.
+            $.ajax({
+                url: '/warehouse-transfers/' + warehouseTransferNo,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    // 발주서 정보 표시
+                    $("#orderInfo").html(`
+                        <p><strong>출발창고:</strong> ${data.fromWarehouseName}</p>
+                        <p><strong>도착창고:</strong> ${data.toWarehouseName}</p>
+                        <p><strong>바코드:</strong> ${data.code}</p>
+                        <p><strong>상태:</strong> ${data.status}</p>
+                        <p><strong>출고일시:</strong> ${data.shippedAt == null ? '출고전' : data.shippedAt}</p>
+                        <p><strong>도착일시:</strong> ${data.receivedAt == null ? '도착전' : data.receivedAt}</p>
+                    `);
+
+                    // 발주 상품 정보 표시 (예제)
+                    data.products.forEach(product => {
+                        let productRow = `
+                            <tr>
+                                <td>${product.productNo}</td>
+                                <td>${product.productName}</td>
+                                <td>${product.quantity}</td>
+                            </tr>
+                        `;
+                        $("#productInfo").append(productRow);
+                    });
+                    // 입고 상품 정보 표시 (예제)
+                    data.locations.forEach(location => {
+                        if (data.shippedAt == null && data.receivedAt == null) {
+                            let target = `
+                            <tr>
+                                <td>${location.locationNo}</td>
+                                <td>${location.locationBarcode}</td>
+                                <td>${location.storageTypeDescription}</td>
+                                <td><a href="/web/locations/${location.locationNo}" class="btn btn-info">상세보기</a></td>
+                                <td><button class="btn btn-danger removeLocationButton">제거</button></td>
+                            </tr>
+                        `;
+                            $("#locationInfo").append(target);
+                        } else {
+                            let target = `
+                            <tr>
+                                <td>${location.locationNo}</td>
+                                <td>${location.locationBarcode}</td>
+                                <td>${location.storageTypeDescription}</td>
+                                <td><a href="/web/locations/${location.locationNo}" class="btn btn-info">상세보기</a></td>
+                            </tr>
+                        `;
+                            $("#locationInfo").append(target);
+                        }
+                    });
+                },
+                error: function (error) {
+                    alert("데이터를 불러오는 데 실패했습니다.");
+                    location.href = '/web/warehouse-transfers';
+                }
+            });
+
+        } else {
+            alert('발주서 번호가 제공되지 않았습니다.');
+        }
+
+        // 로케이션 제거 로직 removeLocationButton
+        $(document).on('click', '.removeLocationButton', function () {
+            // 로케이션 번호를 가져옵니다.
+            let locationNo = $(this).closest('tr').find('td:first').text();
+            // AJAX를 사용하여 서버에 로케이션 삭제 전송 만들어줘.
+            $.ajax({
+                url: '/warehouse-transfers/' + warehouseTransferNo + '/locations/' + locationNo,
+                type: 'DELETE',
+                success: function (data) {
+                    alert('로케이션 삭제가 성공적으로 되었습니다.');
+                    location.reload();
+                },
+                error: function (error) {
+                    alert("데이터를 불러오는 데 실패했습니다.");
+                    location.href = '/web/warehouse-transfers';
+                }
+            });
+        });
+
+        // 출고 처리 로직
+        $("#shipmentButton").click(function () {
+            // AJAX를 사용하여 서버에 출고 처리 전송
+            $.ajax({
+                url: '/warehouse-transfers/' + warehouseTransferNo + '/shipment',
+                type: 'POST',
+                success: function (data) {
+                    alert('출고 처리가 성공적으로 되었습니다.');
+                    location.reload();
+                },
+                error: function (error) {
+                    alert("데이터를 불러오는 데 실패했습니다.");
+                    location.href = '/web/warehouse-transfers';
+                }
+            });
+        });
+
+        // 입고 처리 로직
+        $("#receiveButton").click(function () {
+            // AJAX를 사용하여 서버에 입고 처리 전송
+            $.ajax({
+                url: '/warehouse-transfers/' + warehouseTransferNo + '/receive',
+                type: 'POST',
+                success: function (data) {
+                    alert('입고 처리가 성공적으로 되었습니다.');
+                    location.reload();
+                },
+                error: function (error) {
+                    alert("데이터를 불러오는 데 실패했습니다.");
+                    location.href = '/web/warehouse-transfers';
+                }
+            });
+        });
+
+
+        $(document).on('click', '.detailReceiveRow', function () {
+            $(this).closest('tr').remove();
+        });
+    });
+</script>
+</body>
+</html>

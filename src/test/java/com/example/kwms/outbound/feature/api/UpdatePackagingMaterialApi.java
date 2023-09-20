@@ -101,7 +101,7 @@ public class UpdatePackagingMaterialApi {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .patch("/packaging-materials/{packagingMaterialNo}", packagingMaterialNo)
+                .put("/packaging-materials/{packagingMaterialNo}", packagingMaterialNo)
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value());
         return new Scenario();

@@ -29,6 +29,7 @@ import static com.example.kwms.location.domain.StorageType.TOTE;
 @Entity
 @Table(name = "warehouse_transfer")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+@Getter
 public class WarehouseTransfer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -83,17 +84,35 @@ public class WarehouseTransfer {
         products.forEach(product -> product.assignWarehouseTransfer(this));
     }
 
-    //TODO 대기 상태일때만 변경 가능
     public void update(
             final Long fromWarehouseNo,
             final Long toWarehouseNo,
-            final String barcode) {
-        Assert.notNull(fromWarehouseNo, "출발 창고 번호는 필수입니다.");
-        Assert.notNull(toWarehouseNo, "도착 창고 번호는 필수입니다.");
-        Assert.hasText(barcode, "바코드는 필수입니다.");
+            final String barcode,
+            final List<WarehouseTransferProduct> products) {
+        validateUpdate(fromWarehouseNo, toWarehouseNo, barcode, products);
         this.fromWarehouseNo = fromWarehouseNo;
         this.toWarehouseNo = toWarehouseNo;
         this.barcode = barcode;
+        for (final WarehouseTransferProduct product : this.products) {
+            product.unassignWarehouseTransfer();
+        }
+        this.products.clear();
+        products.forEach(product -> product.assignWarehouseTransfer(this));
+        this.products.addAll(products);
+    }
+
+    private void validateUpdate(
+            final Long fromWarehouseNo,
+            final Long toWarehouseNo,
+            final String barcode,
+            final List<WarehouseTransferProduct> products) {
+        Assert.notNull(fromWarehouseNo, "출발 창고 번호는 필수입니다.");
+        Assert.notNull(toWarehouseNo, "도착 창고 번호는 필수입니다.");
+        Assert.hasText(barcode, "바코드는 필수입니다.");
+        Assert.notEmpty(products, "상품은 필수입니다.");
+        if (!isUpdatable() || isShipped()) {
+            throw new IllegalStateException("수정은 출하되기 전 상태 혹은 로케이션이 없는 상태에서만 가능합니다.");
+        }
     }
 
     public void updateProduct(
@@ -125,7 +144,11 @@ public class WarehouseTransfer {
 
     public void addLocation(final Location location) {
         validateAddLocation(location);
-        warehouseTransferLocations.add(new WarehouseTransferLocation(this, location));
+
+        final UsagePurpose beforeUsagePurpose = location.getUsagePurpose();
+        location.warehouseTransferred();
+
+        warehouseTransferLocations.add(new WarehouseTransferLocation(this, location, beforeUsagePurpose));
     }
 
     private void validateAddLocation(final Location location) {
@@ -155,6 +178,14 @@ public class WarehouseTransfer {
                             "로케이션 바코드: %s, 상품 번호: %d")
                             .formatted(location.getLocationBarcode(), allProductsInLocation.iterator().next()));
         }
+        warehouseTransferLocations.stream()
+                .filter(warehouseTransferLocation -> warehouseTransferLocation.getLocation().equals(location))
+                .findAny()
+                .ifPresent(warehouseTransferLocation -> {
+                    throw new IllegalArgumentException(
+                            ("이미 등록된 로케이션입니다. " +
+                                    "로케이션 바코드: %s").formatted(location.getLocationBarcode()));
+                });
     }
 
     public void shipment() {
@@ -188,6 +219,10 @@ public class WarehouseTransfer {
     public void receive() {
         validateReceive();
         receivedAt = LocalDateTime.now();
+        for (final WarehouseTransferLocation warehouseTransferLocation : warehouseTransferLocations) {
+            final Location location = warehouseTransferLocation.getLocation();
+            location.setWarehouseNo(toWarehouseNo);
+        }
     }
 
     private void validateReceive() {
@@ -197,5 +232,58 @@ public class WarehouseTransfer {
         if (null == shippedAt) {
             throw new IllegalStateException("출하되지 않은 재고이동입니다.");
         }
+    }
+
+    public boolean isUpdatable() {
+        return !hasLocations();
+    }
+
+    public boolean hasLocations() {
+        return !warehouseTransferLocations.isEmpty();
+    }
+
+    public boolean isShipped() {
+        return null != shippedAt;
+    }
+
+    public void deleteLocation(final Location location) {
+        validateDeleteLocation(location);
+        final WarehouseTransferLocation warehouseTransferLocation = getTransferLocation(location);
+        location.updateUsagePurpose(warehouseTransferLocation.getBeforeUsagePurpose().name());
+        warehouseTransferLocations.remove(warehouseTransferLocation);
+    }
+
+    private WarehouseTransferLocation getTransferLocation(final Location location) {
+        return warehouseTransferLocations.stream()
+                .filter(warehouseTransferLocation -> warehouseTransferLocation.getLocation().equals(location))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 로케이션입니다. 로케이션 바코드: %s".formatted(location.getLocationBarcode())));
+    }
+
+    private void validateDeleteLocation(final Location location) {
+        Assert.notNull(location, "로케이션은 필수입니다.");
+        if (!warehouseTransferLocations.stream()
+                .map(WarehouseTransferLocation::getLocation)
+                .collect(Collectors.toUnmodifiableList())
+                .contains(location)) {
+            throw new IllegalArgumentException(
+                    ("존재하지 않는 로케이션입니다. " +
+                            "로케이션 바코드: %s").formatted(location.getLocationBarcode()));
+        }
+
+        if (isShipped()) {
+            throw new IllegalStateException("출하된 재고이동은 로케이션을 삭제할 수 없습니다.");
+        }
+        if (isReceived()) {
+            throw new IllegalStateException("입고된 재고이동은 로케이션을 삭제할 수 없습니다.");
+        }
+
+        if (UsagePurpose.WAREHOUSE_TRANSFER != location.getUsagePurpose()) {
+            throw new IllegalStateException("재고이동에 사용되지 않은 로케이션은 삭제할 수 없습니다.");
+        }
+    }
+
+    public boolean isReceived() {
+        return null != receivedAt;
     }
 }

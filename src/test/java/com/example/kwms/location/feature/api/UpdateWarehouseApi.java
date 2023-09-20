@@ -65,7 +65,7 @@ public class UpdateWarehouseApi {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .patch("/warehouses/{warehouseNo}", warehouseNo)
+                .put("/warehouses/{warehouseNo}", warehouseNo)
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value());
 

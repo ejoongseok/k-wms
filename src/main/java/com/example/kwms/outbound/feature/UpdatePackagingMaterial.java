@@ -10,8 +10,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,13 +21,18 @@ public class UpdatePackagingMaterial {
 
     private final PackagingMaterialRepository packagingMaterialRepository;
 
-    @PatchMapping("/packaging-materials/{packagingMaterialNo}")
+    @PutMapping("/packaging-materials/{packagingMaterialNo}")
     @Transactional
     public void request(
             @PathVariable final Long packagingMaterialNo,
             @RequestBody @Valid final Request request) {
         final PackagingMaterial packagingMaterial = packagingMaterialRepository.getBy(packagingMaterialNo);
-
+        if (!packagingMaterial.getCode().equals(request.code)) {
+            packagingMaterialRepository.findByCode(request.code)
+                    .ifPresent(it -> {
+                        throw new IllegalArgumentException("이미 존재하는 포장재 코드입니다.");
+                    });
+        }
         packagingMaterial.update(
                 request.name(),
                 request.code(),

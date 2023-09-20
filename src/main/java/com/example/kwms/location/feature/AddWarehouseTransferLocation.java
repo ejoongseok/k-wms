@@ -54,7 +54,6 @@ public class AddWarehouseTransferLocation {
 
     void addLocation(final WarehouseTransfer warehouseTransfer, final Location location) {
         warehouseTransfer.addLocation(location);
-        location.warehouseTransferred();
     }
 
     public record Request(

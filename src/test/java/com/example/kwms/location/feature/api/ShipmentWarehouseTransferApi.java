@@ -5,10 +5,10 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 public class ShipmentWarehouseTransferApi {
-    private String warehouseTransferBarcode = "WT-001";
+    private Long warehouseTransferNo = 1L;
 
-    public ShipmentWarehouseTransferApi warehouseTransferBarcode(final String warehouseTransferBarcode) {
-        this.warehouseTransferBarcode = warehouseTransferBarcode;
+    public ShipmentWarehouseTransferApi warehouseTransferNo(final Long warehouseTransferNo) {
+        this.warehouseTransferNo = warehouseTransferNo;
         return this;
     }
 
@@ -16,7 +16,7 @@ public class ShipmentWarehouseTransferApi {
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/warehouse-transfers/{warehouseTransferBarcode}/shipment", warehouseTransferBarcode)
+                .post("/warehouse-transfers/{warehouseTransferNo}/shipment", warehouseTransferNo)
                 .then().log().all()
                 .statusCode(200);
 

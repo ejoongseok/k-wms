@@ -152,10 +152,6 @@ public class Location {
         }
     }
 
-    Long getWarehouseNo() {
-        return warehouseNo;
-    }
-
     private int getSize() {
         return storageType.getSize();
     }
@@ -313,4 +309,8 @@ public class Location {
         }
     }
 
+    public void setWarehouseNo(final Long warehouseNo) {
+        Assert.notNull(warehouseNo, "창고 번호는 필수입니다.");
+        this.warehouseNo = warehouseNo;
+    }
 }

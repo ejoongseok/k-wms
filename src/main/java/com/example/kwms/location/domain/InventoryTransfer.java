@@ -10,6 +10,9 @@ public class InventoryTransfer {
             final Location targetLocation,
             final LPN lpn,
             final Long quantity) {
+        if (!currentLocation.getWarehouseNo().equals(targetLocation.getWarehouseNo())) {
+            throw new IllegalArgumentException("이동할 재고는 같은 창고에 있어야 합니다.");
+        }
         Assert.notNull(currentLocation, "현재 로케이션은 필수입니다.");
         Assert.notNull(targetLocation, "이동할 로케이션은 필수입니다.");
         Assert.notNull(lpn, "LPN은 필수입니다.");

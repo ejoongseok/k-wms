@@ -6,11 +6,15 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class UpdateWarehouseTransferApi {
     private Long warehouseTransferNo = 1L;
     private long fromWarehouseNo = 1L;
     private long toWarehouseNo = 2L;
     private String barcode = "WT-002";
+    List<UpdateWarehouseTransfer.Request.Product> products = List.of(new UpdateWarehouseTransfer.Request.Product(2L, 2L));
 
     public UpdateWarehouseTransferApi warehouseTransferNo(final Long warehouseTransferNo) {
         this.warehouseTransferNo = warehouseTransferNo;
@@ -32,19 +36,25 @@ public class UpdateWarehouseTransferApi {
         return this;
     }
 
+    public UpdateWarehouseTransferApi products(final List<UpdateWarehouseTransfer.Request.Product> products) {
+        this.products = products;
+        return this;
+    }
+
 
     public Scenario request() {
         final UpdateWarehouseTransfer.Request request = new UpdateWarehouseTransfer.Request(
                 fromWarehouseNo,
                 toWarehouseNo,
-                barcode);
+                barcode,
+                products);
 
         RestAssured
                 .given().log().all()
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .patch("/warehouse-transfers/{warehouseTransferNo}", warehouseTransferNo)
+                .put("/warehouse-transfers/{warehouseTransferNo}", warehouseTransferNo)
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value());
 
