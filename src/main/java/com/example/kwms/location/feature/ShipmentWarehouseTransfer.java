@@ -14,10 +14,10 @@ class ShipmentWarehouseTransfer {
     private final WarehouseTransferRepository warehouseTransferRepository;
 
     @Transactional
-    @PostMapping("/warehouse-transfers/{warehouseTransferBarcode}/shipment")
+    @PostMapping("/warehouse-transfers/{warehouseTransferNo}/shipment")
     public void request(
-            @PathVariable final String warehouseTransferBarcode) {
-        final WarehouseTransfer warehouseTransfer = warehouseTransferRepository.getBy(warehouseTransferBarcode);
+            @PathVariable final Long warehouseTransferNo) {
+        final WarehouseTransfer warehouseTransfer = warehouseTransferRepository.getBy(warehouseTransferNo);
 
         warehouseTransfer.shipment();
     }

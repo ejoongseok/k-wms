@@ -1,5 +1,8 @@
 package com.example.kwms.outbound.domain;
 
+import lombok.Getter;
+
+@Getter
 public enum MaterialType {
     CORRUGATED_BOX("골판지 상자");
 

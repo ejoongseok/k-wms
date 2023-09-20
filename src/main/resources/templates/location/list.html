@@ -17,6 +17,7 @@
     <table class="table table-bordered">
         <thead>
         <tr>
+            <th>창고</th>
             <th>로케이션 번호</th>
             <th>로케이션 바코드</th>
             <th>유형</th>
@@ -44,6 +45,7 @@
                 data.forEach(order => {
                     let row = `
                         <tr>
+                            <td>${order.warehouseName}</td>
                             <td>${order.locationNo}</td>
                             <td>${order.locationBarcode}</td>
                             <td>${order.storageType}</td>

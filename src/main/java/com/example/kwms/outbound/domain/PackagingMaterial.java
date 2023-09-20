@@ -17,6 +17,7 @@ import org.springframework.util.Assert;
 
 @Entity
 @Table(name = "packaging_material")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PackagingMaterial {
     @Id
@@ -28,7 +29,7 @@ public class PackagingMaterial {
     @Column(name = "name", nullable = false)
     @Comment("포장재 이름")
     private String name;
-    @Column(name = "code", nullable = false)
+    @Column(name = "code", nullable = false, unique = true)
     @Comment("포장재 코드")
     private String code;
     @Embedded

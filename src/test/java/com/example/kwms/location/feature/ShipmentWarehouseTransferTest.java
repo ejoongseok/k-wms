@@ -49,10 +49,10 @@ public class ShipmentWarehouseTransferTest extends ApiTest {
 
         Scenario
                 .shipmentWarehouseTransfer()
-                .warehouseTransferBarcode(warehouseTransferBarcode)
+                .warehouseTransferNo(1L)
                 .request();
 
-        assertThat(warehouseTransferRepository.getBy(warehouseTransferBarcode).getShippedAt()).isNotNull();
+        assertThat(warehouseTransferRepository.getBy(1L).getShippedAt()).isNotNull();
     }
 
 }

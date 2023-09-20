@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>창고</title>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet">
+    <script crossorigin="anonymous"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+            src="https://code.jquery.com/jquery-3.7.1.js"></script>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="mb-4">창고 상세 정보</h1>
+
+    <!-- 발주서 기본 정보 -->
+    <h4>창고 정보</h4>
+    <div id="orderInfo">
+        <!-- 발주서 번호, 발주서명, 설명 등의 기본 정보 동적 표시 예정 -->
+    </div>
+
+    <div class="d-flex justify-content-end mb-4">
+        <a class="btn btn-secondary" href="/web/warehouses" id="backToList" style="margin-right: 20px;">목록</a>
+        <a class="btn btn-primary" id="updateButton"
+           th:href="@{'/web/warehouses/' + ${warehouseNo} + '/update'}">수정</a>
+    </div>
+    <input id="warehouseNo" th:value="${warehouseNo}" type="hidden">
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        let warehouseNo = $("#warehouseNo").val();
+        if (warehouseNo) {
+            // inboundNo 값을 사용하여 상세 정보를 서버에서 가져오는 AJAX 호출을 여기에 수행합니다.
+            $.ajax({
+                url: '/warehouses/' + warehouseNo,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    // 발주서 정보 표시
+                    $("#orderInfo").html(`
+                        <p><strong>창고 번호:</strong> ${data.warehouseNo}</p>
+                        <p><strong>창고명:</strong> ${data.name}</p>
+                        <p><strong>주소:</strong> ${data.address}</p>
+                        <p><strong>전화번호:</strong> ${data.telNumber}</p>
+                        <p><strong>담당자:</strong> ${data.managerName}</p>
+                        <p><strong>담당자 연락처:</strong> ${data.managerTelNumber}</p>
+                        <p><strong>비고:</strong> ${data.description}</p>
+                    `);
+                },
+                error: function (error) {
+                    alert("데이터를 불러오는 데 실패했습니다.");
+                    location.href = '/web/warehouses';
+                }
+            });
+
+        } else {
+            alert('창고 번호가 제공되지 않았습니다.');
+        }
+    });
+</script>
+</body>
+</html>

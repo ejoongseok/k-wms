@@ -91,6 +91,7 @@
                 success: function (data) {
                     // 발주서 정보 표시
                     $("#orderInfo").html(`
+                        <p><strong>창고:</strong> ${data.warehouseName}</p>
                         <p><strong>로케이션 번호:</strong> ${data.locationNo}</p>
                         <p><strong>로케이션 바코드:</strong> ${data.locationBarcode}</p>
                         <p><strong>유형:</strong> ${data.storageTypeDescription}</p>
@@ -162,16 +163,19 @@
                     $("#inventoryListTable").show();
                     $("#inventoryList").empty();
                     data.forEach(inventory => {
-                        let row = `
+                        if (inventory.quantity != 0) {
+                            let row = `
                         <tr>
                             <td>${inventory.productNo}</td>
                             <td>${inventory.productName}</td>
                             <td>${inventory.lpnBarcode}</td>
                             <td>${inventory.quantity}</td>
                             <td><a href="/web/locations/${locationNo}/adjust-inventories/${inventory.inventoryNo}" class="btn btn-info">재고 변경</a></td>
+                            <td><a href="/web/locations/${locationNo}/transfer-inventories/${inventory.inventoryNo}" class="btn btn-info">재고 이동</a></td>
                         </tr>
                     `;
-                        $("#inventoryList").append(row);
+                            $("#inventoryList").append(row);
+                        }
                     });
                 },
                 error: function (error) {

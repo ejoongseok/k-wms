@@ -14,10 +14,10 @@ class ReceiveWarehouseTransfer {
     private final WarehouseTransferRepository warehouseTransferRepository;
 
     @Transactional
-    @PostMapping("/warehouse-transfers/{warehouseTransferBarcode}/receive")
+    @PostMapping("/warehouse-transfers/{warehouseTransferNo}/receive")
     public void request(
-            @PathVariable final String warehouseTransferBarcode) {
-        final WarehouseTransfer warehouseTransfer = warehouseTransferRepository.getBy(warehouseTransferBarcode);
+            @PathVariable final Long warehouseTransferNo) {
+        final WarehouseTransfer warehouseTransfer = warehouseTransferRepository.getBy(warehouseTransferNo);
 
         warehouseTransfer.receive();
     }

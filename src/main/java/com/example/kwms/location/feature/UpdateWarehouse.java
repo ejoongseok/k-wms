@@ -6,8 +6,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UpdateWarehouse {
     private final WarehouseRepository warehouseRepository;
 
-    @PatchMapping("/warehouses/{warehouseNo}")
+    @PutMapping("/warehouses/{warehouseNo}")
     @Transactional
     public void request(
             @PathVariable final Long warehouseNo,

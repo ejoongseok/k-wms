@@ -2,6 +2,7 @@ package com.example.kwms.location.feature.query;
 
 import com.example.kwms.location.domain.Location;
 import com.example.kwms.location.domain.LocationRepository;
+import com.example.kwms.location.domain.WarehouseRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,12 +18,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GetLocationNo {
     private final LocationRepository locationRepository;
+    private final WarehouseRepository warehouseRepository;
 
     @GetMapping("/locations/{locationNo}")
     @Transactional(readOnly = true)
     public LocationResponse getLocation(@PathVariable final Long locationNo) {
         final Location location = locationRepository.getBy(locationNo);
         final LocationResponse locationResponse = new LocationResponse(
+                warehouseRepository.getBy(location.getWarehouseNo()).getName(),
                 null == location.getParent() ? "" : location.getParent().getLocationBarcode(),
                 location.getLocationNo(),
                 location.getLocationBarcode(),
@@ -43,6 +46,7 @@ public class GetLocationNo {
         final List<LocationResponse> locationResponses = new ArrayList<>();
         for (final Location child : children) {
             final LocationResponse locationResponse = new LocationResponse(
+                    null,
                     null == child.getParent() ? "" : child.getParent().getLocationBarcode(),
                     child.getLocationNo(),
                     child.getLocationBarcode(),
@@ -63,6 +67,7 @@ public class GetLocationNo {
 
     @Data
     public static class LocationResponse {
+        private final String warehouseName;
         private final String parentBarcode;
         private final Long locationNo;
         private final String locationBarcode;
@@ -74,6 +79,7 @@ public class GetLocationNo {
         private final Long parentLocationNo;
 
         LocationResponse(
+                final String warehouseName,
                 final String parentBarcode,
                 final Long locationNo,
                 final String locationBarcode,
@@ -83,6 +89,7 @@ public class GetLocationNo {
                 final String usagePurposeDescription,
                 final List<LocationResponse> children,
                 final Long parentLocationNo) {
+            this.warehouseName = warehouseName;
             this.parentBarcode = parentBarcode;
             this.locationNo = locationNo;
             this.locationBarcode = locationBarcode;

@@ -14,7 +14,8 @@ class WarehouseTransferTest {
     void shipment() {
         final WarehouseTransferProduct warehouseTransferProduct = new WarehouseTransferProduct(1L, 1L);
         final WarehouseTransfer warehouseTransfer = new WarehouseTransfer(1L, 2L, "WT-001", List.of(warehouseTransferProduct));
-        warehouseTransfer.addLocation(aLocation().inventories(anInventory()).build());
+        final Location location = aLocation().inventories(anInventory()).build();
+        warehouseTransfer.addLocation(location);
 
         warehouseTransfer.shipment();
     }
@@ -24,7 +25,8 @@ class WarehouseTransferTest {
         final WarehouseTransferProduct warehouseTransferProduct = new WarehouseTransferProduct(1L, 1L);
         final WarehouseTransferProduct warehouseTransferProduct2 = new WarehouseTransferProduct(2L, 1L);
         final WarehouseTransfer warehouseTransfer = new WarehouseTransfer(1L, 2L, "WT-001", List.of(warehouseTransferProduct, warehouseTransferProduct2));
-        warehouseTransfer.addLocation(aLocation().inventories(anInventory()).build());
+        final Location location = aLocation().inventories(anInventory()).build();
+        warehouseTransfer.addLocation(location);
 
         assertThatThrownBy(() -> {
             warehouseTransfer.shipment();
@@ -37,7 +39,8 @@ class WarehouseTransferTest {
     void shipment3() {
         final WarehouseTransferProduct warehouseTransferProduct = new WarehouseTransferProduct(1L, 1L);
         final WarehouseTransfer warehouseTransfer = new WarehouseTransfer(1L, 2L, "WT-001", List.of(warehouseTransferProduct));
-        warehouseTransfer.addLocation(aLocation().inventories(anInventory()).build());
+        final Location location = aLocation().inventories(anInventory()).build();
+        warehouseTransfer.addLocation(location);
         warehouseTransfer.shipment();
         assertThatThrownBy(() -> {
             warehouseTransfer.shipment();

@@ -59,4 +59,8 @@ public class WarehouseTransferProduct {
         this.productNo = productNo;
         this.quantity = quantity;
     }
+
+    public void unassignWarehouseTransfer() {
+        warehouseTransfer = null;
+    }
 }
