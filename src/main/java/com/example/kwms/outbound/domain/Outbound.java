@@ -65,9 +65,9 @@ public class Outbound {
     @Column(name = "cancel_reason")
     @Comment("출고 취소 사유")
     private String cancelReason;
-    @Column(name = "cancelled_at")
+    @Column(name = "canceled_at")
     @Comment("출고 취소 일시")
-    private LocalDateTime cancelledAt;
+    private LocalDateTime canceledAt;
     @Column(name = "picked_at")
     @Comment("피킹 완료 일시")
     private LocalDateTime pickedAt;
@@ -274,8 +274,8 @@ public class Outbound {
         }
     }
 
-    public void cancelled(final String cancelReason) {
-        cancelledAt = LocalDateTime.now();
+    public void canceled(final String cancelReason) {
+        canceledAt = LocalDateTime.now();
         this.cancelReason = cancelReason;
     }
 
@@ -315,7 +315,7 @@ public class Outbound {
     }
 
     public boolean isCanceled() {
-        return null != cancelledAt && null != cancelReason;
+        return null != canceledAt && null != cancelReason;
     }
 
     public void scanToPick(final Inventory inventory) {
@@ -475,7 +475,7 @@ public class Outbound {
         boxHeightInMillimeters = null;
         trackingNumber = null;
         cancelReason = null;
-        cancelledAt = null;
+        canceledAt = null;
         pickingTote = null;
         bulkOutbound = null;
     }

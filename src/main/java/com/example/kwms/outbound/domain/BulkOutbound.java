@@ -158,7 +158,7 @@ public class BulkOutbound {
         final List<Outbound> sortedForPopOptimalOutbounds = sortForPopOptimalOutbounds();
         for (int i = 0; i < quantity; i++) {
             final Outbound outbound = sortedForPopOptimalOutbounds.get(i);
-            outbound.cancelled("대량 출고 제외");
+            outbound.canceled("대량 출고 제외");
             outbound.unassignBulkOutbound();
             outbounds.remove(outbound);
         }

@@ -118,7 +118,7 @@ class OutboundTest {
                 .outboundProducts(anOutboundProduct().pickings(aPicking()))
                 .build();
         final Inventory inventory = anInventory().build();
-        outbound.cancelled("취소");
+        outbound.canceled("취소");
 
         assertThatThrownBy(() -> {
             outbound.scanToPick(inventory);

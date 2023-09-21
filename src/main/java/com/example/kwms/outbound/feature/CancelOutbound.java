@@ -23,7 +23,7 @@ public class CancelOutbound {
             @RequestBody @Valid final Request request) {
         final Outbound outbound = outboundRepository.getBy(outboundNo);
 
-        outbound.cancelled(request.cancelReason);
+        outbound.canceled(request.cancelReason);
     }
 
     public record Request(

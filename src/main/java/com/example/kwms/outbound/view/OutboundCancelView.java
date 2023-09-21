@@ -10,16 +10,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 @RequiredArgsConstructor
-public class OutboundDetailView {
+public class OutboundCancelView {
     private final OutboundRepository outboundRepository;
 
-    @GetMapping("/web/outbounds/{outboundNo}")
+    @GetMapping("/web/outbounds/{outboundNo}/cancel")
     public String outboundListView(
             @PathVariable final Long outboundNo,
             final Model model) {
         final Outbound outbound = outboundRepository.getBy(outboundNo);
         model.addAttribute("outboundNo", outbound.getOutboundNo());
-        model.addAttribute("isCanceled", outbound.isCanceled());
-        return "outbound/detail";
+        return "outbound/outbound-cancel";
     }
 }

@@ -178,37 +178,37 @@ insert into packaging_material (code, material_type, max_weight_in_grams, name, 
                                 outer_height, outer_length, outer_width, weight_in_grams, packaging_material_no)
 values ('NO.13', 'CORRUGATED_BOX', 5000, 'J7', 215, 145, 615, 225, 155, 625, 390, default);
 insert into outbound (box_height_in_millimeters, box_length_in_millimeters, box_width_in_millimeters, bulk_outbound_no,
-                      cancel_reason, cancelled_at, desired_delivery_at, inspected_at, is_priority_delivery, order_no,
+                      cancel_reason, canceled_at, desired_delivery_at, inspected_at, is_priority_delivery, order_no,
                       packaged_weight_in_grams, packed_at, picked_at, picker_no, picking_tote_no,
                       real_packaging_material_no, packaging_material_no, tracking_number, warehouse_no, outbound_no)
 values (NULL, NULL, NULL, NULL, NULL, NULL, '2021-09-30', NULL, true, 6, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, 1,
         default);
 insert into outbound (box_height_in_millimeters, box_length_in_millimeters, box_width_in_millimeters, bulk_outbound_no,
-                      cancel_reason, cancelled_at, desired_delivery_at, inspected_at, is_priority_delivery, order_no,
+                      cancel_reason, canceled_at, desired_delivery_at, inspected_at, is_priority_delivery, order_no,
                       packaged_weight_in_grams, packed_at, picked_at, picker_no, picking_tote_no,
                       real_packaging_material_no, packaging_material_no, tracking_number, warehouse_no, outbound_no)
 values (NULL, NULL, NULL, NULL, NULL, NULL, '2021-09-30', NULL, true, 4, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, 1,
         default);
 insert into outbound (box_height_in_millimeters, box_length_in_millimeters, box_width_in_millimeters, bulk_outbound_no,
-                      cancel_reason, cancelled_at, desired_delivery_at, inspected_at, is_priority_delivery, order_no,
+                      cancel_reason, canceled_at, desired_delivery_at, inspected_at, is_priority_delivery, order_no,
                       packaged_weight_in_grams, packed_at, picked_at, picker_no, picking_tote_no,
                       real_packaging_material_no, packaging_material_no, tracking_number, warehouse_no, outbound_no)
 values (NULL, NULL, NULL, NULL, NULL, NULL, '2021-09-30', NULL, true, 3, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, 1,
         default);
 insert into outbound (box_height_in_millimeters, box_length_in_millimeters, box_width_in_millimeters, bulk_outbound_no,
-                      cancel_reason, cancelled_at, desired_delivery_at, inspected_at, is_priority_delivery, order_no,
+                      cancel_reason, canceled_at, desired_delivery_at, inspected_at, is_priority_delivery, order_no,
                       packaged_weight_in_grams, packed_at, picked_at, picker_no, picking_tote_no,
                       real_packaging_material_no, packaging_material_no, tracking_number, warehouse_no, outbound_no)
 values (NULL, NULL, NULL, NULL, NULL, NULL, '2021-09-30', NULL, true, 2, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, 1,
         default);
 insert into outbound (box_height_in_millimeters, box_length_in_millimeters, box_width_in_millimeters, bulk_outbound_no,
-                      cancel_reason, cancelled_at, desired_delivery_at, inspected_at, is_priority_delivery, order_no,
+                      cancel_reason, canceled_at, desired_delivery_at, inspected_at, is_priority_delivery, order_no,
                       packaged_weight_in_grams, packed_at, picked_at, picker_no, picking_tote_no,
                       real_packaging_material_no, packaging_material_no, tracking_number, warehouse_no, outbound_no)
 values (NULL, NULL, NULL, NULL, NULL, NULL, '2021-09-30', NULL, true, 1, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, 1,
         default);
 insert into outbound (box_height_in_millimeters, box_length_in_millimeters, box_width_in_millimeters, bulk_outbound_no,
-                      cancel_reason, cancelled_at, desired_delivery_at, inspected_at, is_priority_delivery, order_no,
+                      cancel_reason, canceled_at, desired_delivery_at, inspected_at, is_priority_delivery, order_no,
                       packaged_weight_in_grams, packed_at, picked_at, picker_no, picking_tote_no,
                       real_packaging_material_no, packaging_material_no, tracking_number, warehouse_no, outbound_no)
 values (NULL, NULL, NULL, NULL, NULL, NULL, '2021-09-30', NULL, true, 5, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, 1,
@@ -226,7 +226,7 @@ values (2, NULL, 4, 1, 1500, default);
 insert into outbound_product (outbound_no, picked_at, product_no, quantity, unit_price, outbound_product_no)
 values (4, NULL, 2, 1, 1500, default);
 insert into outbound (box_height_in_millimeters, box_length_in_millimeters, box_width_in_millimeters, bulk_outbound_no,
-                      cancel_reason, cancelled_at, desired_delivery_at, inspected_at, is_priority_delivery, order_no,
+                      cancel_reason, canceled_at, desired_delivery_at, inspected_at, is_priority_delivery, order_no,
                       packaged_weight_in_grams, packed_at, picked_at, picker_no, picking_tote_no,
                       real_packaging_material_no, packaging_material_no, tracking_number, warehouse_no, outbound_no)
 values (NULL, NULL, NULL, NULL, NULL, NULL, '2021-09-30', NULL, true, 7, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, 1,

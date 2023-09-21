@@ -40,7 +40,15 @@
 
     <div class="d-flex justify-content-end mb-4">
         <a class="btn btn-secondary" href="/web/outbounds" id="backToList" style="margin-right: 20px;">목록</a>
-        <button class="btn btn-danger" id="stopButton">출고 중지</button>
+        <!--        <button class="btn btn-danger" id="stopButton">수동 출고</button>-->
+        <div th:if="${isCanceled}">
+            <button class="btn btn-danger" id="stopButton">출고 초기화</button>
+        </div>
+        <div th:if="${!isCanceled}">
+            <a class="btn btn-danger" id="cancel" th:href="@{'/web/outbounds/'+ ${outboundNo} + '/cancel'}">출고 중지</a>
+            <button class="btn btn-dark" id="manualButton">수동 출고</button>
+            <button class="btn btn-success" id="allocateButton">집품 시작</button>
+        </div>
     </div>
     <input id="outboundNo" th:value="${outboundNo}" type="hidden">
 </div>
@@ -58,20 +66,20 @@
                 success: function (data) {
                     // 발주서 정보 표시
                     $("#orderInfo").html(`
-                        <p><strong>창고:</strong> ${data.purchaseOrderNo}</p>
-                        <p><strong>주문번호:</strong> ${data.purchaseOrderNo}</p>
-                        <p><strong>출고번호:</strong> ${data.purchaseOrderNo}</p>
-                        <p><strong>송장번호:</strong> ${data.purchaseOrderNo}</p>
-                        <p><strong>우선순위:</strong> ${data.title}</p>
-                        <p><strong>상태:</strong> ${data.title}</p>
-                        <p><strong>출고희망일자:</strong> ${data.title}</p>
-                        <p><strong>추천 포장재:</strong> ${data.title}</p>
-                        <p><strong>사용한 포장재:</strong> ${data.title}</p>
-                        <p><strong>집품완료일시:</strong> ${data.title}</p>
-                        <p><strong>검수완료일시:</strong> ${data.title}</p>
-                        <p><strong>포장완료일시:</strong> ${data.title}</p>
-                        <p><strong>출고중지일시:</strong> ${data.title}</p>
-                        <p><strong>출고중지사유:</strong> ${data.title}</p>
+                        <p><strong>창고:</strong> ${data.warehouseName}</p>
+                        <p><strong>주문번호:</strong> ${data.orderNo}</p>
+                        <p><strong>출고번호:</strong> ${data.outboundNo}</p>
+                        <p><strong>송장번호:</strong> ${data.trackingNumber}</p>
+                        <p><strong>우선순위:</strong> ${data.priorityType}</p>
+                        <p><strong>상태:</strong> ${data.status}</p>
+                        <p><strong>출고희망일자:</strong> ${data.desiredDeliveryAt}</p>
+                        <p><strong>추천 포장재:</strong> ${data.recommendedPackagingMaterialName}</p>
+                        <p><strong>사용한 포장재:</strong> ${data.realPackagingMaterialName}</p>
+                        <p><strong>집품완료일시:</strong> ${data.pickedAt == null ? "집품전" : data.pickedAt}</p>
+                        <p><strong>검수완료일시:</strong> ${data.inspectedAt == null ? "검수전" : data.inspectedAt}</p>
+                        <p><strong>포장완료일시:</strong> ${data.packedAt == null ? "포장전" : data.packedAt}</p>
+                        <p><strong>출고중지일시:</strong> ${data.canceledAt == null ? "없음" : data.canceledAt}</p>
+                        <p><strong>출고중지사유:</strong> ${data.cancelReason == null ? "없음" : data.cancelReason}</p>
                     `);
 
                     // 발주 상품 정보 표시 (예제)
@@ -81,46 +89,38 @@
                                 <td>${product.productNo}</td>
                                 <td>${product.productName}</td>
                                 <td>${product.quantity}</td>
-                                <td>${product.unitPrice}</td>
-                                <td>${product.description}</td>
-                                <td><a href="/web/purchase-orders/${purchaseOrderNo}/purchase-order-products/${product.purchaseOrderProductNo}/lpns" class="btn btn-info">LPN 관리</a></td>
+                                <td>${product.quantity}</td>
+                                <td>${product.quantity}</td>
+                                <td><a href="/web/outbounds/${outboundNo}/outbound-products/${product.outboundProductNo}/pickings" class="btn btn-info">집품 목록 보기</a></td>
                             </tr>
                         `;
                         $("#productInfo").append(productRow);
                     });
-                    // 입고 상품 정보 표시 (예제)
-                    data.receives.forEach(receive => {
-                        let receiveRow = `
-                            <tr>
-                                <td>${receive.name}</td>
-                                <td>${receive.createdAt}</td>
-                                <td><a href="/web/purchase-orders/${purchaseOrderNo}/receives/${receive.receiveNo}" class="btn btn-info">상세보기</a></td>
-                            </tr>
-                        `;
-                        $("#receiveInfo").append(receiveRow);
-                    });
                 },
                 error: function (error) {
                     alert("데이터를 불러오는 데 실패했습니다.");
-                    location.href = '/web/purchase-orders';
+                    location.href = '/web/outbounds';
                 }
             });
 
-            // 수정 버튼에 orderNo 파라미터 추가
-            $("#updateButton").attr("href", "update.html?orderNo=" + orderNo);
         } else {
             alert('발주서 번호가 제공되지 않았습니다.');
         }
 
-        // 삭제 버튼을 클릭하면 삭제 로직 실행
-        $("#deleteButton").click(function () {
-            if (confirm("정말 삭제하시겠습니까?")) {
-                // 삭제 로직 (예: AJAX를 사용하여 서버에 삭제 요청)
-            }
-        });
-
-        $(document).on('click', '.detailReceiveRow', function () {
-            $(this).closest('tr').remove();
+        // 출고 중지 버튼 클릭 시
+        $("#stopButton").click(function () {
+            // 출고 중지 API 호출
+            $.ajax({
+                url: '/outbounds/' + outboundNo + '/cancel',
+                type: 'POST',
+                success: function (data) {
+                    alert("출고가 중지되었습니다.");
+                    location.reload();
+                },
+                error: function (error) {
+                    alert("출고 중지에 실패했습니다.");
+                }
+            });
         });
     });
 </script>
