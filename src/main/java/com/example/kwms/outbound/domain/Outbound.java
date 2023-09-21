@@ -104,6 +104,9 @@ public class Outbound {
     @Column(name = "picker_no")
     @Comment("집품 작업자 USER_NO")
     private Long pickerNo;
+    @Column(name = "is_manual_outbound")
+    @Comment("수동 출고 여부")
+    private boolean isManualOutbound;
 
     public Outbound(
             final Long warehouseNo,
@@ -515,5 +518,19 @@ public class Outbound {
             throw new IllegalStateException("출고 대기 상태에서만 집품 작업자를 할당할 수 있습니다.");
         }
         pickerNo = userNo;
+    }
+
+    public void manualOutbound() {
+        validateManualOutbound();
+        isManualOutbound = true;
+    }
+
+    private void validateManualOutbound() {
+        if (null != bulkOutbound) {
+            throw new IllegalStateException("대량 출고된 출고는 수동 출고할 수 없습니다.");
+        }
+        if (isManualOutbound) {
+            throw new IllegalStateException("이미 수동 출고된 출고입니다.");
+        }
     }
 }

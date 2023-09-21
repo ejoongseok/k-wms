@@ -45,6 +45,7 @@ public class GetOutbound {
         final LocalDateTime packedAt = outbound.getPackedAt();
         final LocalDateTime canceledAt = outbound.getCanceledAt();
         final String cancelReason = outbound.getCancelReason();
+        final boolean isManualOutbound = outbound.isManualOutbound();
 
         final String status = getStatus(outbound);
         final List<OutboundProduct> outboundProducts = outbound.getOutboundProducts();
@@ -84,6 +85,7 @@ public class GetOutbound {
                     packedAt,
                     canceledAt,
                     cancelReason,
+                    isManualOutbound,
                     products
             );
         return response;
@@ -126,6 +128,7 @@ public class GetOutbound {
             LocalDateTime packedAt,
             LocalDateTime canceledAt,
             String cancelReason,
+            boolean isManualOutbound,
             List<Product> products) {
 
         public record Product(

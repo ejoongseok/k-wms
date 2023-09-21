@@ -24,6 +24,7 @@ public class CancelOutbound {
         final Outbound outbound = outboundRepository.getBy(outboundNo);
 
         outbound.canceled(request.cancelReason);
+        //TOOD 집품이 할당되어있는 상태에서 집품하지 않은 수량만큼은 할당된 재고를 롤백한다.(Optional)
     }
 
     public record Request(

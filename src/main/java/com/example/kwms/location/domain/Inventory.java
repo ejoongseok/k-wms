@@ -155,4 +155,7 @@ public class Inventory {
         quantity -= quantityRequiredForPick;
     }
 
+    public boolean isDisplayInventory() {
+        return UsagePurpose.DISPLAY == location.getUsagePurpose();
+    }
 }

@@ -139,6 +139,7 @@ public class OutboundProduct {
     private List<Inventory> filterAvailableInventories(final Long productNo, final List<Inventory> inventories) {
         return inventories.stream()
                 .filter(i -> i.getProductNo().equals(productNo))
+                .filter(Inventory::isDisplayInventory)
                 .filter(Inventory::hasInventory)
                 .filter(Inventory::isFresh)
                 .toList();

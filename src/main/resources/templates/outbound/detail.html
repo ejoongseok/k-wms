@@ -46,8 +46,10 @@
         </div>
         <div th:if="${!isCanceled}">
             <a class="btn btn-danger" id="cancel" th:href="@{'/web/outbounds/'+ ${outboundNo} + '/cancel'}">출고 중지</a>
-            <button class="btn btn-dark" id="manualButton">수동 출고</button>
             <button class="btn btn-success" id="allocateButton">집품 시작</button>
+        </div>
+        <div th:if="${!isManualOutbound}">
+            <button class="btn btn-dark" id="manualButton">수동 출고</button>
         </div>
     </div>
     <input id="outboundNo" th:value="${outboundNo}" type="hidden">
@@ -80,6 +82,7 @@
                         <p><strong>포장완료일시:</strong> ${data.packedAt == null ? "포장전" : data.packedAt}</p>
                         <p><strong>출고중지일시:</strong> ${data.canceledAt == null ? "없음" : data.canceledAt}</p>
                         <p><strong>출고중지사유:</strong> ${data.cancelReason == null ? "없음" : data.cancelReason}</p>
+                        <p><strong>출고여부:</strong> ${data.isManualOutbound ? "수동" : "자동"}</p>
                     `);
 
                     // 발주 상품 정보 표시 (예제)
@@ -107,18 +110,18 @@
             alert('발주서 번호가 제공되지 않았습니다.');
         }
 
-        // 출고 중지 버튼 클릭 시
-        $("#stopButton").click(function () {
-            // 출고 중지 API 호출
+        // 수동 출고 버튼 클릭 시
+        $("#manualButton").click(function () {
+            // 수동 출고 API 호출
             $.ajax({
-                url: '/outbounds/' + outboundNo + '/cancel',
+                url: '/outbounds/' + outboundNo + '/manual',
                 type: 'POST',
                 success: function (data) {
-                    alert("출고가 중지되었습니다.");
+                    alert("수동 출고로 변경되었습니다.");
                     location.reload();
                 },
                 error: function (error) {
-                    alert("출고 중지에 실패했습니다.");
+                    alert("수동 출고 변경에 실패했습니다.");
                 }
             });
         });

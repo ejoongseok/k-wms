@@ -20,6 +20,7 @@ public class OutboundDetailView {
         final Outbound outbound = outboundRepository.getBy(outboundNo);
         model.addAttribute("outboundNo", outbound.getOutboundNo());
         model.addAttribute("isCanceled", outbound.isCanceled());
+        model.addAttribute("isManualOutbound", outbound.isManualOutbound());
         return "outbound/detail";
     }
 }
