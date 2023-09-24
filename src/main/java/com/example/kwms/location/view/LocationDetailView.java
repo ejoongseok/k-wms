@@ -2,6 +2,10 @@ package com.example.kwms.location.view;
 
 import com.example.kwms.location.domain.Location;
 import com.example.kwms.location.domain.LocationRepository;
+import com.example.kwms.location.domain.StorageType;
+import com.example.kwms.outbound.domain.OutboundRepository;
+import com.example.kwms.outbound.domain.Picking;
+import com.example.kwms.outbound.domain.PickingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,10 +13,16 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Controller
 @RequiredArgsConstructor
 public class LocationDetailView {
     private final LocationRepository locationRepository;
+    private final OutboundRepository outboundRepository;
+    private final PickingRepository pickingRepository;
 
     @GetMapping("/web/locations/{locationNo}")
     @Transactional(readOnly = true)
@@ -24,9 +34,23 @@ public class LocationDetailView {
         model.addAttribute("locationBarcode", location.getLocationBarcode());
         model.addAttribute("parentLocationNo", null == location.getParent() ? null : location.getParent().getLocationNo());
         model.addAttribute("hasChildren", !location.getChildren().isEmpty());
-        // TODO 나중에는 해당로케이션 혹은 하위로케이션에 집품하는 재고가 없는지 확인해야됌.
-        model.addAttribute("isUpdatable", true);
+
+        final Set<Long> inventoryNos = location.getAllInventories().stream()
+                .map(inventory -> inventory.getInventoryNo())
+                .collect(Collectors.toUnmodifiableSet());
+        final List<Picking> pickings = pickingRepository.listByInventoryNos(inventoryNos);
+        final boolean isUpdatable = pickings.stream().allMatch(Picking::isPicked);
+        model.addAttribute("isUpdatable", isUpdatable);
+        final boolean isPickingTote = isPickingTote(location);
+        model.addAttribute("isPickingTote", isPickingTote);
         return "location/detail";
+    }
+
+    private boolean isPickingTote(final Location location) {
+        if (StorageType.TOTE == location.getStorageType()) {
+            return outboundRepository.findBy(location.getLocationBarcode()).isPresent();
+        }
+        return false;
     }
 
 }

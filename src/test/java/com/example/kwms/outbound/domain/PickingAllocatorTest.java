@@ -1,6 +1,7 @@
 package com.example.kwms.outbound.domain;
 
 import com.example.kwms.location.domain.Inventory;
+import com.example.kwms.location.domain.UsagePurpose;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -52,32 +53,32 @@ class PickingAllocatorTest {
                         .inventoryNo(1L)
                         .quantity(4L)
                         .lpn(aLPN().expiringAt(now.plusDays(3L)))
-                        .location(aLocation().locationBarcode("A1"))
+                        .location(aLocation().locationBarcode("A1").usagePurpose(UsagePurpose.DISPLAY))
                         .build()
                 ,
                 anInventory()
                         .inventoryNo(2L)
                         .quantity(3L)
                         .lpn(aLPN().expiringAt(now.plusDays(1L)))
-                        .location(aLocation().locationBarcode("A2"))
+                        .location(aLocation().locationBarcode("A2").usagePurpose(UsagePurpose.DISPLAY))
                         .build()
                 ,
                 anInventory()
                         .inventoryNo(3L)
                         .quantity(4L)
                         .lpn(aLPN().expiringAt(now.plusDays(1L)))
-                        .location(aLocation().locationBarcode("A3"))
+                        .location(aLocation().locationBarcode("A3").usagePurpose(UsagePurpose.DISPLAY))
                         .build()
                 ,
                 anInventory()
                         .inventoryNo(4L)
                         .quantity(4L)
                         .lpn(aLPN().expiringAt(now.plusDays(1L)))
-                        .location(aLocation().locationBarcode("A1-1"))
+                        .location(aLocation().locationBarcode("A1-1").usagePurpose(UsagePurpose.DISPLAY))
                         .build()
                 ,
-                anInventory().inventoryNo(5L).lpn(aLPN().expiringAt(now.minusDays(1L))).build(),
-                anInventory().inventoryNo(6L).quantity(0L).build()
+                anInventory().inventoryNo(5L).lpn(aLPN().expiringAt(now.minusDays(1L))).location(aLocation().locationBarcode("A1-1").usagePurpose(UsagePurpose.DISPLAY)).build(),
+                anInventory().inventoryNo(6L).quantity(0L).location(aLocation().locationBarcode("A1-1").usagePurpose(UsagePurpose.DISPLAY)).build()
         );
     }
 

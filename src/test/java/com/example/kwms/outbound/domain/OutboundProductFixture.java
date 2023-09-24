@@ -46,6 +46,7 @@ public class OutboundProductFixture {
     public OutboundProduct build() {
 
         return new OutboundProduct(
+                outboundProductNo,
                 productNo,
                 orderQuantity,
                 unitPrice,

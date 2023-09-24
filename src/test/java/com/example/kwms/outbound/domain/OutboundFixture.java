@@ -19,6 +19,7 @@ public class OutboundFixture {
     private List<OutboundProductFixture> outboundProducts = List.of(anOutboundProduct());
     private PackagingMaterialFixture packagingMaterial;
     private LocationFixture pickingTote = aLocation();
+    private Long pickerNo = 1L;
 
     public static OutboundFixture anOutbound() {
         return new OutboundFixture();
@@ -65,6 +66,11 @@ public class OutboundFixture {
         return this;
     }
 
+    public OutboundFixture pickerNo(final Long pickerNo) {
+        this.pickerNo = pickerNo;
+        return this;
+    }
+
 
     public Outbound build() {
         return new Outbound(
@@ -75,7 +81,8 @@ public class OutboundFixture {
                 isPriorityDelivery,
                 desiredDeliveryAt,
                 buildPackagingMaterial(),
-                null == pickingTote ? null : pickingTote.build()
+                null == pickingTote ? null : pickingTote.build(),
+                null == pickerNo ? null : pickerNo
         );
     }
 

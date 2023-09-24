@@ -46,10 +46,23 @@
         </div>
         <div th:if="${!isCanceled}">
             <a class="btn btn-danger" id="cancel" th:href="@{'/web/outbounds/'+ ${outboundNo} + '/cancel'}">출고 중지</a>
+        </div>
+        <div th:if="${!isCanceled && !hasPickings && hasPicker}">
             <button class="btn btn-success" id="allocateButton">집품 시작</button>
+        </div>
+        <div th:if="${!isCanceled && !hasPickings && !hasPickingTote && !hasPicker}">
+            <a class="btn btn-info" id="split" th:href="@{'/web/outbounds/'+ ${outboundNo} + '/split'}">출고 분리</a>
+        </div>
+        <div th:if="${!hasPickingTote && hasPicker}">
+            <a class="btn btn-info" id="allocateToteButton"
+               th:href="@{'/web/outbounds/'+ ${outboundNo} + '/allocate-picking-tote'}">집품 토트 배정</a>
         </div>
         <div th:if="${!isManualOutbound}">
             <button class="btn btn-dark" id="manualButton">수동 출고</button>
+        </div>
+        <div th:if="${!hasPicker}">
+            <a class="btn btn-info" id="allocatePickerButton"
+               th:href="@{'/web/outbounds/'+ ${outboundNo} + '/allocate-picker'}">집품 작업자 배정</a>
         </div>
     </div>
     <input id="outboundNo" th:value="${outboundNo}" type="hidden">
@@ -77,27 +90,41 @@
                         <p><strong>출고희망일자:</strong> ${data.desiredDeliveryAt}</p>
                         <p><strong>추천 포장재:</strong> ${data.recommendedPackagingMaterialName}</p>
                         <p><strong>사용한 포장재:</strong> ${data.realPackagingMaterialName}</p>
-                        <p><strong>집품완료일시:</strong> ${data.pickedAt == null ? "집품전" : data.pickedAt}</p>
-                        <p><strong>검수완료일시:</strong> ${data.inspectedAt == null ? "검수전" : data.inspectedAt}</p>
-                        <p><strong>포장완료일시:</strong> ${data.packedAt == null ? "포장전" : data.packedAt}</p>
+                        <p><strong>집품완료일시:</strong> ${data.pickedAt == null ? "" : data.pickedAt}</p>
+                        <p><strong>검수완료일시:</strong> ${data.inspectedAt == null ? "" : data.inspectedAt}</p>
+                        <p><strong>포장완료일시:</strong> ${data.packedAt == null ? "" : data.packedAt}</p>
                         <p><strong>출고중지일시:</strong> ${data.canceledAt == null ? "없음" : data.canceledAt}</p>
                         <p><strong>출고중지사유:</strong> ${data.cancelReason == null ? "없음" : data.cancelReason}</p>
                         <p><strong>출고여부:</strong> ${data.isManualOutbound ? "수동" : "자동"}</p>
+                        <p><strong>집품 토트:</strong> ${data.pickingTote}</p>
                     `);
 
                     // 발주 상품 정보 표시 (예제)
                     data.products.forEach(product => {
-                        let productRow = `
+                        if (product.hasPickings) {
+                            let productRow = `
                             <tr>
                                 <td>${product.productNo}</td>
                                 <td>${product.productName}</td>
                                 <td>${product.quantity}</td>
-                                <td>${product.quantity}</td>
-                                <td>${product.quantity}</td>
+                                <td>${product.pickingStatus}</td>
+                                <td>현재/전체(${product.totalPickedQuantity} / ${product.totalRequiredQuantity})</td>
                                 <td><a href="/web/outbounds/${outboundNo}/outbound-products/${product.outboundProductNo}/pickings" class="btn btn-info">집품 목록 보기</a></td>
                             </tr>
                         `;
-                        $("#productInfo").append(productRow);
+                            $("#productInfo").append(productRow);
+                        } else {
+                            let productRow = `
+                            <tr>
+                                <td>${product.productNo}</td>
+                                <td>${product.productName}</td>
+                                <td>${product.quantity}</td>
+                                <td>집품전</td>
+                                <td>집품전</td>
+                            </tr>
+                        `;
+                            $("#productInfo").append(productRow);
+                        }
                     });
                 },
                 error: function (error) {
@@ -122,6 +149,22 @@
                 },
                 error: function (error) {
                     alert("수동 출고 변경에 실패했습니다.");
+                }
+            });
+        });
+
+        //allocateButton
+        $("#allocateButton").click(function () {
+            // 수동 출고 API 호출
+            $.ajax({
+                url: '/outbounds/' + outboundNo + '/pickings',
+                type: 'POST',
+                success: function (data) {
+                    alert("집품이 시작되었습니다.");
+                    location.reload();
+                },
+                error: function (error) {
+                    alert("집품 시작에 실패했습니다.");
                 }
             });
         });

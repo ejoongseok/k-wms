@@ -104,4 +104,15 @@ public class Picking {
             throw new IllegalArgumentException("이미 집품이 완료된 피킹입니다.");
         }
     }
+
+    public void completePicking() {
+        validateCompletePicking();
+        pickedQuantity = quantityRequiredForPick;
+    }
+
+    private void validateCompletePicking() {
+        if (isPicked()) {
+            throw new IllegalArgumentException("이미 집품이 완료된 피킹입니다.");
+        }
+    }
 }

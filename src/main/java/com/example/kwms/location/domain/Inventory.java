@@ -33,6 +33,7 @@ public class Inventory {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_no", nullable = false)
     @Comment("로케이션 번호")
+    @Getter
     private Location location;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lpn_no", nullable = false)

@@ -167,4 +167,93 @@ class OutboundTest {
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("스캔한 재고는 집품목록에 할당되어 있지 않습니다.");
     }
+
+    @Test
+    @DisplayName("집품 수동 완료처리")
+    void manualCompletePicking() {
+        final Outbound outbound = anOutbound()
+                .outboundProducts(anOutboundProduct().pickings(aPicking().quantityRequiredForPick(2L)))
+                .build();
+
+        assertThat(outbound.getPickingTote().getInventories()).isEmpty();
+        assertThat(outbound.isPicked()).isEqualTo(false);
+        outbound.manualCompletePicking(1L);
+        assertThat(outbound.getPickingTote().getInventories()).hasSize(1);
+        assertThat(outbound.getPickingTote().getInventories().get(0).getQuantity()).isEqualTo(2L);
+        assertThat(outbound.isPicked()).isEqualTo(true);
+    }
+
+    @Test
+    @DisplayName("집품 수동 완료처리")
+    void manualCompletePicking2() {
+        final Outbound outbound = anOutbound()
+                .outboundProducts(anOutboundProduct().pickings(aPicking().quantityRequiredForPick(2L)))
+                .build();
+        final Inventory inventory = anInventory().build();
+
+        outbound.scanToPick(inventory);
+
+        assertThat(outbound.getPickingTote().getInventories()).hasSize(1);
+        assertThat(outbound.getPickingTote().getInventories().get(0).getQuantity()).isEqualTo(1L);
+        assertThat(outbound.isPicked()).isEqualTo(false);
+        outbound.manualCompletePicking(1L);
+        assertThat(outbound.getPickingTote().getInventories()).hasSize(1);
+        assertThat(outbound.getPickingTote().getInventories().get(0).getQuantity()).isEqualTo(2L);
+        assertThat(outbound.isPicked()).isEqualTo(true);
+    }
+
+    @Test
+    @DisplayName("집품 수동 완료처리 - 이미 완료처리된 피킹은 예외가 발생한다.")
+    void manualCompletePicking3() {
+        final Outbound outbound = anOutbound()
+                .outboundProducts(anOutboundProduct().pickings(aPicking().quantityRequiredForPick(2L)))
+                .build();
+
+        outbound.manualCompletePicking(1L);
+        assertThatThrownBy(() -> {
+            outbound.manualCompletePicking(1L);
+        }).isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("이미 집품이 완료된 출고상품입니다.");
+    }
+
+    @Test
+    @DisplayName("집품 수동 완료처리 - 출고 중지된 출고는 집품할 수 없다.")
+    void manualCompletePicking4() {
+        final Outbound outbound = anOutbound()
+                .outboundProducts(anOutboundProduct().pickings(aPicking().quantityRequiredForPick(2L)))
+                .build();
+        outbound.canceled("");
+
+        assertThatThrownBy(() -> {
+            outbound.manualCompletePicking(1L);
+        }).isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("취소된 출고는 피킹할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("집품 수동 완료처리 - 집품이 할당되지 않은 출고상품은 집품 완료 할 수 없다.")
+    void manualCompletePicking5() {
+        final Outbound outbound = anOutbound()
+                .build();
+
+        assertThatThrownBy(() -> {
+            outbound.manualCompletePicking(1L);
+        }).isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("집품 목록이 할당된 상태에서만 집품할 수 있습니다.");
+    }
+
+    @Test
+    @DisplayName("집품 수동 완료처리 - 집품할 토트가 할당되지 않은 출고상품은 집품 완료 할 수 없다.")
+    void manualCompletePicking6() {
+        final Outbound outbound = anOutbound()
+                .outboundProducts(anOutboundProduct().pickings(aPicking().quantityRequiredForPick(2L)))
+                .pickingTote(null)
+                .build();
+
+        assertThatThrownBy(() -> {
+            outbound.manualCompletePicking(1L);
+        }).isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("토트가 할당되지 않은 출고는 집품할 수 없습니다.");
+    }
+
 }

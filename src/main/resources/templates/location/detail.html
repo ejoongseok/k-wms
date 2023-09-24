@@ -29,6 +29,7 @@
                 <th>상품 명</th>
                 <th>LPN 바코드</th>
                 <th>수량</th>
+                <th>집품에 할당된 수량</th>
             </tr>
             </thead>
             <tbody id="inventoryList">
@@ -62,7 +63,7 @@
     </div>
 
     <div class="d-flex justify-content-end mb-4">
-        <div th:if="${isUpdatable}">
+        <div th:if="${isUpdatable && !isPickingTote}">
             <a class="btn btn-primary" id="updatePurposeUsageButton"
                th:href="@{'/web/locations/' + ${locationNo} + '/update-usage-purpose'}">용도 변경</a>
             <a class="btn btn-primary" id="updateBarcodeButton"
@@ -163,18 +164,33 @@
                     $("#inventoryListTable").show();
                     $("#inventoryList").empty();
                     data.forEach(inventory => {
-                        if (inventory.quantity != 0) {
-                            let row = `
+                        if (inventory.quantity != 0 || inventory.allocatedQuantity != 0) {
+                            if (inventory.allocatedQuantity != 0) {
+                                let row = `
                         <tr>
                             <td>${inventory.productNo}</td>
                             <td>${inventory.productName}</td>
                             <td>${inventory.lpnBarcode}</td>
                             <td>${inventory.quantity}</td>
+                            <td>${inventory.allocatedQuantity}</td>
+                        </tr>
+                    `;
+                                $("#inventoryList").append(row);
+                            } else {
+
+                                let row = `
+                        <tr>
+                            <td>${inventory.productNo}</td>
+                            <td>${inventory.productName}</td>
+                            <td>${inventory.lpnBarcode}</td>
+                            <td>${inventory.quantity}</td>
+                            <td>${inventory.allocatedQuantity}</td>
                             <td><a href="/web/locations/${locationNo}/adjust-inventories/${inventory.inventoryNo}" class="btn btn-info">재고 변경</a></td>
                             <td><a href="/web/locations/${locationNo}/transfer-inventories/${inventory.inventoryNo}" class="btn btn-info">재고 이동</a></td>
                         </tr>
                     `;
-                            $("#inventoryList").append(row);
+                                $("#inventoryList").append(row);
+                            }
                         }
                     });
                 },

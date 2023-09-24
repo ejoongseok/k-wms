@@ -30,7 +30,9 @@ import com.example.kwms.outbound.feature.api.CreateOutboundApi;
 import com.example.kwms.outbound.feature.api.CreatePackagingMaterialApi;
 import com.example.kwms.outbound.feature.api.InspectedBulkOutboundApi;
 import com.example.kwms.outbound.feature.api.InspectedOutboundApi;
+import com.example.kwms.outbound.feature.api.ManualAllocatePickerApi;
 import com.example.kwms.outbound.feature.api.ManualOutboundApi;
+import com.example.kwms.outbound.feature.api.ManualOutboundProductPickingCompleteApi;
 import com.example.kwms.outbound.feature.api.PackedBulkOutboundApi;
 import com.example.kwms.outbound.feature.api.PackedOutboundApi;
 import com.example.kwms.outbound.feature.api.PickingBulkOutboundApi;
@@ -205,5 +207,13 @@ public class Scenario {
 
     public static ManualOutboundApi manualOutbound() {
         return new ManualOutboundApi();
+    }
+
+    public static ManualOutboundProductPickingCompleteApi manualOutboundProductPickingComplete() {
+        return new ManualOutboundProductPickingCompleteApi();
+    }
+
+    public static ManualAllocatePickerApi manualAllocatePicker() {
+        return new ManualAllocatePickerApi();
     }
 }

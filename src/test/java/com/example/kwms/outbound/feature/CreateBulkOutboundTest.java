@@ -33,7 +33,7 @@ public class CreateBulkOutboundTest extends ApiTest {
         Scenario.
                 createPackagingMaterial().request();
         Scenario.createOutbound().request();
-        Scenario.createOutbound().request();
+        Scenario.createOutbound().orderNo(99L).request();
     }
 
     @Test

@@ -38,6 +38,12 @@ public class OrderClient {
         orders.put(7L, new Order(7L, createOrderCustomer(),
                 faker.lorem().sentence(),
                 List.of(newOrderProduct(7L, 1L))));
+        orders.put(7L, new Order(8L, createOrderCustomer(),
+                faker.lorem().sentence(),
+                List.of(newOrderProduct(6L, 2L), newOrderProduct(7L, 2L))));
+        orders.put(99L, new Order(99L, createOrderCustomer(),
+                faker.lorem().sentence(),
+                List.of(newOrderProduct(1L, 1L))));
     }
 
     private OrderProduct newOrderProduct(final long productNo, final long orderQuantity) {

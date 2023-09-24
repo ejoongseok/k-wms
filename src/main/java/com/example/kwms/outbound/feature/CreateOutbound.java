@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -41,6 +42,11 @@ public class CreateOutbound {
     @Transactional
     public void request(@RequestBody @Valid final Request request) {
         final Order order = orderClient.getBy(request.orderNo);
+        final Optional<Outbound> byOrderNo = outboundRepository.getByOrderNo(request.orderNo);
+        byOrderNo
+                .ifPresent(outbound -> {
+                    throw new IllegalArgumentException("이미 출고 요청이 완료된 주문입니다. 출고 번호: %d".formatted(outbound.getOutboundNo()));
+                });
         final List<Inventory> inventories = getInventories(request, order.getProductNos());
         final List<PackagingMaterial> packagingMaterials = packagingMaterialRepository.findAll();
         warehouseRepository.findById(request.warehouseNo)

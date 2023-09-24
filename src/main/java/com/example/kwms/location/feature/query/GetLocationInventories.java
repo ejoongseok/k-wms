@@ -3,6 +3,7 @@ package com.example.kwms.location.feature.query;
 import com.example.kwms.location.domain.Inventory;
 import com.example.kwms.location.domain.Location;
 import com.example.kwms.location.domain.LocationRepository;
+import com.example.kwms.outbound.domain.PickingRepository;
 import com.example.kwms.outbound.domain.Product;
 import com.example.kwms.outbound.feature.ProductClient;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.List;
 public class GetLocationInventories {
     private final LocationRepository locationRepository;
     private final ProductClient productClient;
+    private final PickingRepository pickingRepository;
 
     @GetMapping("/locations/{locationBarcode}/inventories")
     @Transactional(readOnly = true)
@@ -34,7 +36,11 @@ public class GetLocationInventories {
             final String productName = product.getProductName();
             final String lpnBarcode = inventory.getLpn().getLpnBarcode();
             final Long quantity = inventory.getQuantity();
-            final InventoryResponse inventoryResponse = new InventoryResponse(inventoryNo, productNo, productName, lpnBarcode, quantity);
+            final long allocatedQuantity = pickingRepository.listByInventoryNo(inventory.getInventoryNo()).stream()
+                    .filter(p -> !p.isPicked())
+                    .mapToLong(p -> p.getQuantityRequiredForPick() - p.getPickedQuantity())
+                    .sum();
+            final InventoryResponse inventoryResponse = new InventoryResponse(inventoryNo, productNo, productName, lpnBarcode, quantity, allocatedQuantity);
             inventoryResponses.add(inventoryResponse);
         }
 
@@ -46,7 +52,7 @@ public class GetLocationInventories {
             Long productNo,
             String productName,
             String lpnBarcode,
-            Long quantity
-    ) {
+            Long quantity,
+            Long allocatedQuantity) {
     }
 }

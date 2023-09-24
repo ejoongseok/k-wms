@@ -5,6 +5,7 @@ import com.example.kwms.outbound.domain.Outbound;
 import com.example.kwms.outbound.domain.OutboundProduct;
 import com.example.kwms.outbound.domain.OutboundRepository;
 import com.example.kwms.outbound.domain.PackagingMaterial;
+import com.example.kwms.outbound.domain.Picking;
 import com.example.kwms.outbound.domain.Product;
 import com.example.kwms.outbound.feature.ProductClient;
 import lombok.RequiredArgsConstructor;
@@ -56,11 +57,28 @@ public class GetOutbound {
             final Long productNo = product.getProductNo();
             final String productName = product.getProductName();
             final Long quantity = outboundProduct.getQuantity();
+            final boolean hasPickings = !outboundProduct.getPickings().isEmpty();
+            final String pickingStatus;
+            if (hasPickings) {
+                pickingStatus = outboundProduct.isPicked() ? "피킹 완료" : "피킹 중";
+            } else {
+                pickingStatus = "피킹 대기";
+            }
+            final long totalRequiredQuantity = outboundProduct.getPickings().stream()
+                    .mapToLong(Picking::getQuantityRequiredForPick)
+                    .sum();
+            final long totalPickedQuantity = outboundProduct.getPickings().stream()
+                    .mapToLong(Picking::getPickedQuantity)
+                    .sum();
             final Response.Product responseProduct = new Response.Product(
                     outboundProductNo,
                     productNo,
                     productName,
-                    quantity
+                    quantity,
+                    hasPickings,
+                    pickingStatus,
+                    totalRequiredQuantity,
+                    totalPickedQuantity
             );
             products.add(responseProduct);
         }
@@ -86,7 +104,8 @@ public class GetOutbound {
                     canceledAt,
                     cancelReason,
                     isManualOutbound,
-                    products
+                    products,
+                    null == outbound.getPickingTote() ? "미할당" : outbound.getPickingTote().getLocationBarcode()
             );
         return response;
     }
@@ -95,7 +114,7 @@ public class GetOutbound {
         String status = "";
         if (outbound.isReady()) {
             status = "대기";
-        } else if (!outbound.getPickings().isEmpty() && !outbound.isCanceled() && !outbound.isInspected() && !outbound.isPacked()) {
+        } else if (!outbound.isPicked() && !outbound.getPickings().isEmpty() && !outbound.isCanceled() && !outbound.isInspected() && !outbound.isPacked()) {
             status = "집품 중";
         } else if (outbound.isPicked() && !outbound.isCanceled() && !outbound.isInspected() && !outbound.isPacked()) {
             status = "집품 완료";
@@ -129,13 +148,18 @@ public class GetOutbound {
             LocalDateTime canceledAt,
             String cancelReason,
             boolean isManualOutbound,
-            List<Product> products) {
+            List<Product> products,
+            String pickingTote) {
 
         public record Product(
                 Long outboundProductNo,
                 Long productNo,
                 String productName,
-                Long quantity) {
+                Long quantity,
+                boolean hasPickings,
+                String pickingStatus,
+                Long totalRequiredQuantity,
+                Long totalPickedQuantity) {
         }
     }
 }

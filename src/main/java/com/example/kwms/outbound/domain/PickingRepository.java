@@ -9,4 +9,7 @@ import java.util.Set;
 public interface PickingRepository extends JpaRepository<Picking, Long> {
     @Query("select p from Picking p where p.inventory.inventoryNo in :inventoryNos")
     List<Picking> listByInventoryNos(Set<Long> inventoryNos);
+
+    @Query("select p from Picking p where p.inventory.inventoryNo = :inventoryNo")
+    List<Picking> listByInventoryNo(Long inventoryNo);
 }

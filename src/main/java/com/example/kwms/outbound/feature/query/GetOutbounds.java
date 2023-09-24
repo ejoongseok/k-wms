@@ -34,7 +34,7 @@ public class GetOutbounds {
             String status = "";
             if (outbound.isReady()) {
                 status = "대기";
-            } else if (!outbound.getPickings().isEmpty() && !outbound.isCanceled() && !outbound.isInspected() && !outbound.isPacked()) {
+            } else if (!outbound.isPicked() && !outbound.getPickings().isEmpty() && !outbound.isCanceled() && !outbound.isInspected() && !outbound.isPacked()) {
                 status = "집품 중";
             } else if (outbound.isPicked() && !outbound.isCanceled() && !outbound.isInspected() && !outbound.isPacked()) {
                 status = "집품 완료";

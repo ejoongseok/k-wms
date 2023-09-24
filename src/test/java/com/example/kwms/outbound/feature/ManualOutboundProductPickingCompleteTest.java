@@ -2,29 +2,27 @@ package com.example.kwms.outbound.feature;
 
 import com.example.kwms.common.ApiTest;
 import com.example.kwms.common.Scenario;
+import com.example.kwms.location.domain.UsagePurpose;
 import com.example.kwms.outbound.domain.OutboundRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AllocatePickingToteTest extends ApiTest {
+public class ManualOutboundProductPickingCompleteTest extends ApiTest {
 
     @Autowired
     private OutboundRepository outboundRepository;
 
     @BeforeEach
-    void allocatePickingToteSetUp() {
+    void manualOutboundProductPickingCompleteSetup() {
+        Scenario.createWarehouse().request();
         final String locationBarcode = "TOTE-001";
-        final String pickingTote = "TOTE-002";
         final String lpnBarcode = "LPN-001";
         final Long quantity = 10L;
-        Scenario.createWarehouse().request();
-        Scenario.createLocation().locationBarcode(pickingTote).request();
-        Scenario.createLocation().locationBarcode(locationBarcode).request()
+        Scenario.createLocation().locationBarcode(locationBarcode).usagePurpose(UsagePurpose.DISPLAY).request()
                 .createPurchaseOrder().request()
                 .addReceive().request()
                 .createLPN().lpnBarcode(lpnBarcode).request();
@@ -37,21 +35,22 @@ public class AllocatePickingToteTest extends ApiTest {
                 createPackagingMaterial().request();
         Scenario.createOutbound().request();
         Scenario.manualAllocatePicker().request();
+        Scenario.allocatePicking().request();
+        final String toteBarcode = "TOTE-002";
+        Scenario.createLocation().locationBarcode(toteBarcode).request();
+        Scenario.allocatePickingTote()
+                .toteBarcode(toteBarcode).request();
     }
 
+
     @Test
-    @DisplayName("피킹 토트를 할당한다.")
-    @Transactional
-    void allocatePickingTote() {
+    @DisplayName("수동 출고 상품 피킹 완료")
+    void manualOutboundProductPickingComplete() {
         final Long outboundNo = 1L;
-        final String toteBarcode = "TOTE-002";
 
-        Scenario.allocatePickingTote()
-                .outboundNo(outboundNo)
-                .toteBarcode(toteBarcode).request();
+        Scenario.manualOutboundProductPickingComplete().request();
 
-        assertThat(outboundRepository.getBy(outboundNo).getPickingTote()).isNotNull();
-        assertThat(outboundRepository.getBy(outboundNo).getPickingTote().getLocationBarcode()).isEqualTo(toteBarcode);
+        assertThat(outboundRepository.getBy(outboundNo).isPicked()).isEqualTo(true);
     }
 
 }

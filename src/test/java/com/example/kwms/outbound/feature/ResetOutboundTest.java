@@ -2,6 +2,7 @@ package com.example.kwms.outbound.feature;
 
 import com.example.kwms.common.ApiTest;
 import com.example.kwms.common.Scenario;
+import com.example.kwms.location.domain.UsagePurpose;
 import com.example.kwms.outbound.domain.Outbound;
 import com.example.kwms.outbound.domain.OutboundRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +23,7 @@ public class ResetOutboundTest extends ApiTest {
         final String locationBarcode = "TOTE-001";
         final String lpnBarcode = "LPN-001";
         final Long quantity = 10L;
-        Scenario.createLocation().locationBarcode(locationBarcode).request()
+        Scenario.createLocation().locationBarcode(locationBarcode).usagePurpose(UsagePurpose.DISPLAY).request()
                 .createPurchaseOrder().request()
                 .addReceive().request()
                 .createLPN().lpnBarcode(lpnBarcode).request();
@@ -34,6 +35,7 @@ public class ResetOutboundTest extends ApiTest {
         Scenario.
                 createPackagingMaterial().request();
         Scenario.createOutbound().request();
+        Scenario.manualAllocatePicker().request();
         Scenario.allocatePicking().request();
         final String toteBarcode = "TOTE-002";
         Scenario.createLocation().locationBarcode(toteBarcode).request();

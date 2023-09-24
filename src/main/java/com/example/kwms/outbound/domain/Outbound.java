@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -139,7 +140,8 @@ public class Outbound {
             final Boolean isPriorityDelivery,
             final LocalDate desiredDeliveryAt,
             final PackagingMaterial packagingMaterial,
-            final Location pickingTote) {
+            final Location pickingTote,
+            final Long pickerNo) {
         this.outboundNo = outboundNo;
         this.warehouseNo = warehouseNo;
         recommendedPackagingMaterial = packagingMaterial;
@@ -149,6 +151,7 @@ public class Outbound {
         this.outboundProducts = outboundProducts;
         outboundProducts.forEach(outboundProduct -> outboundProduct.assignOutbound(this));
         this.pickingTote = pickingTote;
+        this.pickerNo = pickerNo;
     }
 
     private void validateConstructor(
@@ -274,6 +277,9 @@ public class Outbound {
         }
         if (null == recommendedPackagingMaterial) {
             throw new IllegalStateException("포장재가 할당되어 있지 않습니다.");
+        }
+        if (null == pickerNo) {
+            throw new IllegalStateException("집품 작업자가 지정되지 않았습니다.");
         }
     }
 
@@ -531,6 +537,69 @@ public class Outbound {
         }
         if (isManualOutbound) {
             throw new IllegalStateException("이미 수동 출고된 출고입니다.");
+        }
+    }
+
+    public void manualCompletePicking(final Long outboundProductNo) {
+        validateCompletePicking(outboundProductNo);
+        final OutboundProduct outboundProduct = getOutboundProductByOutboundProductNo(outboundProductNo);
+
+        for (final Picking picking : outboundProduct.getPickings()) {
+            final Inventory inventory = picking.getInventory();
+            final Optional<Inventory> pickingToteInventory = pickingTote.getInventories().stream()
+                    .filter(inventory1 -> inventory1.getLpn().equals(inventory.getLpn()))
+                    .findFirst();
+            if (pickingToteInventory.isPresent()) {
+                final Inventory pickingToteInventory_ = pickingToteInventory.get();
+                final Long totePickedQuantity = pickingToteInventory_.getQuantity();
+                final Long quantityRequiredForPick = picking.getQuantityRequiredForPick();
+                if (totePickedQuantity == quantityRequiredForPick) {
+                    continue;
+                }
+                final long remainingQuantity = quantityRequiredForPick - totePickedQuantity;
+                pickingTote.addManualInventory(pickingToteInventory_.getLpn(), remainingQuantity);
+            } else {
+                pickingTote.addManualInventory(inventory.getLpn(), picking.getQuantityRequiredForPick());
+            }
+        }
+
+        outboundProduct.completePicking();
+
+        final boolean allPicked = outboundProducts.stream()
+                .allMatch(OutboundProduct::isPicked);
+        if (allPicked) {
+            pickedAt = LocalDateTime.now();
+        }
+    }
+
+    private OutboundProduct getOutboundProductByOutboundProductNo(final Long outboundProductNo) {
+        return outboundProducts.stream()
+                .filter(op -> op.getOutboundProductNo().equals(outboundProductNo))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(
+                        "출고상품이 존재하지 않습니다. 출고 상품 번호: %d".formatted(outboundProductNo)));
+    }
+
+    private void validateCompletePicking(final Long outboundProductNo) {
+        Assert.notNull(outboundProductNo, "출고상품번호는 필수입니다.");
+        final OutboundProduct outboundProduct = getOutboundProductByOutboundProductNo(outboundProductNo);
+        if (outboundProduct.isPicked()) {
+            throw new IllegalStateException("이미 집품이 완료된 출고상품입니다.");
+        }
+        if (null != pickedAt) {
+            throw new IllegalStateException("이미 피킹이 완료된 출고입니다.");
+        }
+        if (isCanceled()) {
+            throw new IllegalStateException("취소된 출고는 피킹할 수 없습니다.");
+        }
+        if (!hasPickings()) {
+            throw new IllegalStateException("집품 목록이 할당된 상태에서만 집품할 수 있습니다.");
+        }
+        if (null == pickingTote) {
+            throw new IllegalStateException("토트가 할당되지 않은 출고는 집품할 수 없습니다.");
+        }
+        if (!pickingTote.isTote()) {
+            throw new IllegalStateException("토트가 아닌 로케이션은 집품할 수 없습니다.");
         }
     }
 }

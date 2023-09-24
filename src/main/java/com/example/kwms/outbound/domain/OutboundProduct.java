@@ -70,10 +70,12 @@ public class OutboundProduct {
 
     @VisibleForTesting
     OutboundProduct(
+            final Long outboundProductNo,
             final Long productNo,
             final Long orderQuantity,
             final Long unitPrice,
             final List<Picking> pickings) {
+        this.outboundProductNo = outboundProductNo;
         this.productNo = productNo;
         quantity = orderQuantity;
         this.unitPrice = unitPrice;
@@ -230,7 +232,7 @@ public class OutboundProduct {
     }
 
     public boolean isPicked() {
-        return pickings.stream()
+        return !pickings.isEmpty() && pickings.stream()
                 .allMatch(Picking::isPicked);
     }
 
@@ -269,5 +271,13 @@ public class OutboundProduct {
 
     public void bulkPicked() {
         pickedAt = LocalDateTime.now();
+    }
+
+    public void completePicking() {
+        if (isPicked()) {
+            throw new IllegalStateException("이미 피킹이 완료된 집품입니다.");
+        }
+        pickedAt = LocalDateTime.now();
+        pickings.forEach(Picking::completePicking);
     }
 }

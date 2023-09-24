@@ -38,7 +38,7 @@ public class PickingBulkOutboundTest extends ApiTest {
         Scenario.
                 createPackagingMaterial().request();
         Scenario.createOutbound().request();
-        Scenario.createOutbound().request();
+        Scenario.createOutbound().orderNo(99L).request();
         Scenario.createBulkOutbound().request();
     }
 

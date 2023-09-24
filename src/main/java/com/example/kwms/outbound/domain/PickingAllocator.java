@@ -23,6 +23,9 @@ public class PickingAllocator {
         if (outbound.hasPickings()) {
             throw new IllegalArgumentException("이미 피킹이 할당된 출고입니다.");
         }
+        if (null == outbound.getPickerNo()) {
+            throw new IllegalArgumentException("집품 작업자가 지정되지 않았습니다.");
+        }
     }
 
     private void deductAllocatedInventory(

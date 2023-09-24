@@ -21,4 +21,7 @@ public interface OutboundRepository extends JpaRepository<Outbound, Long> {
                         "피킹 토트 바코드로 출고를 찾을 수 없습니다. 토트 바코드: %s"
                                 .formatted(pickingToteBarcode)));
     }
+
+    @Query("select o from Outbound o where o.orderNo = :orderNo")
+    Optional<Outbound> getByOrderNo(Long orderNo);
 }
