@@ -49,7 +49,18 @@
                 success: function (data) {
                     // 발주서 정보 표시
                     data.forEach(order => {
-                        if (order.pickingToteBarcode == null) {
+                        if (order.isCanceled) {
+                            let row = `
+                        <tr>
+                            <td>${order.outboundNo}</td>
+                            <td>${order.orderNo}</td>
+                            <td>${order.skuQuantity}</td>
+                            <td>${order.pickingQuantity}</td>
+                            <td>${order.status}</td>
+                        </tr>
+                    `;
+                            $("#orderList").append(row);
+                        } else if (order.pickingToteBarcode == null) {
                             let row = `
                         <tr>
                             <td>${order.outboundNo}</td>

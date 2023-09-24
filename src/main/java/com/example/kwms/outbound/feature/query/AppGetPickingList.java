@@ -39,7 +39,10 @@ public class AppGetPickingList {
             final String status;
             final boolean isPicked = outbound.isPicked();
             final boolean hasPickList = outbound.hasPickings();
-            if (!hasPickList) {
+            final boolean isCanceled = outbound.isCanceled();
+            if (isCanceled) {
+                status = "출고 중지";
+            } else if (!hasPickList) {
                 status = "피킹 할당 전";
             } else if (isPicked) {
                 status = "피킹 완료";
@@ -52,7 +55,8 @@ public class AppGetPickingList {
                     locationBarcode,
                     skuQuantity,
                     pickingQuantity,
-                    status);
+                    status,
+                    isCanceled);
             responses.add(response);
         }
         return responses;
@@ -64,7 +68,8 @@ public class AppGetPickingList {
             String pickingToteBarcode,
             Long skuQuantity,
             Long pickingQuantity,
-            String status) {
+            String status,
+            boolean isCanceled) {
     }
 
 }
