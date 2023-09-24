@@ -12,15 +12,18 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-public class StartPickingAppView {
+public class AppPickingListView {
     private final OutboundRepository outboundRepository;
 
-    @GetMapping("/app/start-picking")
-    public String startPickingAppView(
+    @GetMapping("/app/pickings")
+    public String pickingListView(
             @LoginUserNo final Long userNo,
             final Model model) {
         final List<Outbound> outbounds = outboundRepository.listByPickerNo(userNo);
         model.addAttribute("hasAllocatedPicking", !outbounds.isEmpty());
-        return "app/start-picking";
+        final boolean hasPickingToteAssigned = outbounds.stream()
+                .anyMatch(outbound -> null != outbound.getPickingTote());
+        model.addAttribute("hasPickingToteAssigned", hasPickingToteAssigned);
+        return "app/pickings";
     }
 }
