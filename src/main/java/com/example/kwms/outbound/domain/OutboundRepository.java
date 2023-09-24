@@ -4,6 +4,7 @@ import com.example.kwms.common.NotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface OutboundRepository extends JpaRepository<Outbound, Long> {
@@ -24,4 +25,7 @@ public interface OutboundRepository extends JpaRepository<Outbound, Long> {
 
     @Query("select o from Outbound o where o.orderNo = :orderNo")
     Optional<Outbound> getByOrderNo(Long orderNo);
+
+    @Query("select o from Outbound o where o.pickerNo = :pickerNo")
+    List<Outbound> listByPickerNo(Long pickerNo);
 }
