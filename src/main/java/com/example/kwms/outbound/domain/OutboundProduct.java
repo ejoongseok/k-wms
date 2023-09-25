@@ -50,6 +50,7 @@ public class OutboundProduct {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "outbound_no", nullable = false)
     @Comment("출고 번호")
+    @Getter
     private Outbound outbound;
     @Getter
     @OneToMany(mappedBy = "outboundProduct", cascade = CascadeType.ALL, orphanRemoval = true)

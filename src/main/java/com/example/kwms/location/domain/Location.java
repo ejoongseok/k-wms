@@ -193,6 +193,14 @@ public class Location {
                         () -> inventories.add(new Inventory(this, lpn, quantity)));
     }
 
+    public void adjustPickManualInventory(final LPN lpn, final Long quantity) {
+        validateAddManualInventory(lpn, quantity);
+        findInventory(lpn)
+                .ifPresentOrElse(
+                        inventory -> inventory.adjustInventory(quantity),
+                        () -> inventories.add(new Inventory(this, lpn, quantity)));
+    }
+
     private void validateAddManualInventory(final LPN lpn, final Long quantity) {
         Assert.notNull(lpn, "LPN은 필수입니다.");
         Assert.notNull(quantity, "수량은 필수입니다.");

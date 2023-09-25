@@ -373,6 +373,18 @@ public class Outbound {
         }
     }
 
+    public void appScanToPickManual(final Inventory inventory, final Long quantity) {
+        validateScanToPickManual(inventory, quantity);
+        final OutboundProduct outboundProduct = getOutboundProduct(inventory.getProductNo());
+        outboundProduct.scanToPickManual(inventory, quantity);
+        pickingTote.adjustPickManualInventory(inventory.getLpn(), quantity);
+        final boolean allPicked = outboundProducts.stream()
+                .allMatch(OutboundProduct::isPicked);
+        if (allPicked) {
+            pickedAt = LocalDateTime.now();
+        }
+    }
+
 
     private void validateScanToPickManual(final Inventory inventory, final Long quantity) {
         Assert.notNull(inventory, "스캔할 재고 정보가 없습니다.");

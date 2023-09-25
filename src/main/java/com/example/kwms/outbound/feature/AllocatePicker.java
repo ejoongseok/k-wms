@@ -24,7 +24,8 @@ class AllocatePicker {
         final List<Outbound> outbounds = outboundRepository.findAll();
 
         outbounds.stream()
-                .filter(outbound -> userNo.equals(outbound.getPickerNo()))
+                .filter(o -> !o.isPicked())
+                .filter(o -> userNo.equals(o.getPickerNo()))
                 .findFirst()
                 .ifPresent(outbound -> {
                     throw new RuntimeException("이미 작업자에게 할당된 출고가 있습니다.");

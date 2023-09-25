@@ -44,6 +44,7 @@ public class Picking {
     @ManyToOne(fetch = FetchType.LAZY)
     @Comment("출고 상품")
     @JoinColumn(name = "outbound_product_id")
+    @Getter
     private OutboundProduct outboundProduct;
 
     public Picking(final Inventory inventory, final Long quantityRequiredForPick) {

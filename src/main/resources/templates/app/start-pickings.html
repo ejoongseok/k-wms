@@ -12,109 +12,128 @@
 </head>
 <body>
 
-<div class="container mt-5">
-    <a class="btn btn-primary mb-4" href="/">메인으로</a>
-    <h1 class="mb-4">출고 목록</h1>
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th>출고번호</th>
-            <th>주문번호</th>
-            <th>상품수량</th>
-            <th>주문수량</th>
-            <th>상태</th>
-            <th>토트바코드</th>
-        </tr>
-        </thead>
-        <tbody id="orderList">
-        <!-- 동적으로 행 추가 예정 -->
-        </tbody>
-    </table>
-    <input id="hasAllocatedPicking" th:value="${hasAllocatedPicking}" type="hidden">
-    <div class="d-flex justify-content-end mb-4">
-        <div th:if="${hasAllocatedPicking}">
-            <a class="btn btn-success" href="/app/start-pickings">집품 시작</a>
-        </div>
-    </div>
-</div>
+<div class="container mt-4" id="dataContainer"></div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
     $(document).ready(function () {
         // 서버에서 데이터를 가져오는 예제. 실제 URL은 서버 상황에 따라 변경되어야 합니다.
-        let hasAllocatedPicking = $("#hasAllocatedPicking").val();
-        if (hasAllocatedPicking == "true") {
-            $.ajax({
-                url: '/app/get-picking-list',
-                type: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    // 발주서 정보 표시
-                    data.forEach(order => {
-                        if (order.pickingToteBarcode == null) {
-                            let row = `
-                        <tr>
-                            <td>${order.outboundNo}</td>
-                            <td>${order.orderNo}</td>
-                            <td>${order.skuQuantity}</td>
-                            <td>${order.pickingQuantity}</td>
-                            <td>${order.status}</td>
-                            <td><a href="/web/outbounds/${order.outboundNo}/allocate-picking-tote" class="btn btn-info">집품 토트 배정</a></td>
-                            <td><a class="btn btn-danger" id="cancel" href="/web/outbounds/${order.outboundNo}/cancel">출고 중지</a></td>
-                        </tr>
-                    `;
-                            $("#orderList").append(row);
-                        } else {
-                            let row = `
-                        <tr>
-                            <td>${order.outboundNo}</td>
-                            <td>${order.orderNo}</td>
-                            <td>${order.skuQuantity}</td>
-                            <td>${order.pickingQuantity}</td>
-                            <td>${order.status}</td>
-                            <td>${order.pickingToteBarcode}</td>
-                            <td><a class="btn btn-danger" id="cancel" href="/web/outbounds/${order.outboundNo}/cancel">출고 중지</a></td>
-                        </tr>
-                    `;
-                            $("#orderList").append(row);
-                        }
-                    });
-                },
-                error: function (error) {
-                    alert("데이터를 불러오는 데 실패했습니다.");
-                    location.href = '/web/outbounds';
+        $.ajax({
+            url: '/start-pickings',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                if (data.length === 0) {
+                    alert("집품할 상품이 없습니다.");
+                    location.href = '/app/pickings';
                 }
-            });
-        } else {
-            $.ajax({
-                url: '/outbounds/allocate-picker',
-                type: 'POST',
-                success: function (data) {
-                    $.ajax({
-                        url: '/app/outbounds/picking-for-outbounds',
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function (data) {
-                            for (let outbound of data.outbounds) {
-                                $.ajax({
-                                    url: '/outbounds/${outbound.outboundNo}/pickings',
-                                    type: 'POST',
-                                    success: function (data) {
-                                    },
-                                    error: function (error) {
+                data.forEach(function (location, index) {
+                    let locationCard = $('<div class="card mb-4 location-card"></div>');
+                    if (index !== 0) locationCard.hide();
+                    let cardHeader = $('<div class="card-header"></div>').append('<h5>Location: <span class="badge bg-secondary">' + location.locationBarcode + '</span></h5>');
+                    locationCard.append(cardHeader);
+
+                    let toteList = $('<ul class="list-group list-group-flush"></ul>');
+                    location.pickingToteResponses.forEach(function (tote) {
+                        tote.pickingResponses.forEach(function (pick) {
+                            let pickItem = $('<li class="list-group-item"></li>')
+                                .append('출고 번호: <strong>' + tote.outboundNo + '</strong><br> ')
+                                .append('토트바코드: <strong>' + tote.pickingToteBarcode + '</strong> ')
+                                .append('<button class="btn btn-sm btn-danger stop-shipping">출고 중지</button><br>')
+                                .append('LPN 바코드: <strong>' + pick.lpnBarcode + '</strong><br>')
+                                .append('집품한 수량: <span class="badge bg-warning">' + pick.pickedQuantity + '</span> ')
+                                .append('<button class="btn btn-sm btn-info increase-qty">+</button><br>')
+                                .append('집품해야할 수량: <span class="badge bg-info">' + pick.allocatedQuantity + '</span><br>')
+                                .append('집품 번호: <span class="badge bg-primary">' + pick.pickingId + '</span><br>')
+                                .append('<button class="btn btn-sm btn-success complete-pick">집품 완료</button>');
+
+                            toteList.append(pickItem);
+                        });
+                    });
+
+                    locationCard.append(toteList);
+                    $('#dataContainer').append(locationCard);
+                });
+
+                $('.increase-qty, .complete-pick').click(function () {
+                    let badge = $(this).siblings('.bg-warning');
+                    let allocatedQty = parseInt($(this).siblings('.bg-info').text());
+
+                    let currentQty;
+                    if ($(this).hasClass('increase-qty')) {
+                        currentQty = parseInt(badge.text()) + 1;
+                    } else { // For complete-pick
+                        currentQty = parseInt($(this).siblings('.bg-info').text());
+                        badge.text(currentQty);
+                    }
+
+                    let listItem = $(this).closest('li.list-group-item');
+                    if (currentQty === allocatedQty) {
+                        listItem.fadeOut(function () {
+                            let toteItems = listItem.parent().children();
+                            if (toteItems.filter(':visible').length === 0) {
+                                let toteContainer = listItem.parent();
+                                toteContainer.fadeOut(function () {
+                                    let locationTotes = toteContainer.siblings().addBack();
+                                    if (locationTotes.filter(':visible').length - 1 === 0) {
+                                        let currentCard = listItem.closest('.card');
+                                        currentCard.fadeOut(function () {
+                                            let nextCard = currentCard.next('.location-card');
+                                            if (nextCard.length === 0) {
+                                                alert('집품이 완료되었습니다!');
+                                                location.href = '/app/pickings';
+                                            } else {
+                                                nextCard.fadeIn();
+                                            }
+                                        });
                                     }
                                 });
                             }
-                            location.reload();
-                        },
-                        error: function (error) {
+                        });
+                    }
+
+                    // AJAX call to update picked quantity on the server
+                    let pickId = $(this).siblings('.bg-primary').text();
+                    let orderData = {
+                        pickingNo: pickId,
+                        quantity: currentQty
+                    }
+                    $.ajax({
+                        url: '/app/outbounds/scan-to-pick-manual',
+                        type: 'POST',
+                        data: JSON.stringify(orderData),
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (response) {
+                            // Handle success
                         }
                     });
-                },
-                error: function (error) {
-                    alert("출고 생성에 실패했습니다.");
-                }
-            });
-            // AJAX allocatePicker(outbounds) -> SUCCESS outbounds.foreach(allocatePicking)
-        }
+                });
+
+
+                $('.stop-shipping').click(function () {
+                    let outboundNo = $(this).siblings('strong').first().text();
+                    let orderData = {
+                        cancelReason: "집품 중 출고 중지"
+                    }
+                    $.ajax({
+                        url: '/outbounds/' + outboundNo + '/cancel',
+                        type: 'POST',
+                        data: JSON.stringify(orderData),
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (response) {
+                            // Handle success, for instance:
+                            location.reload();
+                        }
+                    });
+
+                    // If you wish to send a notification to the backend about the stopped shipping, you can continue with your AJAX call here.
+                });
+            },
+            error: function (error) {
+                alert("데이터를 불러오는 데 실패했습니다.");
+                location.href = '/web/outbounds';
+            }
+        });
     });
 </script>
 

@@ -26,6 +26,11 @@ public class AllocatePickingTote {
             @RequestBody @Valid final Request request) {
         final Outbound outbound = outboundRepository.getBy(outboundNo);
         final Location tote = locationRepository.getBy(request.toteBarcode);
+        //TODO 이미 토트에 할당된 출고가 있는지 확인
+        outboundRepository.findBy(tote.getLocationBarcode())
+                .ifPresent(outbound1 -> {
+                    throw new RuntimeException("이미 할당된 출고가 있습니다.");
+                });
 
         outbound.allocatePickingTote(tote);
     }
