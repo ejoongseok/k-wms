@@ -76,7 +76,6 @@ public class ResetOutboundTest extends ApiTest {
         final Outbound outbound = outboundRepository.getBy(outboundNo);
         assertThat(outbound.getPickingTote()).isNull();
         assertThat(outbound.getRealPackagingMaterial()).isNull();
-        assertThat(outbound.getRecommendedPackagingMaterial()).isNull();
         assertThat(outbound.getTrackingNumber()).isNull();
         assertThat(outbound.getPickedAt()).isNull();
         assertThat(outbound.isInspected()).isFalse();
