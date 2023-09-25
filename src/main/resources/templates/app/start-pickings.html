@@ -62,6 +62,7 @@
                     let currentQty;
                     if ($(this).hasClass('increase-qty')) {
                         currentQty = parseInt(badge.text()) + 1;
+                        badge.text(currentQty);
                     } else { // For complete-pick
                         currentQty = parseInt($(this).siblings('.bg-info').text());
                         badge.text(currentQty);

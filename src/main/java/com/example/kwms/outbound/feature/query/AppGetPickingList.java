@@ -21,7 +21,10 @@ public class AppGetPickingList {
     @GetMapping("/app/get-picking-list")
     @Transactional(readOnly = true)
     public List<Response> request(@LoginUserNo final Long userNo) {
-        final List<Outbound> outbounds = outboundRepository.listByPickerNo(userNo);
+        final List<Outbound> outbounds = outboundRepository.listByPickerNo(userNo).stream()
+                .filter(o -> !o.isPicked())
+                .filter(o -> !o.isCanceled())
+                .toList();
         if (outbounds.isEmpty()) {
             throw new RuntimeException("할당된 출고가 없습니다.");
         }

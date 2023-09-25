@@ -499,6 +499,7 @@ public class Outbound {
         canceledAt = null;
         pickingTote = null;
         bulkOutbound = null;
+        pickerNo = null;
     }
 
     private void validateReset() {

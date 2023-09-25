@@ -19,7 +19,10 @@ public class AppPickingListView {
     public String pickingListView(
             @LoginUserNo final Long userNo,
             final Model model) {
-        final List<Outbound> outbounds = outboundRepository.listByPickerNo(userNo);
+        final List<Outbound> outbounds = outboundRepository.listByPickerNo(userNo).stream()
+                .filter(o -> !o.isPicked())
+                .filter(o -> !o.isCanceled())
+                .toList();
         model.addAttribute("hasAllocatedPicking", !outbounds.isEmpty());
         final boolean hasPickingToteAssigned = outbounds.stream()
                 .anyMatch(outbound -> null != outbound.getPickingTote());

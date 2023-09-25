@@ -42,7 +42,7 @@
         <a class="btn btn-secondary" href="/web/outbounds" id="backToList" style="margin-right: 20px;">목록</a>
         <!--        <button class="btn btn-danger" id="stopButton">수동 출고</button>-->
         <div th:if="${isCanceled}">
-            <button class="btn btn-danger" id="stopButton">출고 초기화</button>
+            <button class="btn btn-danger" id="resetButton">출고 초기화</button>
         </div>
         <div th:if="${!isCanceled}">
             <a class="btn btn-danger" id="cancel" th:href="@{'/web/outbounds/'+ ${outboundNo} + '/cancel'}">출고 중지</a>
@@ -151,6 +151,25 @@
                     alert("수동 출고 변경에 실패했습니다.");
                 }
             });
+        });
+
+        // 수동 출고 버튼 클릭 시
+        $("#resetButton").click(function () {
+            //confirm
+            if (confirm("출고를 초기화 하더라도 재고는 변경되지 않습니다. 출고에 할당된 재고를 먼저 돌려놔주세요.")) {
+                // 수동 출고 API 호출
+                $.ajax({
+                    url: '/outbounds/' + outboundNo + '/reset',
+                    type: 'POST',
+                    success: function (data) {
+                        alert("출고가 초기화되었습니다.");
+                        location.reload();
+                    },
+                    error: function (error) {
+                        alert("출고 초기화에 실패했습니다.");
+                    }
+                });
+            }
         });
 
         //allocateButton

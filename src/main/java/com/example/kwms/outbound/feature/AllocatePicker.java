@@ -25,6 +25,7 @@ class AllocatePicker {
 
         outbounds.stream()
                 .filter(o -> !o.isPicked())
+                .filter(o -> !o.isCanceled())
                 .filter(o -> userNo.equals(o.getPickerNo()))
                 .findFirst()
                 .ifPresent(outbound -> {
