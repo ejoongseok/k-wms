@@ -489,7 +489,6 @@ public class Outbound {
         inspectedAt = null;
         packedAt = null;
         realPackagingMaterial = null;
-        recommendedPackagingMaterial = null;
         packagedWeightInGrams = null;
         boxWidthInMillimeters = null;
         boxLengthInMillimeters = null;
