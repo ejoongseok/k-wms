@@ -14,7 +14,7 @@ class RequestWaybill {
     private final OutboundRepository outboundRepository;
     private final WaybillClient waybillClient;
 
-    @PostMapping("/outbounds/{outboundNo}/waybill")
+    @PostMapping("/outbounds/{outboundNo}/issue-waybill")
     @Transactional
     public void request(@PathVariable final Long outboundNo) {
         final Outbound outbound = outboundRepository.getBy(outboundNo);

@@ -279,3 +279,125 @@ insert into outbound_product (outbound_no, picked_at, product_no, quantity, unit
 values (8, NULL, 6, 2, 1500, default);
 insert into outbound_product (outbound_no, picked_at, product_no, quantity, unit_price, outbound_product_no)
 values (8, NULL, 7, 2, 1500, default);
+
+update outbound
+set box_height_in_millimeters=NULL,
+    box_length_in_millimeters=NULL,
+    box_width_in_millimeters=NULL,
+    bulk_outbound_no=NULL,
+    cancel_reason=NULL,
+    canceled_at=NULL,
+    desired_delivery_at=now(),
+    inspected_at=NULL,
+    is_manual_outbound= false,
+    is_priority_delivery= true,
+    order_no=6,
+    packaged_weight_in_grams=NULL,
+    packed_at=NULL,
+    picked_at=NULL,
+    picker_no=1,
+    picking_tote_no=NULL,
+    real_packaging_material_no=NULL,
+    packaging_material_no=1,
+    tracking_number=NULL,
+    warehouse_no=1
+where outbound_no = 1;
+
+insert into picking (inventory_no, outbound_product_id, picked_quantity, quantity_required_for_pick, picking_no)
+values (6, 1, 0, 1, default);
+
+update inventory
+set location_no=48,
+    lpn_no=6,
+    product_no=6,
+    quantity=34,
+    warehouse_no=1
+where inventory_no = 6;
+
+update outbound
+set box_height_in_millimeters=NULL,
+    box_length_in_millimeters=NULL,
+    box_width_in_millimeters=NULL,
+    bulk_outbound_no=NULL,
+    cancel_reason=NULL,
+    canceled_at=NULL,
+    desired_delivery_at=now(),
+    inspected_at=NULL,
+    is_manual_outbound= false,
+    is_priority_delivery= true,
+    order_no=6,
+    packaged_weight_in_grams=NULL,
+    packed_at=NULL,
+    picked_at=NULL,
+    picker_no=1,
+    picking_tote_no=1,
+    real_packaging_material_no=NULL,
+    packaging_material_no=1,
+    tracking_number=NULL,
+    warehouse_no=1
+where outbound_no = 1;
+
+
+insert into inventory (location_no, lpn_no, product_no, quantity, warehouse_no, inventory_no)
+values (1, 6, 6, 1, 1, default);
+
+update picking
+set inventory_no=6,
+    outbound_product_id=1,
+    picked_quantity=1,
+    quantity_required_for_pick=1
+where picking_no = 2;
+
+update outbound_product
+set outbound_no=1,
+    picked_at=now(),
+    product_no=6,
+    quantity=1,
+    unit_price=1500
+where outbound_product_no = 1;
+
+update outbound
+set box_height_in_millimeters=NULL,
+    box_length_in_millimeters=NULL,
+    box_width_in_millimeters=NULL,
+    bulk_outbound_no=NULL,
+    cancel_reason=NULL,
+    canceled_at=NULL,
+    desired_delivery_at=now(),
+    inspected_at=NULL,
+    is_manual_outbound= false,
+    is_priority_delivery= true,
+    order_no=6,
+    packaged_weight_in_grams=NULL,
+    packed_at=NULL,
+    picked_at=now(),
+    picker_no=1,
+    picking_tote_no=1,
+    real_packaging_material_no=NULL,
+    packaging_material_no=1,
+    tracking_number=NULL,
+    warehouse_no=1
+where outbound_no = 1;
+
+update outbound
+set box_height_in_millimeters=NULL,
+    box_length_in_millimeters=NULL,
+    box_width_in_millimeters=NULL,
+    bulk_outbound_no=NULL,
+    cancel_reason=NULL,
+    canceled_at=NULL,
+    desired_delivery_at=now(),
+    inspected_at=now(),
+    is_manual_outbound= false,
+    is_priority_delivery= true,
+    order_no=6,
+    packaged_weight_in_grams=NULL,
+    packed_at=NULL,
+    picked_at=now(),
+    picker_no=1,
+    picking_tote_no=1,
+    real_packaging_material_no=NULL,
+    packaging_material_no=1,
+    tracking_number=NULL,
+    warehouse_no=1
+where outbound_no = 1;

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>출고 포장</title>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" rel="stylesheet">
+    <script crossorigin="anonymous"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+            src="https://code.jquery.com/jquery-3.7.1.js"></script>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="mb-4">출고 포장</h1>
+
+    <form id="packagingForm">
+        <input id="outboundNo" type="hidden">
+        <!-- Tote Barcode Search -->
+        <div class="form-group">
+            <label for="toteBarcode">토트 바코드</label>
+            <div class="input-group">
+                <input class="form-control" id="toteBarcode" placeholder="Enter or scan tote barcode" required
+                       type="text">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-primary" id="searchToteBarcode" type="button">출고 조회</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shipment Details Display -->
+        <div id="shipmentDetails"></div>
+
+        <!-- Packaging Material Code Search -->
+        <div class="form-group">
+            <label for="packagingMaterialCode">포장재 바코드</label>
+            <div class="input-group">
+                <input class="form-control" id="packagingMaterialCode" placeholder="Enter or scan packaging material code"
+                       type="text">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-primary" id="searchPackagingMaterial" type="button">조회</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Packaging Dimensions Inputs -->
+        <div class="form-group">
+            <label>박스 사이즈</label>
+            <div class="input-group">
+                <input class="form-control" id="boxWidth" placeholder="Width" required type="number">
+                <input class="form-control" id="boxHeight" placeholder="Height" required type="number">
+                <input class="form-control" id="boxLength" placeholder="Length" required type="number">
+            </div>
+        </div>
+
+        <!-- Package Weight Input -->
+        <div class="form-group">
+            <label for="packageWeight">포장 무게</label>
+            <input class="form-control" id="packageWeight" placeholder="Enter package weight" required type="number">
+        </div>
+
+        <div class="d-flex justify-content-end mb-4">
+            <a class="btn btn-outline-secondary mr-4" href="/"
+               id="backToList" style="margin-right: 20px;">메인으로</a>
+            <button class="btn btn-primary" type="submit">포장 완료</button>
+        </div>
+    </form>
+
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#searchToteBarcode").click(function () {
+            let barcode = $("#toteBarcode").val();
+            if (barcode) {
+                $.ajax({
+                    url: "/outbounds/tote-for-packaging/" + barcode,
+                    method: "GET",
+                    success: function (data) {
+                        $("#outboundNo").val(data.outboundNo);
+                        // For demonstration purposes, assuming the response contains an array of products.
+                        let productsList = data.products.map(product => {
+                            return `<li>상품명: ${product.name} 수량:${product.quantity}</li>`;
+                        }).join('');
+
+                        let shipmentInfo = `
+                        <strong>주문 번호:</strong> ${data.orderNo}<br>
+                        <strong>출고 번호:</strong> ${data.outboundNo}<br>
+                        <strong>상품 목록:</strong> <ul>${productsList}</ul><br>
+                        <strong>추천 포장재 명:</strong> ${data.recommendedPackagingMaterialName}<br>
+                        <strong>추천 포장재 코드:</strong> ${data.recommendedPackagingMaterialCode}<br>
+                        <strong>추천 포장재 타입:</strong> ${data.recommendedPackagingMaterialType}<br>
+                    `;
+                        $('#shipmentDetails').html(shipmentInfo);
+                    },
+                    error: function (err) {
+                        alert("Error fetching tote details.");
+                    }
+                });
+            } else {
+                alert("Please enter or scan a tote barcode.");
+            }
+        });
+
+        // Search Packaging Material Code
+        $("#searchPackagingMaterial").click(function () {
+            let code = $("#packagingMaterialCode").val();
+            if (code) {
+                $.ajax({
+                    url: "/packaging/packaging-materials/" + code,
+                    method: "GET",
+                    success: function (data) {
+                        // Set the packaging material details into the respective input boxes
+                        $("#boxWidth").val(data.width);
+                        $("#boxHeight").val(data.height);
+                        $("#boxLength").val(data.length);
+                    },
+                    error: function (err) {
+                        alert("Error fetching packaging material details.");
+                    }
+                });
+            } else {
+                alert("Please enter or scan a packaging material code.");
+            }
+        });
+
+        // Complete Packaging Form Submission
+        $("#packagingForm").on('submit', function (e) {
+            e.preventDefault();
+
+            // Gather all required data
+            let outboundNo = $("#outboundNo").val();
+            let packagingMaterialCode = $("#packagingMaterialCode").val();
+            let boxWidth = $("#boxWidth").val();
+            let boxHeight = $("#boxHeight").val();
+            let boxLength = $("#boxLength").val();
+            let packageWeight = $("#packageWeight").val();
+
+            // Create a data object to send to the API
+            let orderData = {
+                packagingMaterialCode: packagingMaterialCode,
+                boxWidthInMillimeters: boxWidth,
+                boxHeightInMillimeters: boxHeight,
+                boxLengthInMillimeters: boxLength,
+                weightInGrams: packageWeight
+            };
+
+            // Call the packaging completion API
+            $.ajax({
+                url: `/outbounds/${outboundNo}/packed`,
+                method: "POST",
+                data: JSON.stringify(orderData),
+                contentType: 'application/json; charset=utf-8',
+                success: function () {
+                    // If packaging completion API call is successful, call the waybill issuance API
+                    $.ajax({
+                        url: `/outbounds/${outboundNo}/issue-waybill`,
+                        method: "POST",
+                        success: function () {
+                            alert("운송장 발행.");
+                            location.reload();
+                        },
+                        error: function (err) {
+                            alert("Error issuing waybill.");
+                        }
+                    });
+                },
+                error: function (err) {
+                    alert("Error completing packaging.");
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
