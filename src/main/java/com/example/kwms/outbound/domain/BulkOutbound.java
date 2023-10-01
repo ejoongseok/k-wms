@@ -28,6 +28,7 @@ public class BulkOutbound {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bulk_outbound_no")
     @Comment("일괄 출고 번호")
+    @Getter
     private Long bulkOutboundNo;
     @Getter
     @OneToMany(mappedBy = "bulkOutbound", cascade = {CascadeType.PERSIST, CascadeType.MERGE})

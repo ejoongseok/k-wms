@@ -34,14 +34,39 @@
         </tbody>
     </table>
     <div class="d-flex justify-content-end mb-4">
-        <a class="btn btn-success" href="/web/outbounds/bulk/new">동일출고 생성</a>
+        <button class="btn btn-primary" data-target="#shipmentModal" data-toggle="modal">동일 출고 생성</button>
+    </div>
+
+    <!-- Modal -->
+    <div aria-hidden="true" aria-labelledby="shipmentModalLabel" class="modal fade" id="shipmentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="shipmentModalLabel">동일 출고 선택</h5>
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="shipmentForm">
+                        <!-- Shipment list will be populated here -->
+                        <div id="shipmentList"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal" type="button">닫기</button>
+                    <button class="btn btn-primary" id="selectShipment" type="button">선택</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
     $(document).ready(function () {
         // 서버에서 데이터를 가져오는 예제. 실제 URL은 서버 상황에 따라 변경되어야 합니다.
         $.ajax({
-            url: '/outbounds',
+            url: '/outbounds/bulks',
             type: 'GET',
             dataType: 'json',
             success: function (data) {
@@ -54,9 +79,9 @@
                             <td>${order.skuQuantity}</td>
                             <td>${order.orderQuantity}</td>
                             <td>${order.status}</td>
-                            <td>${order.pickedAt}</td>
-                            <td>${order.inspectedAt}</td>
-                            <td>${order.packedAt}</td>
+                            <td>${order.pickedAt == null ? "집품완료 전" : order.pickedAt}</td>
+                            <td>${order.inspectedAt == null ? "검수완료 전" : order.inspectedAt}</td>
+                            <td>${order.packedAt == null ? "포장완료 전" : order.packedAt}</td>
                             <td><a href="/web/outbounds/bulk/${order.bulkOutboundNo}" class="btn btn-info">상세보기</a></td>
                         </tr>
                     `;
@@ -66,6 +91,70 @@
             error: function (error) {
             }
         });
+
+        $('button[data-target="#shipmentModal"]').click(function () {
+            $('#shipmentModal').modal('show');
+        });
+
+        function populateShipments() {
+            $.ajax({
+                url: "/outbounds/same-shipments", // Modify this endpoint accordingly
+                method: "GET",
+                success: function (data) {
+                    if (data.length === 0) {
+                        alert("No shipments available.");
+                    }
+                    let shipmentItems = data.map(shipment => {
+                        return `
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="shipmentRadio" value="${shipment.bulkOutboundNo}" data-outbound-nos="${shipment.outboundNos.join(',')}" id="shipment${shipment.bulkOutboundNo}">
+                            <label class="form-check-label" for="shipment${shipment.bulkOutboundNo}">
+                                번호: ${shipment.bulkOutboundNo} | 동일 출고 수량: ${shipment.shippedQuantity} | 상품 수량: ${shipment.productQuantity} | 주문수량: ${shipment.orderQuantity}
+                            </label>
+                        </div>
+                    `;
+                    }).join('');
+                    $('#shipmentList').html(shipmentItems);
+                },
+                error: function (err) {
+                    alert("Error fetching shipments.");
+                }
+            });
+        }
+
+        // Populate shipments when modal is about to be shown
+        $('#shipmentModal').on('show.bs.modal', function (e) {
+            populateShipments();
+        });
+
+        // Handle shipment selection and creation of the same shipment
+        $('#selectShipment').click(function () {
+            let selectedShipment = $("input[name='shipmentRadio']:checked");
+            let bulkOutboundNo = selectedShipment.val();
+            let outboundNos = selectedShipment.data("outbound-nos").split(',').map(Number);
+            let data = {
+                bulkOutboundNo: bulkOutboundNo,
+                outboundNos: outboundNos
+            };
+            if (bulkOutboundNo) {
+                $.ajax({
+                    url: "/outbounds/bulk", // Modify this endpoint accordingly
+                    method: "POST",
+                    data: JSON.stringify(data),
+                    contentType: 'application/json; charset=utf-8',
+                    success: function () {
+                        alert("Same shipment created successfully!");
+                        $('#shipmentModal').modal('hide');
+                    },
+                    error: function (err) {
+                        alert("Error creating the same shipment.");
+                    }
+                });
+            } else {
+                alert("Please select a shipment.");
+            }
+        });
+
     });
 </script>
 

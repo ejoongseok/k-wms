@@ -25,7 +25,7 @@ public class CreateLPNView {
         final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
         model.addAttribute("purchaseOrderNo", purchaseOrder.getPurchaseOrderNo());
         final PurchaseOrderProduct purchaseOrderProduct = purchaseOrder.getPurchaseOrderProduct(purchaseOrderProductNo);
-        model.addAttribute("purchaseOrderProductNo", purchaseOrderProduct.getProductNo());
+        model.addAttribute("purchaseOrderProductNo", purchaseOrderProduct.getPurchaseOrderProductNo());
         return "purchaseorder/lpn-new";
     }
 

@@ -139,7 +139,11 @@ public class PurchaseOrder {
                     .filter(rp -> rp.getProductNo().equals(productNo))
                     .mapToLong(ReceiveProduct::totalQuantity)
                     .sum();
-            final Long requestQuantity = getPurchaseOrderProduct(productNo).getRequestQuantity();
+            final Long requestQuantity = purchaseOrderProducts.stream()
+                    .filter(product -> product.getProductNo().equals(productNo))
+                    .findFirst()
+                    .orElseThrow(() -> new NotFoundException(
+                            "상품 번호에 해당하는 발주 상품이 존재하지 않습니다. 상품 번호: %s".formatted(productNo))).getRequestQuantity();
             if (requestQuantity < totalQuantityForProductNo + receiveProduct.getAcceptableQuantity() + receiveProduct.getRejectedQuantity()) {
                 throw new IllegalArgumentException(
                         "발주 수량을 초과하여 입고할 수 없습니다. 상품 번호: %s, 발주 수량: %s, 입고 수량: %s".formatted(
@@ -148,12 +152,12 @@ public class PurchaseOrder {
         }
     }
 
-    public PurchaseOrderProduct getPurchaseOrderProduct(final Long productNo) {
+    public PurchaseOrderProduct getPurchaseOrderProduct(final Long purchaseOrderProductNo) {
         return purchaseOrderProducts.stream()
-                .filter(product -> product.getProductNo().equals(productNo))
+                .filter(product -> product.getPurchaseOrderProductNo().equals(purchaseOrderProductNo))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException(
-                        "상품 번호에 해당하는 발주 상품이 존재하지 않습니다. 상품 번호: %s".formatted(productNo)));
+                        "발주 상품 번호에 해당하는 발주 상품이 존재하지 않습니다. 상품 번호: %s".formatted(purchaseOrderProductNo)));
     }
 
     public boolean isReceived() {
