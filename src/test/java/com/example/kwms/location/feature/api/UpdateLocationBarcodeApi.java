@@ -1,7 +1,7 @@
 package com.example.kwms.location.feature.api;
 
 import com.example.kwms.common.Scenario;
-import com.example.kwms.location.feature.UpdateLocationBarcode;
+import com.example.kwms.location.feature.command.UpdateLocationBarcode;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.springframework.http.HttpStatus;

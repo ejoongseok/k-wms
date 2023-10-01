@@ -3,7 +3,7 @@ package com.example.kwms.outbound.feature;
 import lombok.Getter;
 
 @Getter
-class WaybillResponse {
+public class WaybillResponse {
     private final String trackingNumber;
     private final String waybillImage;
 

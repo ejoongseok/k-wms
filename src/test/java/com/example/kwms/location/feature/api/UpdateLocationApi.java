@@ -2,7 +2,7 @@ package com.example.kwms.location.feature.api;
 
 import com.example.kwms.common.Scenario;
 import com.example.kwms.location.domain.UsagePurpose;
-import com.example.kwms.location.feature.UpdateLocation;
+import com.example.kwms.location.feature.command.UpdateLocation;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.springframework.http.HttpStatus;

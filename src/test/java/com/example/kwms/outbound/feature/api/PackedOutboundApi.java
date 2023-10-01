@@ -1,7 +1,7 @@
 package com.example.kwms.outbound.feature.api;
 
 import com.example.kwms.common.Scenario;
-import com.example.kwms.outbound.feature.PackedOutbound;
+import com.example.kwms.outbound.feature.command.PackedOutbound;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.springframework.http.HttpStatus;
