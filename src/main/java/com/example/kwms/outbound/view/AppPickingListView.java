@@ -27,6 +27,12 @@ public class AppPickingListView {
         final boolean hasPickingToteAssigned = outbounds.stream()
                 .anyMatch(outbound -> null != outbound.getPickingTote());
         model.addAttribute("hasPickingToteAssigned", hasPickingToteAssigned);
+        final long count = outboundRepository.findAll().stream()
+                .filter(o -> !o.isPicked())
+                .filter(o -> !o.isCanceled())
+                .filter(o -> null == o.getPickerNo())
+                .count();
+        model.addAttribute("hasUnassignedPicking", 0 < count);
         return "app/pickings";
     }
 }

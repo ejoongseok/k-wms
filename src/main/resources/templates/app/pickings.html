@@ -31,6 +31,7 @@
         </tbody>
     </table>
     <input id="hasAllocatedPicking" th:value="${hasAllocatedPicking}" type="hidden">
+    <input id="hasUnassignedPicking" th:value="${hasUnassignedPicking}" type="hidden">
     <div class="d-flex justify-content-end mb-4">
         <div th:if="${hasAllocatedPicking && hasPickingToteAssigned}">
             <a class="btn btn-success" href="/app/start-pickings">집품 시작</a>
@@ -41,6 +42,7 @@
     $(document).ready(function () {
         // 서버에서 데이터를 가져오는 예제. 실제 URL은 서버 상황에 따라 변경되어야 합니다.
         let hasAllocatedPicking = $("#hasAllocatedPicking").val();
+        let hasUnassignedPicking = $("#hasUnassignedPicking").val();
         if (hasAllocatedPicking == "true") {
             $.ajax({
                 url: '/app/get-picking-list',
@@ -95,37 +97,41 @@
                 }
             });
         } else {
-            $.ajax({
-                url: '/outbounds/allocate-picker',
-                type: 'POST',
-                success: function (data) {
-                    $.ajax({
-                        url: '/app/outbounds/picking-for-outbounds',
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function (datas) {
-                            for (let data of datas) {
-                                $.ajax({
-                                    url: '/outbounds/' + data.outboundNo + '/pickings',
-                                    type: 'POST',
-                                    success: function (data) {
-                                        console.log(data.outboundNo + 'success');
-                                    },
-                                    error: function (error) {
-                                    }
-                                });
+            if (hasUnassignedPicking == "true") {
+                $.ajax({
+                    url: '/outbounds/allocate-picker',
+                    type: 'POST',
+                    success: function (data) {
+                        $.ajax({
+                            url: '/app/outbounds/picking-for-outbounds',
+                            type: 'GET',
+                            dataType: 'json',
+                            success: function (datas) {
+                                for (let data of datas) {
+                                    $.ajax({
+                                        url: '/outbounds/' + data.outboundNo + '/pickings',
+                                        type: 'POST',
+                                        success: function (data) {
+                                            console.log(data.outboundNo + 'success');
+                                        },
+                                        error: function (error) {
+                                        }
+                                    });
+                                }
+                                alert('집품 할당이 완료되었습니다.');
+                                location.reload();
+                            },
+                            error: function (error) {
                             }
-                            alert('집품 할당이 완료되었습니다.');
-                            location.reload();
-                        },
-                        error: function (error) {
-                        }
-                    });
-                },
-                error: function (error) {
-                    alert("출고 생성에 실패했습니다.");
-                }
-            });
+                        });
+                    },
+                    error: function (error) {
+                        alert("출고 생성에 실패했습니다.");
+                    }
+                });
+            } else {
+                alert('집품을 할당할 출고가 없습니다.')
+            }
             // AJAX allocatePicker(outbounds) -> SUCCESS outbounds.foreach(allocatePicking)
         }
     });
