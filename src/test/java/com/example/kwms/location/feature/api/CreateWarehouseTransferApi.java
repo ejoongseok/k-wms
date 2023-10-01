@@ -1,7 +1,7 @@
 package com.example.kwms.location.feature.api;
 
 import com.example.kwms.common.Scenario;
-import com.example.kwms.location.feature.CreateWarehouseTransfer;
+import com.example.kwms.location.feature.command.CreateWarehouseTransfer;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.springframework.http.HttpStatus;

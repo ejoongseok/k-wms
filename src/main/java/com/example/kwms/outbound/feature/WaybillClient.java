@@ -4,7 +4,7 @@ import com.example.kwms.outbound.domain.Outbound;
 import org.springframework.stereotype.Component;
 
 @Component
-class WaybillClient {
+public class WaybillClient {
     public WaybillResponse request(final Outbound outbound) {
         validate(outbound);
         return new WaybillResponse(
