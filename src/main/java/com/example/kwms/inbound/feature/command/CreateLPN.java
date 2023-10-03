@@ -1,5 +1,6 @@
 package com.example.kwms.inbound.feature.command;
 
+import com.example.kwms.inbound.domain.LPN;
 import com.example.kwms.inbound.domain.LPNRepository;
 import com.example.kwms.inbound.domain.PurchaseOrder;
 import com.example.kwms.inbound.domain.PurchaseOrderRepository;
@@ -29,11 +30,12 @@ public class CreateLPN {
             @RequestBody @Valid final Request request) {
         validate(request.lpnBarcode);
         final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
-        purchaseOrder.assignLPN(purchaseOrderProductNo, request.lpnBarcode, request.expiringAt);
+
+        purchaseOrder.addLPN(purchaseOrderProductNo, request.toDomain());
     }
 
     private void validate(final String lpnBarcode) {
-        lpnRepository.findByLpnBarcode(lpnBarcode)
+        lpnRepository.findBy(lpnBarcode)
                 .ifPresent(lpn -> {
                     throw new IllegalArgumentException("이미 존재하는 LPN 바코드입니다.");
                 });
@@ -44,5 +46,8 @@ public class CreateLPN {
             String lpnBarcode,
             @NotNull(message = "유통기한은 필수입니다.")
             LocalDateTime expiringAt) {
+        LPN toDomain() {
+            return new LPN(lpnBarcode, expiringAt);
+        }
     }
 }

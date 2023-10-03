@@ -40,21 +40,18 @@ class PurchaseOrderTest {
 
 
     @Test
-    @DisplayName("LPN 바코드 할당")
-    public void assignLPN() {
+    @DisplayName("LPN 추가")
+    public void addLPN() {
         final PurchaseOrder purchaseOrder = aPurchaseOrder().build();
         final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
         final PurchaseOrderProduct purchaseOrderProduct = purchaseOrderProducts.get(0);
         assertThat(purchaseOrderProduct.getLpns()).isEmpty();
-
         final String lpnBarcode = "1234567890";
         final LocalDateTime expiringAt = LocalDateTime.now().plusDays(30);
+        final LPN lpn = new LPN(lpnBarcode, expiringAt);
         final long inboundProductNo = 1L;
-        purchaseOrder.assignLPN(
-                inboundProductNo,
-                lpnBarcode,
-                expiringAt
-        );
+
+        purchaseOrder.addLPN(inboundProductNo, lpn);
 
         assertThat(purchaseOrderProduct.getLpns()).isNotEmpty();
     }

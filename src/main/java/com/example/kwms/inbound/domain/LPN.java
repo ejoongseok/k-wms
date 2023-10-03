@@ -18,6 +18,7 @@ import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 
+@Getter
 @Entity
 @Table(name = "lpn")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
@@ -27,14 +28,10 @@ public class LPN {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "lpn_no")
     @Comment("LPN 번호")
-    @Getter
     private Long lpnNo;
-
-    @Getter
     @Column(name = "lpn_barcode", nullable = false, unique = true)
     @Comment("LPN 바코드")
     private String lpnBarcode;
-    @Getter
     @Column(name = "expiring_at", nullable = false)
     @Comment("유통기한")
     private LocalDateTime expiringAt;
@@ -43,7 +40,7 @@ public class LPN {
     @Comment("입고 상품 번호")
     private PurchaseOrderProduct purchaseOrderProduct;
 
-    LPN(final String lpnBarcode, final LocalDateTime expiringAt) {
+    public LPN(final String lpnBarcode, final LocalDateTime expiringAt) {
         Assert.hasText(lpnBarcode, "LPN 바코드는 필수입니다.");
         Assert.notNull(expiringAt, "유통기한은 필수입니다.");
         this.lpnBarcode = lpnBarcode;
@@ -59,10 +56,6 @@ public class LPN {
 
     void assignInboundProduct(final PurchaseOrderProduct purchaseOrderProduct) {
         this.purchaseOrderProduct = purchaseOrderProduct;
-    }
-
-    boolean equalsBarcode(final String lpnBarcode) {
-        return this.lpnBarcode.equals(lpnBarcode);
     }
 
     public Long getProductNo() {

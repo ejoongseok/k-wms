@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,22 +94,16 @@ public class PurchaseOrderProduct {
         this.purchaseOrder = purchaseOrder;
     }
 
-    void assignLPN(
-            final String lpnBarcode,
-            final LocalDateTime expiringAt) {
-        validateAssignLPN(lpnBarcode, expiringAt);
-        final LPN lpn = new LPN(lpnBarcode, expiringAt);
+    void assignLPN(final LPN lpn) {
+        validateAssignLPN(lpn);
         lpns.add(lpn);
         lpn.assignInboundProduct(this);
     }
 
-    private void validateAssignLPN(
-            final String lpnBarcode,
-            final LocalDateTime expiringAt) {
-        Assert.hasText(lpnBarcode, "LPN 바코드는 필수입니다.");
-        Assert.notNull(expiringAt, "유통기한은 필수입니다.");
+    private void validateAssignLPN(final LPN newLPN) {
+        Assert.notNull(newLPN, "LPN은 필수입니다.");
         lpns.stream()
-                .filter(lpn -> lpn.equalsBarcode(lpnBarcode))
+                .filter(lpn -> lpn.equals(newLPN))
                 .findAny()
                 .ifPresent(lpn -> {
                     throw new IllegalArgumentException("이미 등록된 LPN 바코드입니다.");

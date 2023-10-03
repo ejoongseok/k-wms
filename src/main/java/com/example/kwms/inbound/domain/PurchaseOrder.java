@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.springframework.util.Assert;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -175,22 +174,19 @@ public class PurchaseOrder {
         return totalQuantity == totalReceivedQuantity;
     }
 
-    public void assignLPN(
+    public void addLPN(
             final Long purchaseOrderProductNo,
-            final String lpnBarcode,
-            final LocalDateTime expiringAt) {
-        validateAssignLPN(purchaseOrderProductNo, lpnBarcode, expiringAt);
+            final LPN lpn) {
+        validateAssignLPN(purchaseOrderProductNo, lpn);
         final PurchaseOrderProduct purchaseOrderProduct = getPurchaseOrderProduct(purchaseOrderProductNo);
-        purchaseOrderProduct.assignLPN(lpnBarcode, expiringAt);
+        purchaseOrderProduct.assignLPN(lpn);
     }
 
     private void validateAssignLPN(
             final Long inboundProductNo,
-            final String lpnBarcode,
-            final LocalDateTime expiringAt) {
+            final LPN lpn) {
         Assert.notNull(inboundProductNo, "입고 상품 번호는 필수입니다.");
-        Assert.hasText(lpnBarcode, "LPN 바코드는 필수입니다.");
-        Assert.notNull(expiringAt, "유통기한은 필수입니다.");
+        Assert.notNull(lpn, "LPN은 필수입니다.");
     }
 
     public Receive getReceive(final Long receiveNo) {
