@@ -43,7 +43,6 @@ public class PurchaseOrderProduct {
     @JoinColumn(name = "purchase_order_no", nullable = false)
     @Comment("입고 번호")
     private PurchaseOrder purchaseOrder;
-    @Getter
     @Column(name = "product_no", nullable = false)
     @Comment("상품 번호")
     private Long productNo;
