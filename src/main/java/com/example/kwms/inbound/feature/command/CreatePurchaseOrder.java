@@ -31,7 +31,7 @@ public class CreatePurchaseOrder {
         final List<PurchaseOrderProduct> products = request.toProducts();
         final PurchaseOrder purchaseOrder = request.toDomain();
 
-        purchaseOrder.assignProducts(products);
+        purchaseOrder.addPurchaseOrderProducts(products);
 
         purchaseOrderRepository.save(purchaseOrder);
     }

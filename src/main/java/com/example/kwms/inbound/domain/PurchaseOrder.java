@@ -67,21 +67,21 @@ public class PurchaseOrder {
         this.purchaseOrderProducts.addAll(purchaseOrderProducts);
     }
 
-    public void assignProducts(final List<PurchaseOrderProduct> products) {
-        validateAssignProducts(products);
-        for (final PurchaseOrderProduct product : products) {
-            product.assignPurchaseOrder(this);
-            purchaseOrderProducts.add(product);
+    public void addPurchaseOrderProducts(final List<PurchaseOrderProduct> purchaseOrderProducts) {
+        validateAddPurchaseOrderProducts(purchaseOrderProducts);
+        for (final PurchaseOrderProduct purchaseOrderProduct : purchaseOrderProducts) {
+            purchaseOrderProduct.assignPurchaseOrder(this);
+            this.purchaseOrderProducts.add(purchaseOrderProduct);
         }
     }
 
-    private void validateAssignProducts(final List<PurchaseOrderProduct> products) {
-        Assert.notEmpty(products, "입고 상품은 필수입니다.");
-        final Set<Long> productsSize = products.stream()
+    private void validateAddPurchaseOrderProducts(final List<PurchaseOrderProduct> purchaseOrderProducts) {
+        Assert.notEmpty(purchaseOrderProducts, "발주 상품 목록은 필수입니다.");
+        final Set<Long> productNos = purchaseOrderProducts.stream()
                 .map(PurchaseOrderProduct::getProductNo)
                 .collect(Collectors.toUnmodifiableSet());
-        if (products.size() != productsSize.size()) {
-            throw new IllegalArgumentException("상품 번호는 중복될 수 없습니다.");
+        if (purchaseOrderProducts.size() != productNos.size()) {
+            throw new IllegalArgumentException("발주 상품 목록에 중복된 상품 번호가 존재합니다.");
         }
     }
 
