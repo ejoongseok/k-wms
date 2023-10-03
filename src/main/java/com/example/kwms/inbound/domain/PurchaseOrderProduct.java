@@ -94,13 +94,13 @@ public class PurchaseOrderProduct {
         this.purchaseOrder = purchaseOrder;
     }
 
-    void assignLPN(final LPN lpn) {
-        validateAssignLPN(lpn);
+    void addLPN(final LPN lpn) {
+        validateAddLPN(lpn);
         lpns.add(lpn);
         lpn.assignInboundProduct(this);
     }
 
-    private void validateAssignLPN(final LPN newLPN) {
+    private void validateAddLPN(final LPN newLPN) {
         Assert.notNull(newLPN, "LPN은 필수입니다.");
         lpns.stream()
                 .filter(lpn -> lpn.equals(newLPN))

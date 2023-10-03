@@ -151,7 +151,7 @@ public class PurchaseOrder {
         }
     }
 
-    public PurchaseOrderProduct getPurchaseOrderProduct(final Long purchaseOrderProductNo) {
+    public PurchaseOrderProduct getPurchaseOrderProductBy(final Long purchaseOrderProductNo) {
         return purchaseOrderProducts.stream()
                 .filter(product -> product.getPurchaseOrderProductNo().equals(purchaseOrderProductNo))
                 .findFirst()
@@ -178,8 +178,8 @@ public class PurchaseOrder {
             final Long purchaseOrderProductNo,
             final LPN lpn) {
         validateAssignLPN(purchaseOrderProductNo, lpn);
-        final PurchaseOrderProduct purchaseOrderProduct = getPurchaseOrderProduct(purchaseOrderProductNo);
-        purchaseOrderProduct.assignLPN(lpn);
+        final var purchaseOrderProduct = getPurchaseOrderProductBy(purchaseOrderProductNo);
+        purchaseOrderProduct.addLPN(lpn);
     }
 
     private void validateAssignLPN(

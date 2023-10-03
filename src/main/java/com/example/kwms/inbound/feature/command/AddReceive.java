@@ -31,8 +31,8 @@ public class AddReceive {
             @PathVariable final Long purchaseOrderNo,
             @RequestBody @Valid final Request request) {
         final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
-        final Receive receive = request.toDomain();
-        purchaseOrder.addReceive(receive);
+
+        purchaseOrder.addReceive(request.toDomain());
     }
 
     public record Request(

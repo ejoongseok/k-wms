@@ -23,7 +23,7 @@ public class LPNView {
             final Model model) {
         final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
         model.addAttribute("purchaseOrderNo", purchaseOrder.getPurchaseOrderNo());
-        final PurchaseOrderProduct purchaseOrderProduct = purchaseOrder.getPurchaseOrderProduct(purchaseOrderProductNo);
+        final PurchaseOrderProduct purchaseOrderProduct = purchaseOrder.getPurchaseOrderProductBy(purchaseOrderProductNo);
         model.addAttribute("purchaseOrderProductNo", purchaseOrderProduct.getPurchaseOrderProductNo());
         return "purchaseorder/lpn-list";
     }

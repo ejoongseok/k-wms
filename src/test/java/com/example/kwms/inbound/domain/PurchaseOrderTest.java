@@ -6,8 +6,10 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.example.kwms.inbound.domain.LPNFixture.aLPN;
 import static com.example.kwms.inbound.domain.PurchaseOrderFixture.aPurchaseOrder;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class PurchaseOrderTest {
 
@@ -43,17 +45,24 @@ class PurchaseOrderTest {
     @DisplayName("LPN 추가")
     public void addLPN() {
         final PurchaseOrder purchaseOrder = aPurchaseOrder().build();
-        final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
-        final PurchaseOrderProduct purchaseOrderProduct = purchaseOrderProducts.get(0);
-        assertThat(purchaseOrderProduct.getLpns()).isEmpty();
-        final String lpnBarcode = "1234567890";
-        final LocalDateTime expiringAt = LocalDateTime.now().plusDays(30);
-        final LPN lpn = new LPN(lpnBarcode, expiringAt);
-        final long inboundProductNo = 1L;
+        assertThat(purchaseOrder.getPurchaseOrderProducts().get(0).getLpns()).isEmpty();
 
-        purchaseOrder.addLPN(inboundProductNo, lpn);
+        purchaseOrder.addLPN(1L, aLPN().build());
 
-        assertThat(purchaseOrderProduct.getLpns()).isNotEmpty();
+        assertThat(purchaseOrder.getPurchaseOrderProducts().get(0).getLpns()).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("LPN 추가 - 발주 상품에 동일한 LPN 바코드가 이미 존재하는 경우 예외 발생")
+    public void fail_addLPN() {
+        final PurchaseOrder purchaseOrder = aPurchaseOrder().build();
+        assertThat(purchaseOrder.getPurchaseOrderProducts().get(0).getLpns()).isEmpty();
+
+        assertThatThrownBy(() -> {
+            purchaseOrder.addLPN(1L, aLPN().build());
+            purchaseOrder.addLPN(1L, aLPN().build());
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("이미 등록된 LPN 바코드입니다.");
     }
 
 }

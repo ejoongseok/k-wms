@@ -27,7 +27,7 @@ public class GetPurchaseOrders {
             @PathVariable final Long purchaseOrderProductNo
     ) {
         final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
-        final PurchaseOrderProduct purchaseOrderProduct = purchaseOrder.getPurchaseOrderProduct(purchaseOrderProductNo);
+        final PurchaseOrderProduct purchaseOrderProduct = purchaseOrder.getPurchaseOrderProductBy(purchaseOrderProductNo);
         return purchaseOrderProduct.getLpns().stream()
                 .map(LPNResponse::from)
                 .toList();
