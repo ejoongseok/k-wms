@@ -106,7 +106,7 @@ public class PurchaseOrderProduct {
                 .filter(lpn -> lpn.equals(newLPN))
                 .findAny()
                 .ifPresent(lpn -> {
-                    throw new IllegalArgumentException("이미 등록된 LPN 바코드입니다.");
+                    throw new AlreadyExistLPNException(lpn.getLpnBarcode());
                 });
     }
 }

@@ -61,7 +61,7 @@ class PurchaseOrderTest {
         assertThatThrownBy(() -> {
             purchaseOrder.addLPN(1L, aLPN().build());
             purchaseOrder.addLPN(1L, aLPN().build());
-        }).isInstanceOf(IllegalArgumentException.class)
+        }).isInstanceOf(AlreadyExistLPNException.class)
                 .hasMessageContaining("이미 등록된 LPN 바코드입니다.");
     }
 
