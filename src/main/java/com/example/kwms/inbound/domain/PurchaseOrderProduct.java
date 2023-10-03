@@ -25,8 +25,6 @@ import java.util.List;
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @Getter
 public class PurchaseOrderProduct {
-    @OneToMany(mappedBy = "purchaseOrderProduct", orphanRemoval = true, cascade = CascadeType.ALL)
-    private final List<LPN> lpns = new ArrayList<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "purchase_order_product_no")
@@ -49,6 +47,8 @@ public class PurchaseOrderProduct {
     @Column(name = "product_no", nullable = false)
     @Comment("상품 번호")
     private Long productNo;
+    @OneToMany(mappedBy = "purchaseOrderProduct", orphanRemoval = true, cascade = CascadeType.ALL)
+    private final List<LPN> lpns = new ArrayList<>();
 
     public PurchaseOrderProduct(
             final Long productNo,
