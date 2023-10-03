@@ -109,4 +109,8 @@ public class PurchaseOrderProduct {
                     throw new AlreadyExistLPNException(lpn.getLpnBarcode());
                 });
     }
+
+    boolean isEqualsPurchaseOrderProductNo(final Long purchaseOrderProductNo) {
+        return this.purchaseOrderProductNo.equals(purchaseOrderProductNo);
+    }
 }

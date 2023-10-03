@@ -151,14 +151,6 @@ public class PurchaseOrder {
         }
     }
 
-    public PurchaseOrderProduct getPurchaseOrderProductBy(final Long purchaseOrderProductNo) {
-        return purchaseOrderProducts.stream()
-                .filter(product -> product.getPurchaseOrderProductNo().equals(purchaseOrderProductNo))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException(
-                        "발주 상품 번호에 해당하는 발주 상품이 존재하지 않습니다. 상품 번호: %s".formatted(purchaseOrderProductNo)));
-    }
-
     public boolean isReceived() {
         return !receives.isEmpty();
     }
@@ -177,16 +169,24 @@ public class PurchaseOrder {
     public void addLPN(
             final Long purchaseOrderProductNo,
             final LPN lpn) {
-        validateAssignLPN(purchaseOrderProductNo, lpn);
+        validateAddLPN(purchaseOrderProductNo, lpn);
         final var purchaseOrderProduct = getPurchaseOrderProductBy(purchaseOrderProductNo);
         purchaseOrderProduct.addLPN(lpn);
     }
 
-    private void validateAssignLPN(
+    private void validateAddLPN(
             final Long inboundProductNo,
             final LPN lpn) {
         Assert.notNull(inboundProductNo, "입고 상품 번호는 필수입니다.");
         Assert.notNull(lpn, "LPN은 필수입니다.");
+    }
+
+    public PurchaseOrderProduct getPurchaseOrderProductBy(final Long purchaseOrderProductNo) {
+        return purchaseOrderProducts.stream()
+                .filter(product -> product.isEqualsPurchaseOrderProductNo(purchaseOrderProductNo))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(
+                        "발주 상품 번호에 해당하는 발주 상품이 존재하지 않습니다. 상품 번호: %s".formatted(purchaseOrderProductNo)));
     }
 
     public Receive getReceive(final Long receiveNo) {
