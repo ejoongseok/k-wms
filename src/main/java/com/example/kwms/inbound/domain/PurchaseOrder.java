@@ -70,7 +70,7 @@ public class PurchaseOrder {
     public void assignProducts(final List<PurchaseOrderProduct> products) {
         validateAssignProducts(products);
         for (final PurchaseOrderProduct product : products) {
-            product.assignInbound(this);
+            product.assignPurchaseOrder(this);
             purchaseOrderProducts.add(product);
         }
     }
@@ -96,7 +96,7 @@ public class PurchaseOrder {
         this.description = description;
         purchaseOrderProducts.clear();
         purchaseOrderProducts.addAll(products);
-        purchaseOrderProducts.forEach(ip -> ip.assignInbound(this));
+        purchaseOrderProducts.forEach(purchaseOrderProduct -> purchaseOrderProduct.assignPurchaseOrder(this));
     }
 
     private void validateUpdate(

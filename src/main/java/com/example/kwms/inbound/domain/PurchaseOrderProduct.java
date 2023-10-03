@@ -61,19 +61,6 @@ public class PurchaseOrderProduct {
         this.unitPrice = unitPrice;
         this.description = description;
     }
-    @VisibleForTesting
-    public PurchaseOrderProduct(
-            final Long purchaseOrderProductNo,
-            final Long requestQuantity,
-            final Long unitPrice,
-            final String description,
-            final Long productNo) {
-        this.purchaseOrderProductNo = purchaseOrderProductNo;
-        this.requestQuantity = requestQuantity;
-        this.unitPrice = unitPrice;
-        this.description = description;
-        this.productNo = productNo;
-    }
 
     private void validateConstructor(
             final Long productNo,
@@ -88,7 +75,21 @@ public class PurchaseOrderProduct {
             throw new IllegalArgumentException("상품 입고 요청 단가는 0원 이상이어야 합니다.");
     }
 
-    void assignInbound(final PurchaseOrder purchaseOrder) {
+    @VisibleForTesting
+    public PurchaseOrderProduct(
+            final Long purchaseOrderProductNo,
+            final Long requestQuantity,
+            final Long unitPrice,
+            final String description,
+            final Long productNo) {
+        this.purchaseOrderProductNo = purchaseOrderProductNo;
+        this.requestQuantity = requestQuantity;
+        this.unitPrice = unitPrice;
+        this.description = description;
+        this.productNo = productNo;
+    }
+
+    void assignPurchaseOrder(final PurchaseOrder purchaseOrder) {
         Assert.notNull(purchaseOrder, "입고는 필수입니다.");
         this.purchaseOrder = purchaseOrder;
     }
