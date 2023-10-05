@@ -1,6 +1,6 @@
 package com.example.kwms.inbound.feature.query;
 
-import com.example.kwms.inbound.domain.PurchaseOrder;
+import com.example.kwms.common.NotFoundException;
 import com.example.kwms.inbound.domain.PurchaseOrderRepository;
 import com.example.kwms.inbound.domain.Receive;
 import com.example.kwms.inbound.domain.ReceiveProduct;
@@ -26,13 +26,28 @@ public class GetReceiveDetail {
     @GetMapping("/purchase-orders/{purchaseOrderNo}/receives/{receiveNo}")
     @ResponseBody
     @Transactional(readOnly = true)
-    public ReceiveResponse getReceive(
+    public ReceiveResponse getReceiveDetail(
             @PathVariable final Long purchaseOrderNo,
             @PathVariable final Long receiveNo) {
-        final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
+        final Receive receive = getReceive(purchaseOrderNo, receiveNo);
+        return new ReceiveResponse(
+                receive.getReceiveNo(),
+                receive.getName(),
+                receive.getCreatedAt(),
+                createReceiveProductResponses(receive.getReceiveProducts()));
+    }
+
+    private Receive getReceive(final Long purchaseOrderNo, final Long receiveNo) {
+        return purchaseOrderRepository.getBy(purchaseOrderNo).getReceives().stream()
+                .filter(r -> r.getReceiveNo().equals(receiveNo))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(
+                        "입고 번호에 해당하는 입고가 존재하지 않습니다. 입고 번호: %s".formatted(receiveNo)));
+    }
+
+    private List<ReceiveProductResponse> createReceiveProductResponses(final List<ReceiveProduct> receiveProducts) {
         final List<ReceiveProductResponse> purchaseOrderReceiveResponses = new ArrayList<>();
-        final Receive receive = purchaseOrder.getReceive(receiveNo);
-        for (final ReceiveProduct receiveProduct : receive.getReceiveProducts()) {
+        for (final ReceiveProduct receiveProduct : receiveProducts) {
             final Product product = productClient.getBy(receiveProduct.getProductNo());
             final ReceiveProductResponse receiveResponse = new ReceiveProductResponse(
                     product.getProductNo(),
@@ -42,11 +57,7 @@ public class GetReceiveDetail {
                     receiveProduct.getInspectionComment());
             purchaseOrderReceiveResponses.add(receiveResponse);
         }
-        return new ReceiveResponse(
-                receive.getReceiveNo(),
-                receive.getName(),
-                receive.getCreatedAt(),
-                purchaseOrderReceiveResponses);
+        return purchaseOrderReceiveResponses;
     }
 
     private record ReceiveResponse(

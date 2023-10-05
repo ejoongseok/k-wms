@@ -28,8 +28,16 @@ public class GetPurchaseOrderDetail {
     @Transactional(readOnly = true)
     public PurchaseOrderResponseDetail getPurchaseOrder(@PathVariable final Long purchaseOrderNo) {
         final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
+        return new PurchaseOrderResponseDetail(
+                purchaseOrder.getPurchaseOrderNo(),
+                purchaseOrder.getTitle(),
+                purchaseOrder.getDescription(),
+                createPurchaseOrderProductResponses(purchaseOrder),
+                createPurchaseOrderReceiveResponses(purchaseOrder));
+    }
+
+    private List<PurchaseOrderProductResponse> createPurchaseOrderProductResponses(final PurchaseOrder purchaseOrder) {
         final List<PurchaseOrderProductResponse> purchaseOrderProductResponses = new ArrayList<>();
-        final List<PurchaseOrderReceiveResponse> purchaseOrderReceiveResponses = new ArrayList<>();
         for (final PurchaseOrderProduct purchaseOrderProduct : purchaseOrder.getPurchaseOrderProducts()) {
             final Product product = productClient.getBy(purchaseOrderProduct.getProductNo());
             final PurchaseOrderProductResponse productResponse = new PurchaseOrderProductResponse(
@@ -41,6 +49,11 @@ public class GetPurchaseOrderDetail {
                     purchaseOrderProduct.getDescription());
             purchaseOrderProductResponses.add(productResponse);
         }
+        return purchaseOrderProductResponses;
+    }
+
+    private List<PurchaseOrderReceiveResponse> createPurchaseOrderReceiveResponses(final PurchaseOrder purchaseOrder) {
+        final List<PurchaseOrderReceiveResponse> purchaseOrderReceiveResponses = new ArrayList<>();
         for (final Receive receive : purchaseOrder.getReceives()) {
             final PurchaseOrderReceiveResponse receiveResponse = new PurchaseOrderReceiveResponse(
                     receive.getReceiveNo(),
@@ -48,12 +61,7 @@ public class GetPurchaseOrderDetail {
                     receive.getCreatedAt());
             purchaseOrderReceiveResponses.add(receiveResponse);
         }
-        return new PurchaseOrderResponseDetail(
-                purchaseOrder.getPurchaseOrderNo(),
-                purchaseOrder.getTitle(),
-                purchaseOrder.getDescription(),
-                purchaseOrderProductResponses,
-                purchaseOrderReceiveResponses);
+        return purchaseOrderReceiveResponses;
     }
 
     private record PurchaseOrderResponseDetail(

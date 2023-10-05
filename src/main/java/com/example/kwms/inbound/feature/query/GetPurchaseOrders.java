@@ -1,5 +1,6 @@
 package com.example.kwms.inbound.feature.query;
 
+import com.example.kwms.common.NotFoundException;
 import com.example.kwms.inbound.domain.LPN;
 import com.example.kwms.inbound.domain.PurchaseOrder;
 import com.example.kwms.inbound.domain.PurchaseOrderProduct;
@@ -24,13 +25,22 @@ public class GetPurchaseOrders {
     @Transactional(readOnly = true)
     public List<LPNResponse> findAll(
             @PathVariable final Long purchaseOrderNo,
-            @PathVariable final Long purchaseOrderProductNo
-    ) {
-        final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
-        final PurchaseOrderProduct purchaseOrderProduct = purchaseOrder.getPurchaseOrderProductBy(purchaseOrderProductNo);
-        return purchaseOrderProduct.getLpns().stream()
+            @PathVariable final Long purchaseOrderProductNo) {
+        final List<LPN> lpns = getLpns(purchaseOrderNo, purchaseOrderProductNo);
+        return lpns.stream()
                 .map(LPNResponse::from)
                 .toList();
+    }
+
+    private List<LPN> getLpns(final Long purchaseOrderNo, final Long purchaseOrderProductNo) {
+        final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
+        final PurchaseOrderProduct purchaseOrderProduct = purchaseOrder.getPurchaseOrderProducts().stream()
+                .filter(product -> product.getProductNo().equals(purchaseOrderProductNo))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(
+                        "발주 상품 번호에 해당하는 발주 상품이 존재하지 않습니다. 상품 번호: %s".formatted(purchaseOrderProductNo)));
+
+        return purchaseOrderProduct.getLpns();
     }
 
     private record LPNResponse(

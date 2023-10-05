@@ -39,7 +39,7 @@
     </table>
 
     <!-- 발주 상품 정보 -->
-    <div th:if="${isReceived}">
+    <div th:if="${hasReceive}">
         <h4 class="mt-4">입고 상품</h4>
         <table class="table table-bordered">
             <thead>
@@ -56,11 +56,11 @@
     </div>
     <div class="d-flex justify-content-end mb-4">
         <a class="btn btn-secondary" href="/web/purchase-orders" id="backToList" style="margin-right: 20px;">목록</a>
-        <div th:if="${!isReceived}">
+        <div th:if="${!hasReceive}">
             <a class="btn btn-primary" id="updateButton"
                th:href="@{'/web/purchase-orders/' + ${purchaseOrderNo} + '/update'}">수정</a>
         </div>
-        <div th:if="${!isReceiveCompleted}">
+        <div th:if="${!isAllReceived}">
             <a class="btn btn-primary" id="assignReceiveButton"
                th:href="@{'/web/purchase-orders/' + ${purchaseOrderNo} + '/add-receive'}">입고 등록</a>
         </div>

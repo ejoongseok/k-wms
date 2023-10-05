@@ -1,6 +1,5 @@
 package com.example.kwms.inbound.view.view;
 
-import com.example.kwms.inbound.domain.PurchaseOrder;
 import com.example.kwms.inbound.domain.PurchaseOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -17,9 +16,8 @@ public class AddReceiveView {
     @GetMapping("/web/purchase-orders/{purchaseOrderNo}/add-receive")
     @Transactional(readOnly = true)
     public String getPurchaseOrder(@PathVariable final Long purchaseOrderNo, final Model model) {
-        final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
+        purchaseOrderRepository.getBy(purchaseOrderNo);
         model.addAttribute("purchaseOrderNo", purchaseOrderNo);
-        model.addAttribute("isReceived", purchaseOrder.isReceived());
         return "purchaseorder/add-receive";
     }
 }

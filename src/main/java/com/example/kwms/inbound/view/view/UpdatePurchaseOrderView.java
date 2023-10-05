@@ -16,10 +16,14 @@ public class UpdatePurchaseOrderView {
     @GetMapping("/web/purchase-orders/{purchaseOrderNo}/update")
     @Transactional(readOnly = true)
     public String assignReceive(@PathVariable final Long purchaseOrderNo) {
+        validate(purchaseOrderNo);
+        return "purchaseorder/update";
+    }
+
+    private void validate(final Long purchaseOrderNo) {
         final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
-        if (purchaseOrder.isReceived()) {
+        if (!purchaseOrder.getReceives().isEmpty()) {
             throw new IllegalStateException("이미 입고가 등록되어 있습니다.");
         }
-        return "purchaseorder/update";
     }
 }

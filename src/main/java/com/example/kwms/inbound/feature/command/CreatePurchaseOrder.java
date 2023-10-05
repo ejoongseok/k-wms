@@ -28,12 +28,7 @@ public class CreatePurchaseOrder {
     @PostMapping("/purchase-orders")
     @ResponseStatus(HttpStatus.CREATED)
     public void request(@RequestBody @Valid final Request request) {
-        final List<PurchaseOrderProduct> products = request.toProducts();
-        final PurchaseOrder purchaseOrder = request.toDomain();
-
-        purchaseOrder.addPurchaseOrderProducts(products);
-
-        purchaseOrderRepository.save(purchaseOrder);
+        purchaseOrderRepository.save(request.toDomain());
     }
 
     public record Request(
@@ -48,7 +43,8 @@ public class CreatePurchaseOrder {
             return new PurchaseOrder(
                     warehouseNo,
                     name,
-                    description);
+                    description,
+                    toProducts());
         }
 
         List<PurchaseOrderProduct> toProducts() {

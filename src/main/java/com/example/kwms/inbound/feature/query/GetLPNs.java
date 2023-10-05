@@ -1,7 +1,9 @@
 package com.example.kwms.inbound.feature.query;
 
 import com.example.kwms.inbound.domain.PurchaseOrder;
+import com.example.kwms.inbound.domain.PurchaseOrderProduct;
 import com.example.kwms.inbound.domain.PurchaseOrderRepository;
+import com.example.kwms.inbound.domain.ReceiveProduct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,17 +28,32 @@ public class GetLPNs {
 
     private record PurchaseOrderResponse(Long purchaseOrderNo, String name, String description, String status) {
         static PurchaseOrderResponse from(final PurchaseOrder purchaseOrder) {
-            String status = "발주";
-            if (purchaseOrder.isReceiveCompleted()) {
-                status = "입고 완료";
-            } else if (purchaseOrder.isReceived()) {
-                status = "입고 중";
-            }
             return new PurchaseOrderResponse(
                     purchaseOrder.getPurchaseOrderNo(),
                     purchaseOrder.getTitle(),
                     purchaseOrder.getDescription(),
-                    status);
+                    determineStatus(purchaseOrder));
+        }
+
+        private static String determineStatus(final PurchaseOrder purchaseOrder) {
+            String status = "발주";
+            if (isAllReceived(purchaseOrder)) {
+                status = "입고 완료";
+            } else if (!purchaseOrder.getReceives().isEmpty()) {
+                status = "입고 중";
+            }
+            return status;
+        }
+
+        private static boolean isAllReceived(final PurchaseOrder purchaseOrder) {
+            final long totalRequestedQuantity = purchaseOrder.getPurchaseOrderProducts().stream()
+                    .mapToLong(PurchaseOrderProduct::getRequestQuantity)
+                    .sum();
+            final long totalReceivedQuantity = purchaseOrder.getReceives().stream()
+                    .flatMap(r -> r.getReceiveProducts().stream())
+                    .mapToLong(ReceiveProduct::totalQuantity)
+                    .sum();
+            return totalRequestedQuantity == totalReceivedQuantity;
         }
     }
 }
