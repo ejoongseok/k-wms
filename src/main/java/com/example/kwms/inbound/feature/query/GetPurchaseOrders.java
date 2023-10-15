@@ -32,7 +32,8 @@ public class GetPurchaseOrders {
 
     private List<LPN> getLpns(final Long purchaseOrderNo, final Long purchaseOrderProductNo) {
         final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
-        return new PurchaseOrderPresenter(purchaseOrder).getLPNs(purchaseOrderProductNo);
+        final PurchaseOrderPresenter purchaseOrderPresenter = new PurchaseOrderPresenter(purchaseOrder);
+        return purchaseOrderPresenter.getLPNs(purchaseOrderProductNo);
     }
 
     private record LPNResponse(

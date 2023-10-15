@@ -7,7 +7,7 @@ import com.example.kwms.inbound.domain.PurchaseOrderProduct;
 
 import java.util.List;
 
-public final class PurchaseOrderPresenter {
+final class PurchaseOrderPresenter {
     private final PurchaseOrder purchaseOrder;
 
     PurchaseOrderPresenter(final PurchaseOrder purchaseOrder) {
