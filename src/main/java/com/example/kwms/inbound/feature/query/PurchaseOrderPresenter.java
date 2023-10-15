@@ -4,13 +4,9 @@ import com.example.kwms.common.NotFoundException;
 import com.example.kwms.inbound.domain.LPN;
 import com.example.kwms.inbound.domain.PurchaseOrder;
 import com.example.kwms.inbound.domain.PurchaseOrderProduct;
-import lombok.Getter;
-import lombok.experimental.Accessors;
 
 import java.util.List;
 
-@Getter
-@Accessors(fluent = true)
 public final class PurchaseOrderPresenter {
     private final PurchaseOrder purchaseOrder;
 
@@ -19,7 +15,7 @@ public final class PurchaseOrderPresenter {
     }
 
     List<LPN> getLPNs(final Long purchasedOrderProductNo) {
-        final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder().getPurchaseOrderProducts();
+        final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
         final PurchaseOrderProduct purchaseOrderProduct = purchaseOrderProducts.stream()
                 .filter(product -> product.getProductNo().equals(purchasedOrderProductNo))
                 .findFirst()
