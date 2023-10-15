@@ -20,13 +20,13 @@ public final class PurchaseOrderPresenter {
         this.purchaseOrder = purchaseOrder;
     }
 
-    List<LPN> getLPNs() {
+    List<LPN> getLPNs(final Long purchasedOrderProductNo) {
         final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder().getPurchaseOrderProducts();
         final PurchaseOrderProduct purchaseOrderProduct = purchaseOrderProducts.stream()
-                .filter(product -> product.getProductNo().equals(purchaseOrderProductNo()))
+                .filter(product -> product.getProductNo().equals(purchasedOrderProductNo))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException(
-                        "발주 상품 번호에 해당하는 발주 상품이 존재하지 않습니다. 상품 번호: %s".formatted(purchaseOrderProductNo())));
+                        "발주 상품 번호에 해당하는 발주 상품이 존재하지 않습니다. 상품 번호: %s".formatted(purchasedOrderProductNo)));
 
         return purchaseOrderProduct.getLpns();
     }
