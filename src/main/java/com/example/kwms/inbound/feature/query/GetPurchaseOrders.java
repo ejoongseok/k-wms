@@ -32,8 +32,7 @@ public class GetPurchaseOrders {
                 .toList();
     }
 
-    private List<LPN> getLpns(final Long purchaseOrderNo, final Long purchaseOrderProductNo) {
-        final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
+    private static List<LPN> getLPNs(final Long purchaseOrderProductNo, final PurchaseOrder purchaseOrder) {
         final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
         final PurchaseOrderProduct purchaseOrderProduct = purchaseOrderProducts.stream()
                 .filter(product -> product.getProductNo().equals(purchaseOrderProductNo))
@@ -42,6 +41,11 @@ public class GetPurchaseOrders {
                         "발주 상품 번호에 해당하는 발주 상품이 존재하지 않습니다. 상품 번호: %s".formatted(purchaseOrderProductNo)));
 
         return purchaseOrderProduct.getLpns();
+    }
+
+    private List<LPN> getLpns(final Long purchaseOrderNo, final Long purchaseOrderProductNo) {
+        final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
+        return getLPNs(purchaseOrderProductNo, purchaseOrder);
     }
 
     private record LPNResponse(
