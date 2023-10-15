@@ -34,7 +34,8 @@ public class GetPurchaseOrders {
 
     private List<LPN> getLpns(final Long purchaseOrderNo, final Long purchaseOrderProductNo) {
         final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
-        final PurchaseOrderProduct purchaseOrderProduct = purchaseOrder.getPurchaseOrderProducts().stream()
+        final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
+        final PurchaseOrderProduct purchaseOrderProduct = purchaseOrderProducts.stream()
                 .filter(product -> product.getProductNo().equals(purchaseOrderProductNo))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException(

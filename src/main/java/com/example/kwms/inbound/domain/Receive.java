@@ -51,7 +51,7 @@ public class Receive {
         receiveProducts.forEach(receiveProduct -> receiveProduct.assignReceive(this));
     }
 
-    public void assignPurchaseOrder(final PurchaseOrder purchaseOrder) {
+    void assignPurchaseOrder(final PurchaseOrder purchaseOrder) {
         this.purchaseOrder = purchaseOrder;
     }
 }

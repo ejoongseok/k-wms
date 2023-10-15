@@ -3,6 +3,7 @@ package com.example.kwms.inbound.feature.query;
 import com.example.kwms.inbound.domain.PurchaseOrder;
 import com.example.kwms.inbound.domain.PurchaseOrderProduct;
 import com.example.kwms.inbound.domain.PurchaseOrderRepository;
+import com.example.kwms.inbound.domain.Receive;
 import com.example.kwms.inbound.domain.ReceiveProduct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -46,10 +47,12 @@ public class GetLPNs {
         }
 
         private static boolean isAllReceived(final PurchaseOrder purchaseOrder) {
-            final long totalRequestedQuantity = purchaseOrder.getPurchaseOrderProducts().stream()
+            final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
+            final long totalRequestedQuantity = purchaseOrderProducts.stream()
                     .mapToLong(PurchaseOrderProduct::getRequestQuantity)
                     .sum();
-            final long totalReceivedQuantity = purchaseOrder.getReceives().stream()
+            final List<Receive> receives = purchaseOrder.getReceives();
+            final long totalReceivedQuantity = receives.stream()
                     .flatMap(r -> r.getReceiveProducts().stream())
                     .mapToLong(ReceiveProduct::totalQuantity)
                     .sum();
