@@ -32,7 +32,7 @@ public class GetPurchaseOrders {
                 .toList();
     }
 
-    private static List<LPN> getLPNs(final PurchaseOrderPresenter purchaseOrderPresenter) {
+    private List<LPN> getLPNs(final PurchaseOrderPresenter purchaseOrderPresenter) {
         final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrderPresenter.purchaseOrder().getPurchaseOrderProducts();
         final PurchaseOrderProduct purchaseOrderProduct = purchaseOrderProducts.stream()
                 .filter(product -> product.getProductNo().equals(purchaseOrderPresenter.purchaseOrderProductNo()))
