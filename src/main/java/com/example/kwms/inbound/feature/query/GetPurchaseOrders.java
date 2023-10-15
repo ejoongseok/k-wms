@@ -32,20 +32,20 @@ public class GetPurchaseOrders {
                 .toList();
     }
 
-    private static List<LPN> getLPNs(final Long purchaseOrderProductNo, final PurchaseOrder purchaseOrder) {
-        final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
+    private static List<LPN> getLPNs(final PurchaseOrderPresenter purchaseOrderPresenter) {
+        final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrderPresenter.purchaseOrder().getPurchaseOrderProducts();
         final PurchaseOrderProduct purchaseOrderProduct = purchaseOrderProducts.stream()
-                .filter(product -> product.getProductNo().equals(purchaseOrderProductNo))
+                .filter(product -> product.getProductNo().equals(purchaseOrderPresenter.purchaseOrderProductNo()))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException(
-                        "발주 상품 번호에 해당하는 발주 상품이 존재하지 않습니다. 상품 번호: %s".formatted(purchaseOrderProductNo)));
+                        "발주 상품 번호에 해당하는 발주 상품이 존재하지 않습니다. 상품 번호: %s".formatted(purchaseOrderPresenter.purchaseOrderProductNo())));
 
         return purchaseOrderProduct.getLpns();
     }
 
     private List<LPN> getLpns(final Long purchaseOrderNo, final Long purchaseOrderProductNo) {
         final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
-        return getLPNs(purchaseOrderProductNo, purchaseOrder);
+        return getLPNs(new PurchaseOrderPresenter(purchaseOrderProductNo, purchaseOrder));
     }
 
     private record LPNResponse(
