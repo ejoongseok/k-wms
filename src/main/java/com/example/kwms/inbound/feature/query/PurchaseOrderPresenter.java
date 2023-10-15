@@ -12,11 +12,9 @@ import java.util.List;
 @Getter
 @Accessors(fluent = true)
 public final class PurchaseOrderPresenter {
-    private final Long purchaseOrderProductNo;
     private final PurchaseOrder purchaseOrder;
 
-    PurchaseOrderPresenter(final Long purchaseOrderProductNo, final PurchaseOrder purchaseOrder) {
-        this.purchaseOrderProductNo = purchaseOrderProductNo;
+    PurchaseOrderPresenter(final PurchaseOrder purchaseOrder) {
         this.purchaseOrder = purchaseOrder;
     }
 
