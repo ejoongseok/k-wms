@@ -9,10 +9,10 @@ import com.example.kwms.inbound.domain.ReceiveProduct;
 
 import java.util.List;
 
-final class PurchaseOrderPresenter {
+public final class PurchaseOrderPresenter {
     private final PurchaseOrder purchaseOrder;
 
-    PurchaseOrderPresenter(final PurchaseOrder purchaseOrder) {
+    public PurchaseOrderPresenter(final PurchaseOrder purchaseOrder) {
         this.purchaseOrder = purchaseOrder;
     }
 

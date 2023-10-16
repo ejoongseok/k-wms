@@ -4,6 +4,7 @@ import com.example.kwms.common.NotFoundException;
 import com.example.kwms.inbound.domain.PurchaseOrder;
 import com.example.kwms.inbound.domain.PurchaseOrderProduct;
 import com.example.kwms.inbound.domain.PurchaseOrderRepository;
+import com.example.kwms.inbound.feature.query.PurchaseOrderPresenter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,10 +34,10 @@ public class CreateLPNView {
 
     private void validate(final Long purchaseOrderNo, final Long purchaseOrderProductNo) {
         final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
-        extracted(purchaseOrderProductNo, purchaseOrder);
+        extracted(purchaseOrderProductNo, purchaseOrder, new PurchaseOrderPresenter(purchaseOrder));
     }
 
-    private void extracted(final Long purchaseOrderProductNo, final PurchaseOrder purchaseOrder) {
+    private void extracted(final Long purchaseOrderProductNo, final PurchaseOrder purchaseOrder, final PurchaseOrderPresenter purchaseOrderPresenter) {
         final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
         purchaseOrderProducts.stream()
                 .filter(product -> product.getProductNo().equals(purchaseOrderProductNo))
