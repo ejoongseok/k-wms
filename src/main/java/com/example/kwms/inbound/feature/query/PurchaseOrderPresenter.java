@@ -60,4 +60,13 @@ public final class PurchaseOrderPresenter {
                 .sum();
         return totalRequestedQuantity == totalReceivedQuantity;
     }
+
+    public Receive getReceive(final Long receiveNo) {
+        final List<Receive> receives = purchaseOrder.getReceives();
+        return receives.stream()
+                .filter(r -> r.getReceiveNo().equals(receiveNo))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(
+                        "입고 번호에 해당하는 입고가 존재하지 않습니다. 입고 번호: %s".formatted(receiveNo)));
+    }
 }
