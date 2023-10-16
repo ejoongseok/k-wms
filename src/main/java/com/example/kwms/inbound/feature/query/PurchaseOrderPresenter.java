@@ -33,7 +33,7 @@ final class PurchaseOrderPresenter {
                         "발주 상품 번호에 해당하는 발주 상품이 존재하지 않습니다. 상품 번호: %s".formatted(purchasedOrderProductNo)));
     }
 
-    String determineStatus() {
+    String getPurchaseOrderStatus() {
         if (isAllReceived()) {
             return "입고 완료";
         } else if (hasReceivedList()) {
