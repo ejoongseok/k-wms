@@ -16,19 +16,6 @@ final class PurchaseOrderPresenter {
         this.purchaseOrder = purchaseOrder;
     }
 
-    static boolean isAllReceived(final PurchaseOrder purchaseOrder, final PurchaseOrderPresenter purchaseOrderPresenter) {
-        final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
-        final long totalRequestedQuantity = purchaseOrderProducts.stream()
-                .mapToLong(PurchaseOrderProduct::getRequestQuantity)
-                .sum();
-        final List<Receive> receives = purchaseOrder.getReceives();
-        final long totalReceivedQuantity = receives.stream()
-                .flatMap(r -> r.getReceiveProducts().stream())
-                .mapToLong(ReceiveProduct::totalQuantity)
-                .sum();
-        return totalRequestedQuantity == totalReceivedQuantity;
-    }
-
     List<LPN> getLPNs(final Long purchasedOrderProductNo) {
         final PurchaseOrderProduct purchaseOrderProduct = getPurchaseOrderProduct(
                 purchaseOrder.getPurchaseOrderProducts(),
@@ -54,5 +41,18 @@ final class PurchaseOrderPresenter {
             status = "입고 중";
         }
         return status;
+    }
+
+    static boolean isAllReceived(final PurchaseOrder purchaseOrder, final PurchaseOrderPresenter purchaseOrderPresenter) {
+        final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
+        final long totalRequestedQuantity = purchaseOrderProducts.stream()
+                .mapToLong(PurchaseOrderProduct::getRequestQuantity)
+                .sum();
+        final List<Receive> receives = purchaseOrder.getReceives();
+        final long totalReceivedQuantity = receives.stream()
+                .flatMap(r -> r.getReceiveProducts().stream())
+                .mapToLong(ReceiveProduct::totalQuantity)
+                .sum();
+        return totalRequestedQuantity == totalReceivedQuantity;
     }
 }
