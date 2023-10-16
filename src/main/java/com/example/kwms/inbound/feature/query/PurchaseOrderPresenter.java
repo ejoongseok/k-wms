@@ -33,20 +33,20 @@ final class PurchaseOrderPresenter {
                         "발주 상품 번호에 해당하는 발주 상품이 존재하지 않습니다. 상품 번호: %s".formatted(purchasedOrderProductNo)));
     }
 
-    String determineStatus(final PurchaseOrder purchaseOrder) {
-        if (isAllReceived(purchaseOrder)) {
+    String determineStatus() {
+        if (isAllReceived()) {
             return "입고 완료";
-        } else if (hasReceivedList(purchaseOrder)) {
+        } else if (hasReceivedList()) {
             return "입고 중";
         }
         return "발주";
     }
 
-    private boolean hasReceivedList(final PurchaseOrder purchaseOrder) {
+    private boolean hasReceivedList() {
         return !purchaseOrder.getReceives().isEmpty();
     }
 
-    private boolean isAllReceived(final PurchaseOrder purchaseOrder) {
+    private boolean isAllReceived() {
         final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
         final long totalRequestedQuantity = purchaseOrderProducts.stream()
                 .mapToLong(PurchaseOrderProduct::getRequestQuantity)

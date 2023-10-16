@@ -30,7 +30,7 @@ public class GetLPNs {
                     purchaseOrder.getPurchaseOrderNo(),
                     purchaseOrder.getTitle(),
                     purchaseOrder.getDescription(),
-                    new PurchaseOrderPresenter(purchaseOrder).determineStatus(purchaseOrder));
+                    new PurchaseOrderPresenter(purchaseOrder).determineStatus());
         }
 
     }
