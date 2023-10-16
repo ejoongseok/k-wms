@@ -18,15 +18,13 @@ public final class PurchaseOrderPresenter {
 
     List<LPN> getLPNs(final Long purchasedOrderProductNo) {
         final PurchaseOrderProduct purchaseOrderProduct = getPurchaseOrderProduct(
-                purchaseOrder.getPurchaseOrderProducts(),
                 purchasedOrderProductNo);
         return purchaseOrderProduct.getLpns();
     }
 
-    private PurchaseOrderProduct getPurchaseOrderProduct(
-            final List<PurchaseOrderProduct> purchaseOrderProducts,
+    public PurchaseOrderProduct getPurchaseOrderProduct(
             final Long purchasedOrderProductNo) {
-        return purchaseOrderProducts.stream()
+        return purchaseOrder.getPurchaseOrderProducts().stream()
                 .filter(product -> product.getProductNo().equals(purchasedOrderProductNo))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException(
@@ -57,14 +55,5 @@ public final class PurchaseOrderPresenter {
 
     private boolean hasReceivedList() {
         return !purchaseOrder.getReceives().isEmpty();
-    }
-
-    public void extracted(final Long purchaseOrderProductNo, final PurchaseOrder purchaseOrder) {
-        final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
-        purchaseOrderProducts.stream()
-                .filter(product -> product.getProductNo().equals(purchaseOrderProductNo))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException(
-                        "발주 상품 번호에 해당하는 발주 상품이 존재하지 않습니다. 상품 번호: %s".formatted(purchaseOrderProductNo)));
     }
 }

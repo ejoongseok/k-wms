@@ -30,7 +30,7 @@ public class CreateLPNView {
 
     private void validate(final Long purchaseOrderNo, final Long purchaseOrderProductNo) {
         final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
-        new PurchaseOrderPresenter(purchaseOrder).extracted(purchaseOrderProductNo, purchaseOrder);
+        new PurchaseOrderPresenter(purchaseOrder).getPurchaseOrderProduct(purchaseOrderProductNo);
     }
 
 }
