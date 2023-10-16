@@ -58,4 +58,13 @@ public final class PurchaseOrderPresenter {
     private boolean hasReceivedList() {
         return !purchaseOrder.getReceives().isEmpty();
     }
+
+    public void extracted(final Long purchaseOrderProductNo, final PurchaseOrder purchaseOrder) {
+        final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
+        purchaseOrderProducts.stream()
+                .filter(product -> product.getProductNo().equals(purchaseOrderProductNo))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(
+                        "발주 상품 번호에 해당하는 발주 상품이 존재하지 않습니다. 상품 번호: %s".formatted(purchaseOrderProductNo)));
+    }
 }
