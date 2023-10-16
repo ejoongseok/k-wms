@@ -40,19 +40,6 @@ public final class PurchaseOrderPresenter {
         return "발주";
     }
 
-    private boolean isAllReceived() {
-        final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
-        final long totalRequestedQuantity = purchaseOrderProducts.stream()
-                .mapToLong(PurchaseOrderProduct::getRequestQuantity)
-                .sum();
-        final List<Receive> receives = purchaseOrder.getReceives();
-        final long totalReceivedQuantity = receives.stream()
-                .flatMap(r -> r.getReceiveProducts().stream())
-                .mapToLong(ReceiveProduct::totalQuantity)
-                .sum();
-        return totalRequestedQuantity == totalReceivedQuantity;
-    }
-
     private boolean hasReceivedList() {
         return !purchaseOrder.getReceives().isEmpty();
     }
