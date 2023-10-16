@@ -35,7 +35,7 @@ final class PurchaseOrderPresenter {
 
     String determineStatus(final PurchaseOrder purchaseOrder) {
         String status = "발주";
-        if (isAllReceived(purchaseOrder, this)) {
+        if (isAllReceived(purchaseOrder)) {
             status = "입고 완료";
         } else if (!purchaseOrder.getReceives().isEmpty()) {
             status = "입고 중";
@@ -43,7 +43,7 @@ final class PurchaseOrderPresenter {
         return status;
     }
 
-    private boolean isAllReceived(final PurchaseOrder purchaseOrder, final PurchaseOrderPresenter purchaseOrderPresenter) {
+    private boolean isAllReceived(final PurchaseOrder purchaseOrder) {
         final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
         final long totalRequestedQuantity = purchaseOrderProducts.stream()
                 .mapToLong(PurchaseOrderProduct::getRequestQuantity)
