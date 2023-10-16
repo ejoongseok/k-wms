@@ -33,7 +33,7 @@ public class GetLPNs {
                     determineStatus(purchaseOrder, new PurchaseOrderPresenter(purchaseOrder)));
         }
 
-        private static String determineStatus(final PurchaseOrder purchaseOrder, final PurchaseOrderPresenter purchaseOrderPresenter) {
+        private String determineStatus(final PurchaseOrder purchaseOrder, final PurchaseOrderPresenter purchaseOrderPresenter) {
             String status = "발주";
             if (PurchaseOrderPresenter.isAllReceived(purchaseOrder, purchaseOrderPresenter)) {
                 status = "입고 완료";
