@@ -43,7 +43,7 @@ final class PurchaseOrderPresenter {
         return status;
     }
 
-    static boolean isAllReceived(final PurchaseOrder purchaseOrder, final PurchaseOrderPresenter purchaseOrderPresenter) {
+    private boolean isAllReceived(final PurchaseOrder purchaseOrder, final PurchaseOrderPresenter purchaseOrderPresenter) {
         final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
         final long totalRequestedQuantity = purchaseOrderProducts.stream()
                 .mapToLong(PurchaseOrderProduct::getRequestQuantity)
