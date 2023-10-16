@@ -34,13 +34,12 @@ final class PurchaseOrderPresenter {
     }
 
     String determineStatus(final PurchaseOrder purchaseOrder) {
-        String status = "발주";
         if (isAllReceived(purchaseOrder)) {
-            status = "입고 완료";
+            return "입고 완료";
         } else if (hasReceivedList(purchaseOrder)) {
-            status = "입고 중";
+            return "입고 중";
         }
-        return status;
+        return "발주";
     }
 
     private boolean hasReceivedList(final PurchaseOrder purchaseOrder) {
