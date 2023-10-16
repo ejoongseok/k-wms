@@ -4,6 +4,8 @@ import com.example.kwms.common.NotFoundException;
 import com.example.kwms.inbound.domain.LPN;
 import com.example.kwms.inbound.domain.PurchaseOrder;
 import com.example.kwms.inbound.domain.PurchaseOrderProduct;
+import com.example.kwms.inbound.domain.Receive;
+import com.example.kwms.inbound.domain.ReceiveProduct;
 
 import java.util.List;
 
@@ -12,6 +14,19 @@ final class PurchaseOrderPresenter {
 
     PurchaseOrderPresenter(final PurchaseOrder purchaseOrder) {
         this.purchaseOrder = purchaseOrder;
+    }
+
+    static boolean isAllReceived(final PurchaseOrder purchaseOrder, final PurchaseOrderPresenter purchaseOrderPresenter) {
+        final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
+        final long totalRequestedQuantity = purchaseOrderProducts.stream()
+                .mapToLong(PurchaseOrderProduct::getRequestQuantity)
+                .sum();
+        final List<Receive> receives = purchaseOrder.getReceives();
+        final long totalReceivedQuantity = receives.stream()
+                .flatMap(r -> r.getReceiveProducts().stream())
+                .mapToLong(ReceiveProduct::totalQuantity)
+                .sum();
+        return totalRequestedQuantity == totalReceivedQuantity;
     }
 
     List<LPN> getLPNs(final Long purchasedOrderProductNo) {
