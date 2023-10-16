@@ -37,10 +37,14 @@ final class PurchaseOrderPresenter {
         String status = "발주";
         if (isAllReceived(purchaseOrder)) {
             status = "입고 완료";
-        } else if (!purchaseOrder.getReceives().isEmpty()) {
+        } else if (hasReceivedList(purchaseOrder)) {
             status = "입고 중";
         }
         return status;
+    }
+
+    private boolean hasReceivedList(final PurchaseOrder purchaseOrder) {
+        return !purchaseOrder.getReceives().isEmpty();
     }
 
     private boolean isAllReceived(final PurchaseOrder purchaseOrder) {
