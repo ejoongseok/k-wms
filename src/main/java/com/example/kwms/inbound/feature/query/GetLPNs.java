@@ -30,17 +30,7 @@ public class GetLPNs {
                     purchaseOrder.getPurchaseOrderNo(),
                     purchaseOrder.getTitle(),
                     purchaseOrder.getDescription(),
-                    determineStatus(purchaseOrder, new PurchaseOrderPresenter(purchaseOrder)));
-        }
-
-        private String determineStatus(final PurchaseOrder purchaseOrder, final PurchaseOrderPresenter purchaseOrderPresenter) {
-            String status = "발주";
-            if (PurchaseOrderPresenter.isAllReceived(purchaseOrder, purchaseOrderPresenter)) {
-                status = "입고 완료";
-            } else if (!purchaseOrder.getReceives().isEmpty()) {
-                status = "입고 중";
-            }
-            return status;
+                    new PurchaseOrderPresenter(purchaseOrder).determineStatus(purchaseOrder));
         }
 
     }

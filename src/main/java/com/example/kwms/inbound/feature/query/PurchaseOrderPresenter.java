@@ -45,4 +45,14 @@ final class PurchaseOrderPresenter {
                 .orElseThrow(() -> new NotFoundException(
                         "발주 상품 번호에 해당하는 발주 상품이 존재하지 않습니다. 상품 번호: %s".formatted(purchasedOrderProductNo)));
     }
+
+    String determineStatus(final PurchaseOrder purchaseOrder) {
+        String status = "발주";
+        if (isAllReceived(purchaseOrder, this)) {
+            status = "입고 완료";
+        } else if (!purchaseOrder.getReceives().isEmpty()) {
+            status = "입고 중";
+        }
+        return status;
+    }
 }
