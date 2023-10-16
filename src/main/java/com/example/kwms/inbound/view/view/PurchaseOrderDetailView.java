@@ -19,9 +19,10 @@ public class PurchaseOrderDetailView {
     @Transactional(readOnly = true)
     public String getPurchaseOrder(@PathVariable final Long purchaseOrderNo, final Model model) {
         final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
+        final PurchaseOrderPresenter purchaseOrderPresenter = new PurchaseOrderPresenter(purchaseOrder);
         model.addAttribute("purchaseOrderNo", purchaseOrderNo);
         model.addAttribute("hasReceive", !purchaseOrder.getReceives().isEmpty());
-        model.addAttribute("isAllReceived", new PurchaseOrderPresenter(purchaseOrder).isAllReceived());
+        model.addAttribute("isAllReceived", purchaseOrderPresenter.isAllReceived());
         return "purchaseorder/detail";
     }
 
