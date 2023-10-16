@@ -44,10 +44,6 @@ public final class PurchaseOrderPresenter {
         return !purchaseOrder.getReceives().isEmpty();
     }
 
-    public PurchaseOrder getPurchaseOrder() {
-        return purchaseOrder;
-    }
-
     public boolean isAllReceived() {
         final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
         final long totalRequestedQuantity = purchaseOrderProducts.stream()
@@ -61,9 +57,9 @@ public final class PurchaseOrderPresenter {
         return totalRequestedQuantity == totalReceivedQuantity;
     }
 
-    public Receive getReceive(final Long receiveNo) {
+    public void getReceive(final Long receiveNo) {
         final List<Receive> receives = purchaseOrder.getReceives();
-        return receives.stream()
+        receives.stream()
                 .filter(r -> r.getReceiveNo().equals(receiveNo))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException(
