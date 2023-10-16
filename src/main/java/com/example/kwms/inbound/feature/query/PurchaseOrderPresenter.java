@@ -9,24 +9,22 @@ import com.example.kwms.inbound.domain.ReceiveProduct;
 
 import java.util.List;
 
-final class PurchaseOrderPresenter {
+public final class PurchaseOrderPresenter {
     private final PurchaseOrder purchaseOrder;
 
-    PurchaseOrderPresenter(final PurchaseOrder purchaseOrder) {
+    public PurchaseOrderPresenter(final PurchaseOrder purchaseOrder) {
         this.purchaseOrder = purchaseOrder;
     }
 
     List<LPN> getLPNs(final Long purchasedOrderProductNo) {
         final PurchaseOrderProduct purchaseOrderProduct = getPurchaseOrderProduct(
-                purchaseOrder.getPurchaseOrderProducts(),
                 purchasedOrderProductNo);
         return purchaseOrderProduct.getLpns();
     }
 
-    private PurchaseOrderProduct getPurchaseOrderProduct(
-            final List<PurchaseOrderProduct> purchaseOrderProducts,
+    public PurchaseOrderProduct getPurchaseOrderProduct(
             final Long purchasedOrderProductNo) {
-        return purchaseOrderProducts.stream()
+        return purchaseOrder.getPurchaseOrderProducts().stream()
                 .filter(product -> product.getProductNo().equals(purchasedOrderProductNo))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException(
@@ -42,7 +40,11 @@ final class PurchaseOrderPresenter {
         return "발주";
     }
 
-    private boolean isAllReceived() {
+    public boolean hasReceivedList() {
+        return !purchaseOrder.getReceives().isEmpty();
+    }
+
+    public boolean isAllReceived() {
         final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
         final long totalRequestedQuantity = purchaseOrderProducts.stream()
                 .mapToLong(PurchaseOrderProduct::getRequestQuantity)
@@ -55,7 +57,12 @@ final class PurchaseOrderPresenter {
         return totalRequestedQuantity == totalReceivedQuantity;
     }
 
-    private boolean hasReceivedList() {
-        return !purchaseOrder.getReceives().isEmpty();
+    public void getReceive(final Long receiveNo) {
+        final List<Receive> receives = purchaseOrder.getReceives();
+        receives.stream()
+                .filter(r -> r.getReceiveNo().equals(receiveNo))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(
+                        "입고 번호에 해당하는 입고가 존재하지 않습니다. 입고 번호: %s".formatted(receiveNo)));
     }
 }
