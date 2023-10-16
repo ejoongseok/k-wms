@@ -60,4 +60,17 @@ public final class PurchaseOrderPresenter {
     public PurchaseOrder getPurchaseOrder() {
         return purchaseOrder;
     }
+
+    public boolean isAllReceived() {
+        final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
+        final long totalRequestedQuantity = purchaseOrderProducts.stream()
+                .mapToLong(PurchaseOrderProduct::getRequestQuantity)
+                .sum();
+        final List<Receive> receives = purchaseOrder.getReceives();
+        final long totalReceivedQuantity = receives.stream()
+                .flatMap(r -> r.getReceiveProducts().stream())
+                .mapToLong(ReceiveProduct::totalQuantity)
+                .sum();
+        return totalRequestedQuantity == totalReceivedQuantity;
+    }
 }
