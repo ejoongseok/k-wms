@@ -42,10 +42,6 @@ final class PurchaseOrderPresenter {
         return "발주";
     }
 
-    private boolean hasReceivedList() {
-        return !purchaseOrder.getReceives().isEmpty();
-    }
-
     private boolean isAllReceived() {
         final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
         final long totalRequestedQuantity = purchaseOrderProducts.stream()
@@ -57,5 +53,9 @@ final class PurchaseOrderPresenter {
                 .mapToLong(ReceiveProduct::totalQuantity)
                 .sum();
         return totalRequestedQuantity == totalReceivedQuantity;
+    }
+
+    private boolean hasReceivedList() {
+        return !purchaseOrder.getReceives().isEmpty();
     }
 }
