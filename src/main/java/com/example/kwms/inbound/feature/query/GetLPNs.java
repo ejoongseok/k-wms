@@ -1,10 +1,7 @@
 package com.example.kwms.inbound.feature.query;
 
 import com.example.kwms.inbound.domain.PurchaseOrder;
-import com.example.kwms.inbound.domain.PurchaseOrderProduct;
 import com.example.kwms.inbound.domain.PurchaseOrderRepository;
-import com.example.kwms.inbound.domain.Receive;
-import com.example.kwms.inbound.domain.ReceiveProduct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,30 +30,8 @@ public class GetLPNs {
                     purchaseOrder.getPurchaseOrderNo(),
                     purchaseOrder.getTitle(),
                     purchaseOrder.getDescription(),
-                    determineStatus(purchaseOrder));
+                    new PurchaseOrderPresenter(purchaseOrder).getPurchaseOrderStatus());
         }
 
-        private static String determineStatus(final PurchaseOrder purchaseOrder) {
-            String status = "발주";
-            if (isAllReceived(purchaseOrder)) {
-                status = "입고 완료";
-            } else if (!purchaseOrder.getReceives().isEmpty()) {
-                status = "입고 중";
-            }
-            return status;
-        }
-
-        private static boolean isAllReceived(final PurchaseOrder purchaseOrder) {
-            final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
-            final long totalRequestedQuantity = purchaseOrderProducts.stream()
-                    .mapToLong(PurchaseOrderProduct::getRequestQuantity)
-                    .sum();
-            final List<Receive> receives = purchaseOrder.getReceives();
-            final long totalReceivedQuantity = receives.stream()
-                    .flatMap(r -> r.getReceiveProducts().stream())
-                    .mapToLong(ReceiveProduct::totalQuantity)
-                    .sum();
-            return totalRequestedQuantity == totalReceivedQuantity;
-        }
     }
 }
