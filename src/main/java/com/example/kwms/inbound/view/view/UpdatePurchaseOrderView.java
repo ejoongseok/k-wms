@@ -2,6 +2,7 @@ package com.example.kwms.inbound.view.view;
 
 import com.example.kwms.inbound.domain.PurchaseOrder;
 import com.example.kwms.inbound.domain.PurchaseOrderRepository;
+import com.example.kwms.inbound.feature.query.PurchaseOrderPresenter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,8 @@ public class UpdatePurchaseOrderView {
 
     private void validate(final Long purchaseOrderNo) {
         final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
-        if (!purchaseOrder.getReceives().isEmpty()) {
+        final PurchaseOrderPresenter purchaseOrderPresenter = new PurchaseOrderPresenter(purchaseOrder);
+        if (purchaseOrderPresenter.hasReceivedList()) {
             throw new IllegalStateException("이미 입고가 등록되어 있습니다.");
         }
     }

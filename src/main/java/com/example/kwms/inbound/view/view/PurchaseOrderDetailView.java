@@ -18,12 +18,16 @@ public class PurchaseOrderDetailView {
     @GetMapping("/web/purchase-orders/{purchaseOrderNo}")
     @Transactional(readOnly = true)
     public String getPurchaseOrder(@PathVariable final Long purchaseOrderNo, final Model model) {
-        final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
-        final PurchaseOrderPresenter purchaseOrderPresenter = new PurchaseOrderPresenter(purchaseOrder);
+        final PurchaseOrderPresenter purchaseOrderPresenter = createPurchaseOrderPresenter(purchaseOrderNo);
         model.addAttribute("purchaseOrderNo", purchaseOrderNo);
         model.addAttribute("hasReceive", purchaseOrderPresenter.hasReceivedList());
         model.addAttribute("isAllReceived", purchaseOrderPresenter.isAllReceived());
         return "purchaseorder/detail";
+    }
+
+    private PurchaseOrderPresenter createPurchaseOrderPresenter(final Long purchaseOrderNo) {
+        final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
+        return new PurchaseOrderPresenter(purchaseOrder);
     }
 
 }
