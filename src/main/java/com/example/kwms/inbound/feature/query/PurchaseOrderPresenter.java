@@ -56,4 +56,8 @@ public final class PurchaseOrderPresenter {
     private boolean hasReceivedList() {
         return !purchaseOrder.getReceives().isEmpty();
     }
+
+    public PurchaseOrder getPurchaseOrder() {
+        return purchaseOrder;
+    }
 }

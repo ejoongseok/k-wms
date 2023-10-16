@@ -5,6 +5,7 @@ import com.example.kwms.inbound.domain.PurchaseOrderProduct;
 import com.example.kwms.inbound.domain.PurchaseOrderRepository;
 import com.example.kwms.inbound.domain.Receive;
 import com.example.kwms.inbound.domain.ReceiveProduct;
+import com.example.kwms.inbound.feature.query.PurchaseOrderPresenter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,16 +26,16 @@ public class PurchaseOrderDetailView {
         final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
         model.addAttribute("purchaseOrderNo", purchaseOrderNo);
         model.addAttribute("hasReceive", !purchaseOrder.getReceives().isEmpty());
-        model.addAttribute("isAllReceived", isAllReceived(purchaseOrder));
+        model.addAttribute("isAllReceived", isAllReceived(new PurchaseOrderPresenter(purchaseOrder)));
         return "purchaseorder/detail";
     }
 
-    private boolean isAllReceived(final PurchaseOrder purchaseOrder) {
-        final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
+    private boolean isAllReceived(final PurchaseOrderPresenter purchaseOrderPresenter) {
+        final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrderPresenter.getPurchaseOrder().getPurchaseOrderProducts();
         final long totalRequestedQuantity = purchaseOrderProducts.stream()
                 .mapToLong(PurchaseOrderProduct::getRequestQuantity)
                 .sum();
-        final List<Receive> receives = purchaseOrder.getReceives();
+        final List<Receive> receives = purchaseOrderPresenter.getPurchaseOrder().getReceives();
         final long totalReceivedQuantity = receives.stream()
                 .flatMap(r -> r.getReceiveProducts().stream())
                 .mapToLong(ReceiveProduct::totalQuantity)
