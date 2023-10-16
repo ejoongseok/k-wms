@@ -33,6 +33,10 @@ public class CreateLPNView {
 
     private void validate(final Long purchaseOrderNo, final Long purchaseOrderProductNo) {
         final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
+        extracted(purchaseOrderProductNo, purchaseOrder);
+    }
+
+    private void extracted(final Long purchaseOrderProductNo, final PurchaseOrder purchaseOrder) {
         final List<PurchaseOrderProduct> purchaseOrderProducts = purchaseOrder.getPurchaseOrderProducts();
         purchaseOrderProducts.stream()
                 .filter(product -> product.getProductNo().equals(purchaseOrderProductNo))
