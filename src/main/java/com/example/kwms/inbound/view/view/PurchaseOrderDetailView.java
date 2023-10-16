@@ -21,7 +21,7 @@ public class PurchaseOrderDetailView {
         final PurchaseOrder purchaseOrder = purchaseOrderRepository.getBy(purchaseOrderNo);
         final PurchaseOrderPresenter purchaseOrderPresenter = new PurchaseOrderPresenter(purchaseOrder);
         model.addAttribute("purchaseOrderNo", purchaseOrderNo);
-        model.addAttribute("hasReceive", !purchaseOrder.getReceives().isEmpty());
+        model.addAttribute("hasReceive", purchaseOrderPresenter.hasReceivedList());
         model.addAttribute("isAllReceived", purchaseOrderPresenter.isAllReceived());
         return "purchaseorder/detail";
     }

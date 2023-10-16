@@ -40,7 +40,7 @@ public final class PurchaseOrderPresenter {
         return "발주";
     }
 
-    private boolean hasReceivedList() {
+    public boolean hasReceivedList() {
         return !purchaseOrder.getReceives().isEmpty();
     }
 
